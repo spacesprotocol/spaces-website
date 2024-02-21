@@ -1,0 +1,20 @@
+baseURL = 'https://spacesprotocol.org/'
+languageCode = 'en-us'
+title = 'Spaces Protocol'
+
+
+[markup]
+  [markup.tableOfContents]
+    endLevel = 3
+    ordered = false
+    startLevel = 1
+  [markup.goldmark.renderer]
+      unsafe = true  
+  [markup.highlight]
+    noclasses = false 
+
+
+  
+
+[security]
+  enableInlineShortcodes = true    
