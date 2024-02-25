@@ -9,6 +9,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
 {{ $CSS := resources.Match "css/*.css" | resources.Concat "spaces.css" }}
 <link rel="stylesheet" href="{{ $CSS.RelPermalink }}" media="all">
+<meta name="description" content="Scalable & Permissionless Bitcoin Identities">
+
+ <meta property="og:type" content="website">
+ <meta property="og:url" content="https://spacesprotocol.org">
+ <meta property="og:title" content="Spaces Protocol">
+ <meta property="og:description" content="Scalable & Permissionless Bitcoin Identities">
+ <meta property="og:image" content="https://spacesprotocol.org/images/card.png">
+ <meta name="twitter:card" content="summary_large_image">
+ <meta name="twitter:url" content="https://spacesprotocol.org">
+ <meta name="twitter:title" content="Spaces Protocol">
+ <meta name="twitter:description" content="Scalable & Permissionless Bitcoin Identities">
+ <meta name="twitter:image" content="https://spacesprotocol.org/images/card.png">
 
 </head>
 <body>
