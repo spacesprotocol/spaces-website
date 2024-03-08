@@ -11,12 +11,18 @@ draft = false
 
 # Spaces
 
-Spaces is a naming protocol that leverages the existing infrastructure and security of Bitcoin without requiring a new blockchain or any modifications to Bitcoin itself. "Spaces" serve as community identifiers that are distributed through an auction process built using existing Bitcoin scripting capabilities. Proceeds generated through auctions are irrevocably burned. Within each Space, users can create "Subspaces," which serve as trustless individual identities, operating with a high degree of autonomy primarily off-chain but can also submit transactions directly on-chain. Spaces is designed to be verifiable by end-users in a trustless manner without requiring a full node. This is achieved through a stateless zero-knowledge light client built using RISC0 zkVM[^0]. The protocol essentially acts as a scalable & trustless ~250KB Bitcoin certificate authority.
-
-Spaces implements protocol specific consensus rules on top of Bitcoin without requiring any modifications to Bitcoin itself similar in principle to Colored Coins[^1]. The protocol relies on Bitcoin scripting capabilities to implement some of its features like Auctions. Transactions are plain Bitcoin transactions and bids are paid in BTC.
-
+Spaces is a naming protocol that leverages the existing infrastructure and security of Bitcoin[^0] without requiring a new blockchain or any modifications to Bitcoin itself. "Spaces" serve as community identifiers that are distributed through an auction process built using existing Bitcoin scripting capabilities. Proceeds generated through auctions are irrevocably burned. Within each Space, users can create "Subspaces," which serve as trustless individual identities, operating with a high degree of autonomy primarily off-chain but can also submit transactions directly on-chain. Spaces is designed to be verifiable by end-users in a trustless manner without requiring a full node. This is achieved through a stateless zero-knowledge light client built using RISC0 zkVM[^1]. The protocol essentially acts as a scalable & trustless ~250KB Bitcoin certificate authority.
 
 ![Bitcoin block header to Spaces state](images/block-header-to-accumulator.png)
+
+
+## Background
+
+Public Key Infrastructure (PKI) is a critical component of internet security, enabling secure communication and authentication between parties. However, traditional PKI systems often rely on centralized authorities, which can be vulnerable to attacks, censorship, and single points of failure. This has led to a growing interest in decentralized PKI solutions, particularly those built on blockchain technology. Over the past decade, various decentralized naming protocols have emerged to address this need. Namecoin[^2] pioneered this field in 2011 but fell short due to usability issues and a significant number of inactive or "squatted" domains[^3]. The Ethereum Name Service (ENS)[^4] has become the most widely adopted naming system, primarily because most ENS users rely on trusted third parties for resolving .eth identities. However, this reliance on intermediaries undermines the decentralized nature of these names, and ENS lacks meaningful light client support. 
+
+The Handshake[^5] blockchain attempted to improve upon Namecoin’s design by introducing an auction process for acquiring names. However, this approach has proven ineffective, as bots can open numerous auctions during a short time period and acquire valuable names unnoticed. Being a niche blockchain with limited utility,  focusing on an alternate root to the existing DNS, Handshake faces substantial challenges. First, it fails to match the security found in well-established blockchains such as Bitcoin. In addition, name collisions further undermine its practicality, violating a crucial principle of URLs: uniqueness. This unique identification permits the unambiguous sharing of links and access to web resources. Inconsistent user configurations or name resolution preferences will affect even more subtle issues such as the loading of subresources on the web.
+
+These innovations fall short of delivering the security attributes inherent to a robust Proof-of-Work blockchain such as Bitcoin. This paper seeks to address these shortcomings, proposing a highly secure, scalable and decentralized PKI anchored in Bitcoin.
 
 
 ## Name Syntax
@@ -82,7 +88,7 @@ The following figure illustrates the input/output pair bundling a PSBT in a bid 
 
 To reconstruct a PSBT from its compressed form, the first step is to recover the Space UTXO outpoint, which includes a 32-byte transaction ID and an output index. The transaction ID can be obtained by identifying the input index that corresponds to the OP_RETURN output, as both should align index-wise. Since this input originates from the transaction that includes the Space UTXO, its transaction ID is used. Within the OP_RETURN data, the initial byte indicates the Space UTXO's output index. For instance, the Space UTXO in the referenced figure would be identified as outpoint `#f9395e:6`. The Space UTXO's locking script is used as the refund address and its value is added to the refunded bid amount. This PSBT is then used to construct the next bid transaction, continuing with this pattern until the auction concludes. 
 
-In scenarios where multiple bids are placed simultaneously on the same Space UTXO, only one bid will succeed in burning the coins. This is because other bids will attempt to spend a UTXO that has already been spent and their transaction will be rejected by Bitcoin full nodes. Similar techniques have been used in the past to implement Dutch auctions[^2], although they do not allow for arbitrary bids and may require a larger on-chain footprint to implement for this purpose.
+In scenarios where multiple bids are placed simultaneously on the same Space UTXO, only one bid will succeed in burning the coins. This is because other bids will attempt to spend a UTXO that has already been spent and their transaction will be rejected by Bitcoin full nodes. Similar techniques have been used in the past to implement Dutch auctions[^7], although they do not allow for arbitrary bids and may require a larger on-chain footprint to implement for this purpose.
 
 Protocol specific rules are enforced through a client-side consensus node. For example, bids must be in ascending order. Attempting to bid a lower amount is technically possible but it violates a protocol rule which causes the auction to be invalidated and as a result the offending bidder will lose their coins. Additionally, it's important to open auctions with zero or low initial bids since if two auctions for the same name open simultaneously, only the first auction will be recognized.
 
@@ -106,7 +112,7 @@ To finalize an auction, the winning bidder must actively end it, once the SCP be
 
 
 
-After an auction is finalized, the Space is represented as a Bitcoin UTXO. Space UTXOs can hold any value, just like regular Bitcoin UTXOs. Moreover, any coin a user might already possess can be converted or "marked" as the Space's UTXO. Since they are indistinguishable from standard UTXOs, they can be used for payment in Bitcoin transactions and returned as change. Space UTXOs do not necessarily expand Bitcoin's UTXO set size more than a normal UTXO used to hold value would. The protocol encourages their use in transactions, serving a dual purpose: it facilitates regular Bitcoin transactions and simultaneously renews the Space's registration, thereby preventing its expiration.
+After an auction is finalized, the Space is represented as a Bitcoin UTXO. Space UTXOs can hold any value, just like regular Bitcoin UTXOs. Moreover, any coin a user might already possess can be converted or "marked" as the Space's UTXO. They're similar in principle to Colored Coins[^6] except they're indistinguishable from standard UTXOs. They can be used for payment in Bitcoin transactions, and returned as change. Space UTXOs do not necessarily expand Bitcoin's UTXO set size more than a normal UTXO used to hold value would. The protocol encourages their use in transactions, serving a dual purpose: it facilitates regular Bitcoin transactions and simultaneously renews the Space's registration, thereby preventing its expiration.
 
 There's one rule when it comes to transacting with Space UTXOs. If a Space UTXO is used as an input at a certain index within a transaction, the corresponding output or change, i.e. - the new Space UTXO must be placed at the next sequential index. For instance, if the Space UTXO is at input index 2, then the new UTXO must be at output index 3. This facilitates trustless and non-interactive resale of Spaces in secondary marketplaces by creating a PSBT with signature type `SINGLE|ANYONECANPAY` using the Space as the input and the required payment is set as the output.
 
@@ -289,7 +295,7 @@ Other revocation techniques may be explored, such as building off-chain cascadin
 
 Given the scarcity of block space, finding a balance between rapid commitment updates and the on-chain footprint is crucial. Since zk-STARK proofs can be nearly constant-sized due to proof composition, aggregating as many transactions as possible into a single commitment is advantageous. 
 
-Currently, the RISC0 zkVM[0] is capable of generating concise zk-STARK proofs, occupying less than ~250KB, not accounting for the public outputs. While it should be feasible to implement a mechanism that maintains the trustless nature of subspace commitments while enabling rapid progression of the protocol state entirely off-chain, on-chain validity proofs are still required. Depending on the volume of transactions, STARK proofs might be feasible to submit on-chain on a monthly basis.
+Currently, the RISC0 zkVM[^1] is capable of generating concise zk-STARK proofs, occupying less than ~250KB, not accounting for the public outputs. While it should be feasible to implement a mechanism that maintains the trustless nature of subspace commitments while enabling rapid progression of the protocol state entirely off-chain, on-chain validity proofs are still required. Depending on the volume of transactions, STARK proofs might be feasible to submit on-chain on a monthly basis.
 
 In addition to zk-STARKs, there's potential for further compression of proofs using zk-SNARKs, which can shrink the data to the range of hundreds of bytes. This compression does introduce additional trust assumptions, which might be deemed acceptable temporarily by some clients to update their state sooner while waiting for the zk-STARK proofs.
 
@@ -301,7 +307,7 @@ In addition to zk-STARKs, there's potential for further compression of proofs us
 
 
 
-Spaces implements dynamic hash-based accumulators, similar in function to Utreexo[^3], to summarize the protocol's entire state in 96 bytes consisting of `global_root`, `commitments_root` and `pre_auctions_root`. 
+Spaces implements dynamic hash-based accumulators, similar in function to Utreexo[^8], to summarize the protocol's entire state in 96 bytes consisting of `global_root`, `commitments_root` and `pre_auctions_root`. 
 
 
 
@@ -321,7 +327,7 @@ Below is a visual guide for the various trees that collectively embody the struc
 
 
 
-The protocol is designed to work with zero-knowledge light clients and as a result it necessitates a universal accumulator to support membership and non-membership proofs for name states. To achieve this, we implement a binary trie known as a Merklix[^4] tree. 
+The protocol is designed to work with zero-knowledge light clients and as a result it necessitates a universal accumulator to support membership and non-membership proofs for batches of elements. To achieve this, we implement a binary trie known as a Merklix[^9] tree. Various Trie structures have been used in blockchains in the past. For instance, Ethereum[^10] currently uses a base-16 trie and have been exploring the transition to a binary trie[^11]. Handshake[^5] uses some variation of a binary trie with its tree root included in the block header. Spaces does not require modifications to Bitcoin's block header itself but it can accumulate name data into a state root in a verifiable way using zero-knowledge proofs.
 
 The individual bits of the keys are used to route the leaf nodes to their appropriate paths. A trie offers simplicity over a Sparse Merkle Tree, as the latter necessitates dealing with empty leaves. The tree has only two types of nodes: An internal node, potentially containing a prefix for path compression, and a leaf node. Considering keys are hashed prior to insertion, they consistently have a fixed length. The overall depth of the tree is therefore determined by the number of bits produced by the hash function.
 
@@ -362,7 +368,7 @@ A significant advantage of this structure is its capacity to function as an accu
 
 
 
-A zero-knowledge light client needs to perform two main tasks: verify Bitcoin's header chain, similar to the header chain proof by ZeroSync[^5], and enforce protocol specific rules. This also involves verifying zk-STARK proofs linked to the on-chain commitments for subspaces and producing a 96-byte state header in its public outputs. This state header effectively encapsulates the entire state of the protocol and serves as a trust anchor for certificate verification.
+A zero-knowledge light client needs to perform two main tasks: verify Bitcoin's header chain, similar to the header chain proof by ZeroSync[^12], and enforce protocol specific rules. This also involves verifying zk-STARK proofs linked to the on-chain commitments for subspaces and producing a 96-byte state header in its public outputs. This state header effectively encapsulates the entire state of the protocol and serves as a trust anchor for certificate verification.
 
 For instance, verifying a Space requires checking an inclusion proof hashes to the `global_root` in the state header. The same process applies to validating an on-chain subspace. For off-chain subspaces, a client needs to check an exclusion proof against the `global_root` and then verify an inclusion proof related to the `commitments_root`.
 
@@ -374,25 +380,38 @@ For instance, verifying a Space requires checking an inclusion proof hashes to t
 
 The core functionality of the Spaces protocol is centered around its role as a certificate authority, as it does not inherently provide a mechanism for storing records on-chain. This design choice keeps the protocol streamlined and focused on its primary task of securely managing and verifying digital spaces and identities within the Bitcoin network. 
 
-The trustless nature of the protocol makes it an ideal foundation for developing a Peer-to-Peer (P2P) protocol that uses Spaces as a trust anchor to support record storage and other use cases entirely off-chain. Additionally, integrating Spaces with various other protocols such as Nostr[^6] is relatively straightforward.  
+The trustless nature of the protocol makes it an ideal foundation for developing a Peer-to-Peer (P2P) protocol that uses Spaces as a trust anchor to support record storage and other use cases entirely off-chain. Additionally, integrating Spaces with various other protocols such as Nostr[^13] is relatively straightforward.  
 
 
 
 # References
 
 
+[^0]: https://bitcoin.org/bitcoin.pdf
 
-[^0]: https://dev.risczero.com/proof-system-in-detail.pdf
+[^1]: https://dev.risczero.com/proof-system-in-detail.pdf
 
-[^1]: https://en.wikipedia.org/wiki/Colored_Coins
+[^2]: https://www.namecoin.org/resources/whitepaper/
 
-[^2]: https://medium.com/summa-technology/summa-auction-bitcoin-technical-7344096498f2
+[^3]: https://www.cs.princeton.edu/~arvindn/publications/namespaces.pdf
 
-[^3]: https://eprint.iacr.org/2019/611.pdf
+[^4]: https://eips.ethereum.org/EIPS/eip-137
 
-[^4]: https://blog.vermorel.com/pdf/merklix-tree-for-bitcoin-2018-07.pdf
+[^5]: https://handshake.org/files/handshake.txt
 
-[^5]: https://zerosync.org/demo/
+[^6]: https://en.wikipedia.org/wiki/Colored_Coins
 
-[^6]: https://en.wikipedia.org/wiki/Nostr
+[^7]: https://medium.com/summa-technology/summa-auction-bitcoin-technical-7344096498f2
+
+[^8]: https://eprint.iacr.org/2019/611.pdf
+
+[^9]: https://blog.vermorel.com/pdf/merklix-tree-for-bitcoin-2018-07.pdf
+
+[^10]: https://ethereum.org/en/developers/docs/data-structures-and-encoding/patricia-merkle-trie/
+
+[^11]: https://eips.ethereum.org/EIPS/eip-3102
+
+[^12]: https://zerosync.org/demo/
+
+[^13]: https://en.wikipedia.org/wiki/Nostr
 
