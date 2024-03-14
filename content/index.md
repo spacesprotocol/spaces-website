@@ -90,7 +90,7 @@ To reconstruct a PSBT from its compressed form, the first step is to recover the
 
 In scenarios where multiple bids are placed simultaneously on the same Space UTXO, only one bid will succeed in burning the coins. This is because other bids will attempt to spend a UTXO that has already been spent and their transaction will be rejected by Bitcoin full nodes. Similar techniques have been used in the past to implement Dutch auctions[^7], although they do not allow for arbitrary bids and may require a larger on-chain footprint to implement for this purpose.
 
-Protocol specific rules are enforced through a client-side consensus node. For example, bids must be in ascending order. Attempting to bid a lower amount is technically possible but it violates a protocol rule which causes the auction to be invalidated and as a result the offending bidder will lose their coins. Additionally, it's important to open auctions with zero or low initial bids since if two auctions for the same name open simultaneously, only the first auction will be recognized.
+Protocol-specific rules are enforced through a client-side consensus node. For example, spending the auctioned UTXO without following the auction pattern or attempting to register the Space before the safe closing period is technically possible, but it violates a protocol rule, which causes the auction to be invalidated. As a result, the offending bidder will lose their coins. Additionally, it's important to open auctions with zero or low initial bids. If two auctions for the same name open simultaneously, only the first auction will be recognized.
 
 
 
