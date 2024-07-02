@@ -52,9 +52,15 @@
 <div class="container">
     
   <div class="sidebar">
+
     {{ .TableOfContents }}
+
   </div>
   <div id="content" class="main">
+      <div style="display: flex; list-style: none;">
+          <a style="margin-right:12px;" href="/">Home</a>  <span>|</span>  <a style="margin-left:12px;" href="/pages/paper">Paper</a>
+      </div>
+
     {{ .Content }}
   </div>
 </div> 

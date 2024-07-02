@@ -11,10 +11,7 @@ title = 'Spaces Protocol'
   [markup.goldmark.renderer]
       unsafe = true  
   [markup.highlight]
-    noclasses = false 
-
-
-  
+    noclasses = false
 
 [security]
   enableInlineShortcodes = true    

@@ -10,9 +10,9 @@
     <item>
       <title>Spaces Protocol | Scalable &amp; Permissionless Bitcoin Identities</title>
       <link>https://spacesprotocol.org/</link>
-      <pubDate>Thu, 15 Feb 2024 12:54:32 -0700</pubDate>
+      <pubDate>Mon, 01 Jul 2024 12:54:32 -0700</pubDate>
       <guid>https://spacesprotocol.org/</guid>
-      <description>Spaces Protocol Scalable &amp; Permissionless Bitcoin Identities Spaces Spaces is a naming protocol that leverages the existing infrastructure and security of Bitcoin1 without requiring a new blockchain or any modifications to Bitcoin itself. &amp;ldquo;Spaces&amp;rdquo; serve as community identifiers that are distributed through an auction process built using existing Bitcoin scripting capabilities. Proceeds generated through auctions are irrevocably burned. Within each Space, users can create &amp;ldquo;Subspaces,&amp;rdquo; which serve as trustless individual identities, operating with a high degree of autonomy primarily off-chain but can also submit transactions directly on-chain.</description>
+      <description>Spaces Protocol Scalable &amp; Permissionless Bitcoin Identities Spaces is a naming protocol that leverages the existing infrastructure and security of Bitcoin without requiring a new blockchain or any modifications to Bitcoin itself. Spaces is a permissionless protocol and can be used as decentralized social handles for Nostr, receiving payments and other digital interactions. On-chain Spaces are represented as Bitcoin UTXOs, they take full advantage of Bitcoin&amp;rsquo;s security, and have minimal on-chain footprint.</description>
     </item>
   </channel>
 </rss>
