@@ -620,7 +620,7 @@ h1, h2 {
         display: inline-block;
         margin: 0.4em;
         padding:0;
-        overflow:hidden;
+
         width: 30px;
         height: 30px;
     }

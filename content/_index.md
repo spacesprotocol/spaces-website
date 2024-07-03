@@ -1,7 +1,5 @@
 +++
 title = 'Spaces Protocol | Scalable & Permissionless Bitcoin Identities'
-date = 2024-07-01T12:54:32-07:00
-draft = false
 +++
 
 <div style="text-align: center;margin-bottom:4em;margin-top:4em;">
@@ -44,7 +42,7 @@ bitcoind -testnet -datadir=$HOME/bitcoin-testnet
 
 Spaces protocol is activated on Bitcoin testnet block `2865460` - wait for `bitcoind` to sync up to that block before proceeding.
 
-## Install `spaced` 
+## Install `spaced`
 
 `spaced` is a tiny layer on top of Bitcoin Core allowing you to interact with Spaces. To compile `spaced`, you need to install Rust and then
 
@@ -56,7 +54,7 @@ git clone https://github.com/spacesprotocol/spaced && cd spaced
 cargo build --release
 
 # Install the binaries
-cargo install --path .
+cargo install --path node
 
 # Ensure Cargo's bin directory is in your PATH
 echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
@@ -73,7 +71,7 @@ space-cli --version
 ## Connect to Bitcoin Core
 
 ```bash
-spaced --chain testnet --bitcoin-rpc-user test --bitcoin-rpc-password test
+spaced --chain test --bitcoin-rpc-user test --bitcoin-rpc-password test
 ```
 
 
@@ -96,7 +94,7 @@ space-cli getnewaddress
 ```
 
 The `getnewaddress` command will return an address you can use to receive testnet coins compatible with most Bitcoin wallets. You
-can also use `getnewspaceaddress` to return a special Bitcoin address for receiving Spaces. 
+can also use `getnewspaceaddress` to return a special Bitcoin address for receiving Spaces.
 
 Check your balance:
 
@@ -129,7 +127,7 @@ You will get a similar output to this
 ]
 ```
 
-The tags field indicate the reason(s) for this transaction. In this case, the first is creating a P2TR script commitment and initial outputs to auction off. 
+The tags field indicate the reason(s) for this transaction. In this case, the first is creating a P2TR script commitment and initial outputs to auction off.
 Second one opens the auction by revealing the Space.
 
 
@@ -175,7 +173,7 @@ including outputs that are actively in an auction.
 
 The `bid` covenant indicates spending this output requires either another bid spend or a registration spend if the claim height is reached. There are three types of covenants: `bid`, `transfer`, and `reserved`.
 
-Spends that don't satisfy a covenant condition will be revoked by the protocol causing the winner bidder to lose any coins they have burned or ownership of their name.
+Spends that don't satisfy a covenant condition will be revoked by the protocol causing the winning bidder to lose any coins they have burned or ownership of their name.
 
 
 The `claim_height` field is not populated in the above output indicating the name is still in the pre-auctions phase. Every 144 blocks, the top 10 names with highest bids are rolled out to the auctions.
