@@ -52,153 +52,27 @@
 </div>
 <div class="container">
 
-    <div class="sidebar">
+    <div id="content" style="margin:0 auto; max-width:800px;">
+        <div style="display: flex; gap:12px;padding-left:5px;padding-right:5px; list-style: none;max-width: 400px;margin:0 auto;">
+    <a  href="/">home</a>  <span>|</span>
+    <a  href="https://explorer.spacesprotocol.org">explorer</a>  <span>|</span>
+    <a  href="/paper">paper</a>  <span>|</span>
 
-        <nav id="TableOfContents">
-  <ul>
-    <li><a href="#bitcoin-testnet">Bitcoin Testnet</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#testnet-sync">Testnet sync</a></li>
-        <li><a href="#install-spaced">Install <code>spaced</code></a></li>
-        <li><a href="#connect-to-bitcoin-core">Connect to Bitcoin Core</a></li>
-        <li><a href="#creating-a-wallet">Creating a wallet</a></li>
-        <li><a href="#getting-testnet-coins">Getting testnet coins</a></li>
-        <li><a href="#opening-an-auction">Opening an auction</a></li>
-        <li><a href="#placing-a-bid">Placing a bid</a></li>
-        <li><a href="#space-details">Space details</a></li>
-        <li><a href="#registering-a-space">Registering a Space</a></li>
-        <li><a href="#receiving-payments">Receiving payments</a></li>
-        <li><a href="#more-information">More information</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav>
-
-    </div>
-    <div id="content" class="main">
-        <div style="display: flex; list-style: none;">
-    <a style="margin-right:12px;" href="/">Home</a>  <span>|</span>  <a style="margin-left:12px;" href="/paper">Paper</a>
+    <a  href="https://docs.spacesprotocol.org">docs</a>
 </div>
 
 
-        <div style="text-align: center;margin-bottom:4em;margin-top:4em;">
-  <h1 style="font-size:4em;margin-bottom:-0.1em;margin-left:0;margin-right:0;margin-top:0;">Spaces Protocol</h1>
+        <div style="max-width:700px;padding:2em;margin-bottom:4em;margin-top:4em;">
+  <h1 style="text-align:center; font-size:4em;margin-bottom:-0.1em;margin-left:0;margin-right:0;margin-top:0;">Spaces Protocol</h1>
   <p style="font-size: 1.4em">Scalable & Permissionless Bitcoin Identities</h1>
+<div style="margin-bottom: 4em;">
+  <p>Spaces empowers users with a sovereign Bitcoin identity, anchored securely on the Bitcoin blockchain. Imagine a social handle that is truly yours—censorship-resistant and accessible across various protocols like Nostr, wallet naming, peer-to-peer applications, and beyond.</p>
 </div>
-<p>Spaces is a naming protocol that leverages the existing infrastructure and security of Bitcoin without requiring a new blockchain or any modifications to Bitcoin itself. Spaces is a permissionless protocol and can be used as decentralized social handles for <a href="https://nostr.com/">Nostr</a>, receiving payments and other digital interactions. On-chain Spaces are represented as Bitcoin UTXOs, they take full advantage of Bitcoin&rsquo;s security, and have minimal on-chain footprint.</p>
-<h1 id="bitcoin-testnet">Bitcoin Testnet</h1>
-<p>You can now try the base functionality of the Spaces protocol on <a href="https://mempool.space/testnet">Bitcoin testnet3</a>! First, download Bitcoin Core and set it up using these steps:</p>
-<img src="/images/bcs.png" alt="Spaces Protocol" style="width:100%;margin-top:2em;margin-bottom:2em;">
-<h2 id="prerequisites">Prerequisites</h2>
-<ul>
-<li><a href="https://bitcoincore.org/en/download/">Bitcoin Core</a></li>
-<li><a href="https://www.rust-lang.org/tools/install">Rust</a></li>
-</ul>
-<h2 id="testnet-sync">Testnet sync</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Create a directory for Bitcoin testnet data</span>
-</span></span><span class="line"><span class="cl">mkdir <span class="nv">$HOME</span>/bitcoin-testnet
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># Create a configuration file with RPC credentials</span>
-</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;rpcuser=test&#34;</span> &gt; <span class="nv">$HOME</span>/bitcoin-testnet/bitcoin.conf
-</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;rpcpassword=test&#34;</span> &gt;&gt; <span class="nv">$HOME</span>/bitcoin-testnet/bitcoin.conf
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># Start Bitcoin Core in testnet mode</span>
-</span></span><span class="line"><span class="cl">bitcoind -testnet -datadir<span class="o">=</span><span class="nv">$HOME</span>/bitcoin-testnet
-</span></span></code></pre></div><p>Spaces protocol is activated on Bitcoin testnet block <code>2865460</code> - wait for <code>bitcoind</code> to sync up to that block before proceeding.</p>
-<h2 id="install-spaced">Install <code>spaced</code></h2>
-<p><code>spaced</code> is a tiny layer on top of Bitcoin Core allowing you to interact with Spaces. To compile <code>spaced</code>, you need to install Rust and then</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Clone the repository</span>
-</span></span><span class="line"><span class="cl">git clone https://github.com/spacesprotocol/spaced <span class="o">&amp;&amp;</span> <span class="nb">cd</span> spaced
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># Build the release version</span>
-</span></span><span class="line"><span class="cl">cargo build --release
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># Install the binaries</span>
-</span></span><span class="line"><span class="cl">cargo install --path node
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># Ensure Cargo&#39;s bin directory is in your PATH</span>
-</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$HOME/.cargo/bin:$PATH&#34;&#39;</span> &gt;&gt; ~/.bashrc
-</span></span><span class="line"><span class="cl"><span class="nb">source</span> ~/.bashrc
-</span></span></code></pre></div><p>Verify you have <code>spaced</code> and <code>space-cli</code> installed:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">spaced --version
-</span></span><span class="line"><span class="cl">space-cli --version
-</span></span></code></pre></div><h2 id="connect-to-bitcoin-core">Connect to Bitcoin Core</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">spaced --chain <span class="nb">test</span> --bitcoin-rpc-user <span class="nb">test</span> --bitcoin-rpc-password <span class="nb">test</span>
-</span></span></code></pre></div><h2 id="creating-a-wallet">Creating a wallet</h2>
-<p><code>space-cli</code> is a command-line tool that makes it easy to interact with Spaces. It also functions as a Bitcoin wallet. To create a new wallet, run:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">space-cli createwallet &lt;optional-wallet-name&gt;
-</span></span></code></pre></div><h2 id="getting-testnet-coins">Getting testnet coins</h2>
-<p>You can get testnet coins from a <a href="https://bitcoinfaucet.uo1.net/">testnet faucet</a> but these faucets give very small amounts. If you need more, you can ask in the <a href="https://t.me/spacesprotocol">Spaces Telegram</a> group.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">space-cli getnewaddress
-</span></span></code></pre></div><p>The <code>getnewaddress</code> command will return an address you can use to receive testnet coins compatible with most Bitcoin wallets. You
-can also use <code>getnewspaceaddress</code> to return a special Bitcoin address for receiving Spaces.</p>
-<p>Check your balance:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">space-cli balance
-</span></span></code></pre></div><h2 id="opening-an-auction">Opening an auction</h2>
-<p>To open an auction for a Space, run:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">space-cli open bitcoin
-</span></span></code></pre></div><p>You will get a similar output to this</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">[</span>
-</span></span><span class="line"><span class="cl">  <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;txid&#34;</span><span class="p">:</span> <span class="s2">&#34;fa55b7e5e5b54e170a99f26dcb43baf207d922efb8d69304993c255f61c6ca43&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;auction-outputs&#34;</span><span class="p">,</span> <span class="s2">&#34;commitment&#34;</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">  <span class="p">},</span>
-</span></span><span class="line"><span class="cl">  <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;txid&#34;</span><span class="p">:</span> <span class="s2">&#34;aeba215372b5095640416c7bac31feecdb8cc0589803172939c0fb0b233d6785&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;open&#34;</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">]</span>
-</span></span></code></pre></div><p>The tags field indicate the reason(s) for this transaction. In this case, the first is creating a P2TR script commitment and initial outputs to auction off.
-Second one opens the auction by revealing the Space.</p>
-<h2 id="placing-a-bid">Placing a bid</h2>
-<p>To place a bid on an open auction:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">space-cli bid bitcoin <span class="m">1500</span>
-</span></span></code></pre></div><p>Bid amounts are in satoshis.</p>
-<h2 id="space-details">Space details</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">space-cli getspace bitcoin
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;outpoint&#34;</span><span class="p">:</span> <span class="s2">&#34;45b06887c6f560af607f833fe78edd40327b177a60c9c22b21894510cd094b7c:1&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="mi">662</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;script_pubkey&#34;</span><span class="p">:</span> <span class="s2">&#34;5120dcb42260e175ed4c27709ca0b9246a2a0506471bbac000c7caf5503c5f5ff176&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;@bitcoin&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;covenant&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;bid&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;burn_increment&#34;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;signature&#34;</span><span class="p">:</span> <span class="s2">&#34;........&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;total_burned&#34;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;claim_height&#34;</span><span class="p">:</span> <span class="kc">null</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>You can use <code>listspaces</code> command to see all outputs representing spaces you own
-including outputs that are actively in an auction.</p>
-<p>The <code>bid</code> covenant indicates spending this output requires either another bid spend or a registration spend if the claim height is reached. There are three types of covenants: <code>bid</code>, <code>transfer</code>, and <code>reserved</code>.</p>
-<p>Spends that don&rsquo;t satisfy a covenant condition will be revoked by the protocol causing the winning bidder to lose any coins they have burned or ownership of their name.</p>
-<p>The <code>claim_height</code> field is not populated in the above output indicating the name is still in the pre-auctions phase. Every 144 blocks, the top 10 names with highest bids are rolled out to the auctions.</p>
-<p>Once a Space is in the auctions phase, the <code>claim_height</code> indicates the block height at which the winning bidder may register the Space.</p>
-<p>Auctions continue indefinitely until a winning bidder claims their Space.</p>
-<h2 id="registering-a-space">Registering a Space</h2>
-<p>To register a Space:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">space-cli register bitcoin
-</span></span></code></pre></div><p>If you are the winning bidder and registering after the <code>claim_height</code>, you will get something like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;outpoint&#34;</span><span class="p">:</span> <span class="s2">&#34;45b06887c6f560af607f833fe78edd40327b177a60c9c22b21894510cd094b7c:1&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="mi">662</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;script_pubkey&#34;</span><span class="p">:</span> <span class="s2">&#34;5120dcb42260e175ed4c27709ca0b9246a2a0506471bbac000c7caf5503c5f5ff176&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;@bitcoin&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;covenant&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;transfer&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;expire_height&#34;</span><span class="p">:</span> <span class="mi">2918106</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;data&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h2 id="receiving-payments">Receiving payments</h2>
-<p>As a Space owner you can receive payments by sharing your Space handle.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">space-cli send <span class="m">1000</span> --to @bitcoin
-</span></span></code></pre></div><p>Amount is in satoshis.</p>
-<h2 id="more-information">More information</h2>
-<p>Use <code>space-cli help</code> to see all other available commands and options. Ask in the <a href="https://t.me/spacesprotocol">Spaces Telegram</a> group if you have any questions or need help.</p>
+<div style="display:flex;gap: 20px;justify-content: center;">
+  <a href="https://docs.spacesprotocol.org" style="background:#FF8400;color:#fff;text-decoration: none; padding:12px 22px;border-radius:20px;">Read the docs</a>
+  <a href="https://explorer.spacesprotocol.org" style="background:#FF8400;color:#fff;text-decoration: none; padding:12px 22px;border-radius:20px;">Explorer</a>
+</div>
+</div>
 
     </div>
 </div>

@@ -51,12 +51,7 @@
 </div>
 <div class="container">
 
-    <div class="sidebar">
-
-        {{ .TableOfContents }}
-
-    </div>
-    <div id="content" class="main">
+    <div id="content" style="margin:0 auto; max-width:800px;">
         {{ partial "navbar.html" . }}
 
         {{ .Content }}
