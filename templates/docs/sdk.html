@@ -1,0 +1,727 @@
+{% extends "base.html" %}
+
+{% block nav_width %}max-w-[1440px]{% endblock %}
+{% block nav_badge %}<span class="font-mono text-[9px] font-semibold text-txt-muted bg-raised border border-border px-1.5 py-0.5 rounded ml-2 uppercase tracking-[0.06em]">docs</span>{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/tomorrow-night.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+.hljs{background:transparent!important;padding:0!important;color:#dcdce0}
+        .hljs-keyword,.hljs-built_in,.hljs-type,.hljs-literal,.hljs-selector-tag{color:#c084fc}
+        .hljs-string,.hljs-addition{color:#3fbc8b}
+        .hljs-comment,.hljs-quote,.hljs-deletion{color:#585862}
+        .hljs-title,.hljs-title\.class_,.hljs-title\.function_{color:#d4a94e}
+        .hljs-number{color:#e0722e}
+        .hljs-attr,.hljs-attribute,.hljs-property{color:#5e9de0}
+        .hljs-symbol,.hljs-bullet{color:#e0722e}
+        .hljs-meta,.hljs-meta .hljs-keyword{color:#8a8a94}
+        .hljs-variable,.hljs-template-variable,.hljs-function .hljs-params{color:#dcdce0}
+        body{background:#0e0e11;-webkit-font-smoothing:antialiased}
+        ::selection{background:rgba(224,114,46,.25)}
+        .dot-grid{background-image:radial-gradient(circle,#2a2a31 .6px,transparent .6px);background-size:28px 28px}
+        .lang-tab{padding:9px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:#585862;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none}
+        .lang-tab:hover{color:#8a8a94}.lang-tab.active{color:#dcdce0;border-bottom-color:#e0722e;background:rgba(255,255,255,.03)}
+        .code-block{font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.7;tab-size:2;white-space:pre}
+        .copy-btn{opacity:0;transition:opacity .2s}.code-wrap:hover .copy-btn{opacity:1}@media(max-width:768px){.copy-btn{opacity:1}}
+        .doc-p{color:#8a8a94;font-size:15px;line-height:1.75}
+        .doc-p strong{color:#dcdce0;font-weight:600}
+        .doc-p code{font-family:'JetBrains Mono',monospace;font-size:13px;background:#1c1c22;border:1px solid #2a2a31;padding:1px 6px;border-radius:4px;color:#dcdce0}
+        .doc-p a{color:#e0722e}.doc-p a:hover{color:#eb7e3a}
+        .toc-link{display:block;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#585862;border-left:2px solid transparent;transition:all .2s;text-decoration:none}
+        .toc-link:hover{color:#8a8a94;border-left-color:#2a2a31}
+        .toc-link.sub{padding-left:24px;font-size:11px}
+        .docs-sidebar a.active{color:#dcdce0;background-color:rgba(224,114,46,0.08);border-left:2px solid #e0722e}
+        #tocNav .toc-link.active{color:#8a8a94;background:none;border-left-color:transparent}
+        .docs-sidebar a{border-left:2px solid transparent}
+        .docs-sidebar{scrollbar-width:thin;scrollbar-color:#2a2a31 transparent}
+        .docs-sidebar::-webkit-scrollbar{width:3px}
+        .docs-sidebar::-webkit-scrollbar-track{background:transparent}
+        .docs-sidebar::-webkit-scrollbar-thumb{background:#2a2a31;border-radius:3px}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-[1440px] mx-auto px-8 pt-14 pb-16 flex">
+    <!-- Docs sidebar -->
+    <aside class="docs-sidebar hidden lg:block w-56 shrink-0 sticky top-14 self-start max-h-[calc(100vh-3.5rem)] overflow-y-auto pt-4 pr-4 border-r border-border-subtle">
+        <nav class="flex flex-col gap-8 text-sm pb-8">
+            {% set docs_section = get_section(path="docs/_index.md") %}
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Use</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set gs = get_section(path="docs/use/_index.md") %}
+                    {% for page in gs.pages %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">{{ page.title }}</a>
+                    {% endfor %}
+                    <a href="/editor" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">Records</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Developers</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set gs = get_section(path="docs/developers/_index.md") %}
+                    {% for p in gs.pages %}
+                    {% if p.title != "Specification" %}
+                    <a href="{{ p.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if p.title == 'Fabric' %}active{% endif %}">{{ p.title }}</a>
+                    {% if p.extra.toc is defined %}
+                    <nav {% if p.title == 'Fabric' %}id="tocNav"{% endif %} class="flex flex-col gap-0.5 mt-1 mb-1">
+                        {% for item in p.extra.toc %}
+                        <a href="{% if p.title == 'Fabric' %}#{{ item.anchor }}{% else %}{{ p.permalink }}#{{ item.anchor }}{% endif %}" class="toc-link px-3 pl-6 py-1 rounded-r-md font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors">{{ item.label }}</a>
+                        {% endfor %}
+                    </nav>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Learn</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set gs = get_section(path="docs/learn/_index.md") %}
+                    {% for page in gs.pages %}
+                    {% if page.title != "Resolution" %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">{{ page.title }}</a>
+                    {% endif %}
+                    {% endfor %}
+                    {% set tl = get_section(path="docs/top-level/_index.md") %}
+                    <span class="px-3 pt-3 pb-1 font-mono text-[9px] text-txt-muted uppercase tracking-[0.08em] font-semibold">Top level names</span>
+                    {% for page in tl.pages %}
+                    <a href="{{ page.permalink }}" class="px-3 pl-5 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">{{ page.title }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Infra</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set infra = get_section(path="docs/infra/_index.md") %}
+                    {% for page in infra.pages %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">{{ page.title }}</a>
+                    {% endfor %}
+                    {% for subsection in infra.subsections %}
+                        {% set sub = get_section(path=subsection) %}
+                        <span class="px-3 pt-3 pb-1 font-mono text-[9px] text-txt-muted uppercase tracking-[0.08em] font-semibold">{{ sub.title }}</span>
+                        {% for page in sub.pages %}
+                        <a href="{{ page.permalink }}" class="px-3 pl-5 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">{{ page.title }}</a>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Deep Dive</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set learn = get_section(path="docs/learn/_index.md") %}
+                    {% for page in learn.pages %}
+                    {% if page.title == "Resolution" %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">{{ page.title }}</a>
+                    {% endif %}
+                    {% endfor %}
+                    {% set devs = get_section(path="docs/developers/_index.md") %}
+                    {% for page in devs.pages %}
+                    {% if page.title == "Specification" %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">{{ page.title }}</a>
+                    {% endif %}
+                    {% endfor %}
+                    <a href="/paper" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">White Paper</a>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main content area -->
+    <div class="flex-1 min-w-0">
+
+    <!-- Header -->
+    <div class="pl-10 pr-10 pt-5 pb-12">
+        <h1 class="text-[1.6rem] font-bold text-txt-primary tracking-[-0.03em] mb-2">Fabric</h1>
+        <p class="doc-p mb-4 max-w-[600px]">Fabric enables stateless handle resolution & verification through the HTTP-based certrelay network in any environment, including the browser. Resolution is permissionless against a specified <button data-trust-popover class="text-accent hover:text-accent-strong transition-colors cursor-pointer">trust anchor</button>.</p>
+        <a href="/docs/developers/playground/" class="inline-flex items-center gap-1.5 font-mono text-[11px] font-medium text-accent hover:text-accent-strong transition-colors mb-6">
+            <iconify-icon icon="solar:code-linear" class="text-sm"></iconify-icon>
+            Open playground
+        </a>
+
+        <!-- Interactive demo -->
+        <div class="max-w-[500px]">
+            <div class="flex items-center bg-surface border border-border rounded-lg p-1 focus-within:border-accent/40 transition-colors">
+                <input type="text" id="sdkQuery" placeholder="alice@bitcoin" class="w-full bg-transparent border-none text-txt-primary text-[13px] px-3 py-1.5 focus:ring-0 focus:outline-none placeholder:text-txt-muted font-mono" autocomplete="off" spellcheck="false" />
+                <button id="sdkQueryBtn" onclick="sdkDoQuery()" class="bg-accent hover:bg-accent-strong text-black font-mono text-[11px] font-semibold px-3.5 py-1.5 rounded-md transition-colors whitespace-nowrap">Resolve</button>
+            </div>
+            <div class="mt-3 bg-base border border-border rounded-lg overflow-hidden hidden" id="sdkResultWrap">
+                <div class="flex items-center gap-2 px-4 py-2 border-b border-border-subtle">
+                    <span id="sdkResultDot" class="w-[5px] h-[5px] rounded-full bg-txt-muted"></span>
+                    <span id="sdkResultLabel" class="font-mono text-[10px] uppercase font-semibold text-txt-muted tracking-[0.06em]"></span>
+                </div>
+                <div id="sdkResultBody" class="p-4 overflow-x-auto max-h-[240px] overflow-y-auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sticky top-14 z-40 border-b border-border bg-base">
+        <div class="flex items-center justify-start overflow-x-auto no-scrollbar">
+            <button class="lang-tab active" onclick="switchLang('rust')">Rust</button>
+            <button class="lang-tab" onclick="switchLang('js')">JavaScript</button>
+            <button class="lang-tab" onclick="switchLang('rn')">React Native</button>
+            <button class="lang-tab" onclick="switchLang('go')">Go</button>
+            <button class="lang-tab" onclick="switchLang('kotlin')">Kotlin</button>
+            <button class="lang-tab" onclick="switchLang('swift')">Swift</button>
+            <button class="lang-tab" onclick="switchLang('python')">Python</button>
+        </div>
+    </div>
+    <section class="bg-base relative pl-10 pr-10">
+        <div class="w-full relative">
+            <div class="max-w-[780px] py-10">
+                <!-- ═══ STEP 1: INSTALL ═══ -->
+                <div class="mb-16" id="install">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">1</span></div>
+                        <h3 class="text-[16px] font-bold text-txt-primary">Install Fabric</h3>
+                    </div>
+                    <p class="doc-p mb-5">The Fabric client handles relay connections, verification, and broadcasting. Each package bundles <code>libveritas</code> for proof verification.</p>
+                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden" id="install-code">
+                        <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                                <span class="font-mono text-[10px] text-txt-muted font-medium install-file-hint hidden">Cargo.toml</span>
+                            </div>
+                            <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                        </div>
+                        <div class="p-5 overflow-x-auto bg-base">
+                            {% set install_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/install.txt", format="plain") %}
+                            <pre class="code-block lc" data-lang="rust">{{ install_rust | safe }}</pre>
+                            {% set install_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/install.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="js">{{ install_js | safe }}</pre>
+                            <pre class="code-block lc hidden" data-lang="rn">{{ install_js | safe }}</pre>
+                            {% set install_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/install.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="go">{{ install_go | safe }}</pre>
+                            <div class="lc hidden" data-lang="kotlin">
+                                <div class="inline-flex rounded-lg border border-border overflow-hidden mb-4">
+                                    <button onclick="switchKt('android',this)" class="kt-tab font-mono text-[11px] font-medium py-1 px-3 text-txt-primary bg-white/[0.04] cursor-pointer border-none">Android</button>
+                                    <button onclick="switchKt('jvm',this)" class="kt-tab font-mono text-[11px] font-medium py-1 px-3 text-txt-muted bg-transparent cursor-pointer border-none">JVM</button>
+                                </div>
+                                {% set install_kt_android = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/install-kotlin-android.txt", format="plain") %}
+                                <pre class="code-block kt-android">{{ install_kt_android | safe }}</pre>
+                                {% set install_kt_jvm = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/install-kotlin-jvm.txt", format="plain") %}
+                                <pre class="code-block kt-jvm" style="display:none">{{ install_kt_jvm | safe }}</pre>
+                            </div>
+                            {% set install_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/install.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="swift">{{ install_swift | safe }}</pre>
+                            {% set install_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/install.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="python">{{ install_python | safe }}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ STEP 2: RESOLVE ═══ -->
+                <div class="mb-16" id="resolve">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">2</span></div>
+                        <h3 class="text-[16px] font-bold text-txt-primary">Resolve a handle</h3>
+                    </div>
+                    <p class="doc-p mb-5">Resolve a handle to get its records.</p>
+                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                            <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                            <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                        </div>
+                        <div class="p-5 overflow-x-auto bg-base">
+                            {% set resolve_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/resolve.txt", format="plain") %}
+                            <pre class="code-block lc" data-lang="rust">{{ resolve_rust | safe }}</pre>
+                            {% set resolve_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/resolve.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="js">{{ resolve_js | safe }}</pre>
+                            <pre class="code-block lc hidden" data-lang="rn">{{ resolve_js | safe }}</pre>
+                            {% set resolve_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/resolve.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="go">{{ resolve_go | safe }}</pre>
+                            {% set resolve_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/resolve.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="kotlin">{{ resolve_kotlin | safe }}</pre>
+                            {% set resolve_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/resolve.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="swift">{{ resolve_swift | safe }}</pre>
+                            {% set resolve_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/resolve.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="python">{{ resolve_python | safe }}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ STEP 3: READ RECORDS ═══ -->
+                <div class="mb-16" id="read-records">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">3</span></div>
+                        <h3 class="text-[16px] font-bold text-txt-primary">Read records</h3>
+                    </div>
+                    <p class="doc-p mb-5">Unpack and read records from a resolved handle.</p>
+                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                            <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                            <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                        </div>
+                        <div class="p-5 overflow-x-auto bg-base">
+                            {% set unpack_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/unpack-records.txt", format="plain") %}
+                            <pre class="code-block lc" data-lang="rust">{{ unpack_rust | safe }}</pre>
+                            {% set unpack_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/unpack-records.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="js">{{ unpack_js | safe }}</pre>
+                            <pre class="code-block lc hidden" data-lang="rn">{{ unpack_js | safe }}</pre>
+                            {% set unpack_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/unpack-records.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="go">{{ unpack_go | safe }}</pre>
+                            {% set unpack_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/unpack-records.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="kotlin">{{ unpack_kotlin | safe }}</pre>
+                            {% set unpack_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/unpack-records.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="swift">{{ unpack_swift | safe }}</pre>
+                            {% set unpack_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/unpack-records.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="python">{{ unpack_python | safe }}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ TRUST SECTION ═══ -->
+                <div class="mb-10 mt-8 pt-10 border-t border-border-subtle" id="trust">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-7 h-7 rounded-lg bg-sp-green-dim border border-sp-green/15 flex items-center justify-center"><iconify-icon icon="solar:shield-check-linear" class="text-sp-green text-xs"></iconify-icon></div>
+                        <h2 class="text-xl font-bold text-txt-primary tracking-tight">Trust &amp; Verification</h2>
+                    </div>
+                    <p class="doc-p mb-4">Fabric tracks three trust pools: <strong>trusted</strong>, <strong>semi-trusted</strong>, and <strong>observed</strong>. The <strong>observed</strong> id is the latest state seen from peers - it's used for best-effort resolution but isn't trusted on its own. Without any pinned trust, <code>badge()</code> returns <code>Unverified</code>.</p>
+                    <p class="doc-p mb-4">The <strong>trusted</strong> id is pinned by scanning a QR code directly from a local trust source e.g. Veritas menubar app. Handles verified against a locally verified trust id report as "Orange" (if their certificate is final). The <strong>semi-trusted</strong> id comes from a less authoritative source e.g. user scans trust id from an explorer over HTTPS - it won't produce <code>Orange</code> state, but results won't show as <code>Unverified</code> either.</p>
+                    <p class="doc-p mb-5">See the <a href="/docs/developers/guidelines/">Design Guidelines</a> for how to display badges in your UI.</p>
+                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                            <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                            <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                        </div>
+                        <div class="p-5 overflow-x-auto bg-base">
+                            {% set verify_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/verification.txt", format="plain") %}
+                            <pre class="code-block lc" data-lang="rust">{{ verify_rust | safe }}</pre>
+                            {% set verify_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/verification.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="js">{{ verify_js | safe }}</pre>
+                            <pre class="code-block lc hidden" data-lang="rn">{{ verify_js | safe }}</pre>
+                            {% set verify_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/verification.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="go">{{ verify_go | safe }}</pre>
+                            {% set verify_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/verification.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="kotlin">{{ verify_kotlin | safe }}</pre>
+                            {% set verify_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/verification.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="swift">{{ verify_swift | safe }}</pre>
+                            {% set verify_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/verification.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="python">{{ verify_python | safe }}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ PUBLISHING SECTION HEADER ═══ -->
+                <div class="mb-10 mt-8 pt-10 border-t border-border-subtle" id="publishing">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-7 h-7 rounded-lg bg-accent-dim border border-accent/15 flex items-center justify-center"><iconify-icon icon="solar:upload-minimalistic-linear" class="text-accent text-xs"></iconify-icon></div>
+                        <h2 class="text-xl font-bold text-txt-primary tracking-tight">Publishing Records</h2>
+                    </div>
+                    <p class="doc-p">Pack records, sign them, and publish to the network.</p>
+                </div>
+
+                <div class="mb-16" id="pack">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">1</span></div>
+                        <h3 class="text-[16px] font-bold text-txt-primary">Pack records</h3>
+                    </div>
+                    <p class="doc-p mb-5">Create a record set with the data you want to publish for your handle.</p>
+                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                            <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                            <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                        </div>
+                        <div class="p-5 overflow-x-auto bg-base">
+                            {% set pack_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/pack-records.txt", format="plain") %}
+                            <pre class="code-block lc" data-lang="rust">{{ pack_rust | safe }}</pre>
+                            {% set pack_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/pack-records.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="js">{{ pack_js | safe }}</pre>
+                            <pre class="code-block lc hidden" data-lang="rn">{{ pack_js | safe }}</pre>
+                            {% set pack_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/pack-records.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="go">{{ pack_go | safe }}</pre>
+                            {% set pack_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/pack-records.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="kotlin">{{ pack_kotlin | safe }}</pre>
+                            {% set pack_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/pack-records.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="swift">{{ pack_swift | safe }}</pre>
+                            {% set pack_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/pack-records.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="python">{{ pack_python | safe }}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ STEP 2: PUBLISH ═══ -->
+                <div class="mb-16" id="broadcast">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="w-6 h-6 rounded-full bg-sp-green flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">2</span></div>
+                        <h3 class="text-[16px] font-bold text-txt-primary">Publish</h3>
+                    </div>
+                    <p class="doc-p mb-5">Sign and publish your records to the network.</p>
+                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                            <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                            <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                        </div>
+                        <div class="p-5 overflow-x-auto bg-base">
+                            {% set publish_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/publish.txt", format="plain") %}
+                            <pre class="code-block lc" data-lang="rust">{{ publish_rust | safe }}</pre>
+                            {% set publish_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/publish.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="js">{{ publish_js | safe }}</pre>
+                            <pre class="code-block lc hidden" data-lang="rn">{{ publish_js | safe }}</pre>
+                            {% set publish_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/publish.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="go">{{ publish_go | safe }}</pre>
+                            {% set publish_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/publish.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="kotlin">{{ publish_kotlin | safe }}</pre>
+                            {% set publish_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/publish.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="swift">{{ publish_swift | safe }}</pre>
+                            {% set publish_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/publish.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="python">{{ publish_python | safe }}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ REVERSE RESOLUTION SECTION HEADER ═══ -->
+                <div class="mb-10 mt-8 pt-10 border-t border-border-subtle" id="reverse">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-7 h-7 rounded-lg bg-accent-dim border border-accent/15 flex items-center justify-center"><iconify-icon icon="solar:magnifer-linear" class="text-accent text-xs"></iconify-icon></div>
+                        <h2 class="text-xl font-bold text-txt-primary tracking-tight">Reverse Resolution</h2>
+                    </div>
+                    <p class="doc-p">Look up handles from addresses or numeric identifiers.</p>
+                </div>
+
+                <!-- ═══ STEP 1: SEARCH ADDRESSES ═══ -->
+                <div class="mb-16" id="search-addr">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">1</span></div>
+                        <h3 class="text-[16px] font-bold text-txt-primary">Search addresses</h3>
+                    </div>
+                    <p class="doc-p mb-5">Relays index the mapping of all ADDR records, for example to find names associated with an npub:</p>
+                    <div class="mb-5 px-4 py-3 rounded-lg border border-accent/15 bg-accent/[0.04] flex gap-3">
+                        <iconify-icon icon="solar:info-circle-linear" class="text-accent shrink-0" style="font-size:20px;margin-top:2px"></iconify-icon>
+                        <p class="text-[13px] text-txt-secondary leading-relaxed">An ADDR record is a one-way statement. For example, if Alice adds her Nostr npub (like <code class="font-mono text-[12px] bg-white/[0.04] border border-border-subtle px-1 rounded">npub1abc...xyz</code>) to her handle, she's saying "this is my Nostr identity." But it's on the application layer to verify that she actually controls the npub. Search-addrs simply indexes the mappings found in record sets and returns zones containing the matching ADDR record.</p>
+                    </div>
+                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                            <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                            <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                        </div>
+                        <div class="p-5 overflow-x-auto bg-base">
+                            {% set sa_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/search-addr.txt", format="plain") %}
+                            <pre class="code-block lc" data-lang="rust">{{ sa_rust | safe }}</pre>
+                            {% set sa_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/search-addr.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="js">{{ sa_js | safe }}</pre>
+                            <pre class="code-block lc hidden" data-lang="rn">{{ sa_js | safe }}</pre>
+                            {% set sa_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/search-addr.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="go">{{ sa_go | safe }}</pre>
+                            {% set sa_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/search-addr.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="kotlin">{{ sa_kotlin | safe }}</pre>
+                            {% set sa_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/search-addr.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="swift">{{ sa_swift | safe }}</pre>
+                            {% set sa_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/search-addr.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="python">{{ sa_python | safe }}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ STEP 2: RESOLVE BY ID ═══ -->
+                <div class="mb-16" id="resolve-by-id">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">2</span></div>
+                        <h3 class="text-[16px] font-bold text-txt-primary">Resolve by id</h3>
+                    </div>
+                    <p class="doc-p mb-5">Handles have a numeric identifier, if you have the id, you could resolve back the handle name:</p>
+                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                            <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                            <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                        </div>
+                        <div class="p-5 overflow-x-auto bg-base">
+                            {% set ri_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/resolve-by-id.txt", format="plain") %}
+                            <pre class="code-block lc" data-lang="rust">{{ ri_rust | safe }}</pre>
+                            {% set ri_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/resolve-by-id.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="js">{{ ri_js | safe }}</pre>
+                            <pre class="code-block lc hidden" data-lang="rn">{{ ri_js | safe }}</pre>
+                            {% set ri_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/resolve-by-id.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="go">{{ ri_go | safe }}</pre>
+                            {% set ri_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/resolve-by-id.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="kotlin">{{ ri_kotlin | safe }}</pre>
+                            {% set ri_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/resolve-by-id.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="swift">{{ ri_swift | safe }}</pre>
+                            {% set ri_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/resolve-by-id.txt", format="plain") %}
+                            <pre class="code-block lc hidden" data-lang="python">{{ ri_python | safe }}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ MORE ═══ -->
+                <div class="mb-20" id="more">
+                    <h2 class="text-xl font-bold text-txt-primary tracking-tight mb-6">More</h2>
+
+                    <!-- Resolve multiple -->
+                    <div class="mb-10" id="resolve-all">
+                        <h3 class="text-[15px] font-bold text-txt-primary mb-3">Resolve multiple handles</h3>
+                        <p class="doc-p mb-4">Batch resolution returns a <code>ResolvedBatch</code> with shared roots. Use <code>badge_for()</code> to get the badge for each zone in the batch.</p>
+                        <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                            <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                                <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                                <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                            </div>
+                            <div class="p-5 overflow-x-auto bg-base">
+                                {% set ra_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/resolve-all.txt", format="plain") %}
+                                <pre class="code-block lc" data-lang="rust">{{ ra_rust | safe }}</pre>
+                                {% set ra_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/resolve-all.txt", format="plain") %}
+                                <pre class="code-block lc hidden" data-lang="js">{{ ra_js | safe }}</pre>
+                                <pre class="code-block lc hidden" data-lang="rn">{{ ra_js | safe }}</pre>
+                                {% set ra_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/resolve-all.txt", format="plain") %}
+                                <pre class="code-block lc hidden" data-lang="go">{{ ra_go | safe }}</pre>
+                                {% set ra_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/resolve-all.txt", format="plain") %}
+                                <pre class="code-block lc hidden" data-lang="kotlin">{{ ra_kotlin | safe }}</pre>
+                                {% set ra_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/resolve-all.txt", format="plain") %}
+                                <pre class="code-block lc hidden" data-lang="swift">{{ ra_swift | safe }}</pre>
+                                {% set ra_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/resolve-all.txt", format="plain") %}
+                                <pre class="code-block lc hidden" data-lang="python">{{ ra_python | safe }}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MessageBuilder -->
+                    <div class="mb-10" id="builder">
+                        <h3 class="text-[15px] font-bold text-txt-primary mb-3">MessageBuilder (advanced)</h3>
+                        <p class="doc-p mb-4">For batching multiple handles into a single message, or when you need access to the raw message bytes before broadcasting.</p>
+                        <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                            <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                                <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                                <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                            </div>
+                            <div class="p-5 overflow-x-auto bg-base">
+                                {% set mb_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/message-builder.txt", format="plain") %}
+                                <pre class="code-block lc" data-lang="rust">{{ mb_rust | safe }}</pre>
+                                {% set mb_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/message-builder.txt", format="plain") %}
+                                <pre class="code-block lc hidden" data-lang="js">{{ mb_js | safe }}</pre>
+                                <pre class="code-block lc hidden" data-lang="rn">{{ mb_js | safe }}</pre>
+                                {% set mb_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/message-builder.txt", format="plain") %}
+                                <pre class="code-block lc hidden" data-lang="go">{{ mb_go | safe }}</pre>
+                                {% set mb_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/message-builder.txt", format="plain") %}
+                                <pre class="code-block lc hidden" data-lang="kotlin">{{ mb_kotlin | safe }}</pre>
+                                {% set mb_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/message-builder.txt", format="plain") %}
+                                <pre class="code-block lc hidden" data-lang="swift">{{ mb_swift | safe }}</pre>
+                                {% set mb_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/message-builder.txt", format="plain") %}
+                                <pre class="code-block lc hidden" data-lang="python">{{ mb_python | safe }}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Config -->
+                    <div class="mb-10" id="config">
+                        <h3 class="text-[15px] font-bold text-txt-primary mb-3">Configuration</h3>
+                        <p class="doc-p mb-4">Custom relay seeds, dev mode, and trust pinning.</p>
+                        <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                            <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                                <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                                <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                            </div>
+                            <div class="p-5 overflow-x-auto bg-base">
+<pre class="code-block lc" data-lang="rust">let mut fabric = Fabric::with_seeds(&["https://relay1.example.com"])
+    .with_dev_mode();
+fabric.trust(TrustId::from_str("abcdef..")?).await?;</pre>
+                                <pre class="code-block lc hidden" data-lang="js">const fabric = new Fabric({
+  provider,
+  seeds: ["https://relay1.example.com"],
+  devMode: true,
+});
+await fabric.trust("abcdef..");</pre>
+                                <pre class="code-block lc hidden" data-lang="rn">const fabric = new Fabric({
+  provider,
+  seeds: ["https://relay1.example.com"],
+  devMode: true,
+});
+await fabric.trust("abcdef..");</pre>
+                                <pre class="code-block lc hidden" data-lang="go">f := fabric.New([]string{"https://relay1.example.com"})
+f.SetDevMode(true)
+f.Trust("abcdef..")</pre>
+                                <pre class="code-block lc hidden" data-lang="kotlin">val fabric = Fabric(
+    seeds = listOf("https://relay1.example.com"),
+    devMode = true,
+)
+fabric.trust("abcdef..")</pre>
+                                <pre class="code-block lc hidden" data-lang="swift">let fabric = Fabric(
+    seeds: ["https://relay1.example.com"],
+    devMode: true
+)
+try await fabric.trust("abcdef..")</pre>
+                                <pre class="code-block lc hidden" data-lang="python">f = Fabric(
+    seeds=["https://relay1.example.com"],
+    dev_mode=True,
+)
+f.trust("abcdef..")</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Offline verification -->
+                    <div class="mb-10" id="verification">
+                        <h3 class="text-[15px] font-bold text-txt-primary mb-3">Offline verification</h3>
+                        <p class="doc-p mb-4">Access the internal <code>Veritas</code> instance for custom proof verification.</p>
+                        <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                            <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
+                                <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
+                                <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
+                            </div>
+                            <div class="p-5 overflow-x-auto bg-base">
+<pre class="code-block lc" data-lang="rust">let fabric = Fabric::new();
+fabric.bootstrap().await?;
+let veritas = fabric.veritas();</pre>
+                                <pre class="code-block lc hidden" data-lang="js">const fabric = new Fabric();
+await fabric.bootstrap();
+const veritas = fabric.getVeritas();</pre>
+                                <pre class="code-block lc hidden" data-lang="rn">const fabric = new Fabric();
+await fabric.bootstrap();
+const veritas = fabric.getVeritas();</pre>
+                                <pre class="code-block lc hidden" data-lang="go">f := fabric.New(nil)
+f.Bootstrap()
+veritas := f.Veritas()</pre>
+                                <pre class="code-block lc hidden" data-lang="kotlin">val fabric = Fabric()
+fabric.bootstrap()
+val veritas = fabric.getVeritas()</pre>
+                                <pre class="code-block lc hidden" data-lang="swift">let fabric = Fabric()
+try await fabric.bootstrap()
+let veritas = fabric.veritas</pre>
+                                <pre class="code-block lc hidden" data-lang="python">f = Fabric()
+f.bootstrap()
+veritas = f.veritas</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div></div></section>
+    </div><!-- /main content area -->
+</div><!-- /flex container -->
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentLang='rust';
+    const langNames={rust:'Rust',js:'JavaScript',rn:'React Native',go:'Go',kotlin:'Kotlin',swift:'Swift',python:'Python'};
+    function switchLang(l){
+        currentLang=l;
+        document.querySelectorAll('.lang-tab').forEach(t=>t.classList.toggle('active',t.textContent.trim()===langNames[l]));
+        document.querySelectorAll('.lc').forEach(b=>{
+            const match=b.dataset.lang===l;
+            b.classList.toggle('hidden',!match);
+            if(b.tagName==='DIV')b.style.display=match?'':'none';
+        });
+        document.querySelectorAll('.lang-label').forEach(e=>e.textContent=langNames[l]);
+        // File hints in install header
+        const fileHints={rust:'Cargo.toml',js:'Terminal',rn:'Terminal',go:'Terminal',kotlin:'build.gradle.kts',swift:'Package.swift',python:'Terminal'};
+        document.querySelectorAll('.install-file-hint').forEach(e=>{
+            e.textContent=fileHints[l]||'';
+            e.classList.toggle('hidden',!fileHints[l]);
+        });
+        setTimeout(applyHighlight,10);
+    }
+    function switchKt(variant,btn){
+        document.querySelectorAll('.kt-jvm').forEach(e=>e.style.display=variant==='jvm'?'':'none');
+        document.querySelectorAll('.kt-android').forEach(e=>e.style.display=variant==='android'?'':'none');
+        btn.parentElement.querySelectorAll('.kt-tab').forEach(t=>{t.style.color='#585862';t.style.background='transparent'});
+        btn.style.color='#dcdce0';btn.style.background='rgba(255,255,255,0.04)';
+        setTimeout(applyHighlight,10);
+    }
+    function copyCode(btn){
+        const wrap=btn.closest('.code-wrap');
+        const visible=wrap.querySelector('.code-block:not(.hidden):not([style*="display: none"]):not([style*="display:none"])');
+        if(visible){navigator.clipboard.writeText(visible.textContent).then(()=>{
+            const o=btn.innerHTML;
+            btn.innerHTML='<iconify-icon icon="solar:check-read-linear" class="text-xs"></iconify-icon> Copied';
+            btn.style.color='#3fbc8b';
+            setTimeout(()=>{btn.innerHTML=o;btn.style.color=''},1500);
+        })}
+    }
+    const tocLinks=document.querySelectorAll('.toc-link');
+    const tocTargets=[];
+    tocLinks.forEach(link=>{const id=link.getAttribute('href').slice(1);const el=document.getElementById(id);if(el)tocTargets.push({el,link})});
+    const tocObs=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){tocLinks.forEach(l=>l.classList.remove('active'));const m=tocTargets.find(t=>t.el===entry.target);if(m)m.link.classList.add('active')}})},{rootMargin:'-20% 0px -60% 0px'});
+    tocTargets.forEach(t=>tocObs.observe(t.el));
+    function applyHighlight(){
+        const langMap={rust:'rust',js:'javascript',rn:'javascript',go:'go',kotlin:'kotlin',swift:'swift',python:'python'};
+        document.querySelectorAll('.code-block:not([style*="display: none"]):not([style*="display:none"])').forEach(pre=>{
+            if(pre.closest('.hidden'))return;
+            const lang=langMap[pre.dataset.lang]||'kotlin';
+            pre.removeAttribute('data-highlighted');
+            pre.classList.remove('hljs');
+            pre.className=pre.className.replace(/language-\S+/g,'').trim();
+            pre.classList.add('code-block','language-'+lang);
+            hljs.highlightElement(pre);
+        });
+    }
+    applyHighlight();
+
+    // ── SDK DEMO QUERY ──
+    let sdkFabricInstance = null;
+    async function sdkLoadFabric() {
+        if (!sdkFabricInstance) {
+            const mod = await import(`https://esm.sh/@spacesprotocol/fabric-web@${FABRIC_VERSION}`);
+            if (mod.init) await mod.init();
+            sdkFabricInstance = new mod.Fabric();
+        }
+        return sdkFabricInstance;
+    }
+
+    function sdkHighlight(json) {
+        return json.replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*")\s*:/g, '<span style="color:#5e9de0">$1</span>:')
+                   .replace(/:\s*("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*")/g, ': <span style="color:#3fbc8b">$1</span>')
+                   .replace(/:\s*(true|false)/g, ': <span style="color:#c084fc">$1</span>')
+                   .replace(/:\s*(\d+)/g, ': <span style="color:#e0722e">$1</span>')
+                   .replace(/:\s*(null)/g, ': <span style="color:#585862">$1</span>');
+    }
+
+    async function sdkDoQuery() {
+        const input = document.getElementById('sdkQuery');
+        const btn = document.getElementById('sdkQueryBtn');
+        const wrap = document.getElementById('sdkResultWrap');
+        const dot = document.getElementById('sdkResultDot');
+        const label = document.getElementById('sdkResultLabel');
+        const body = document.getElementById('sdkResultBody');
+        const q = input.value.trim() || 'alice@bitcoin';
+        input.value = q;
+
+        wrap.classList.remove('hidden');
+        dot.className = 'w-[5px] h-[5px] rounded-full bg-accent';
+        dot.style.animation = 'pulse-dot .6s ease infinite';
+        label.textContent = 'Loading...';
+        label.className = 'font-mono text-[10px] uppercase font-semibold text-accent tracking-[0.06em]';
+        body.innerHTML = '<div class="font-mono text-[11px] text-txt-muted">Initializing...</div>';
+        btn.disabled = true;
+
+        try {
+            const fab = await sdkLoadFabric();
+            label.textContent = 'Resolving...';
+            body.innerHTML = '<div class="font-mono text-[11px] text-txt-muted">Querying certrelay network...</div>';
+
+            const resolved = await fab.resolve(q);
+            dot.style.animation = '';
+
+            const json = resolved?.toJson();
+            const records = json?.records;
+            if (records && Array.isArray(records) && records.length > 0) {
+                dot.className = 'w-[5px] h-[5px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b]';
+                label.textContent = 'Resolved';
+                label.className = 'font-mono text-[10px] uppercase font-semibold text-sp-green tracking-[0.06em]';
+                const str = JSON.stringify(records, null, 2);
+                body.innerHTML = '<pre class="font-mono text-[11px] leading-6 whitespace-pre-wrap break-all">' + sdkHighlight(str) + '</pre>';
+            } else if (resolved) {
+                dot.className = 'w-[5px] h-[5px] rounded-full bg-txt-muted';
+                label.textContent = 'No records';
+                label.className = 'font-mono text-[10px] uppercase font-semibold text-txt-muted tracking-[0.06em]';
+                body.innerHTML = '<div class="font-mono text-[12px] text-txt-muted">Handle exists but has no records set</div>';
+            } else {
+                dot.className = 'w-[5px] h-[5px] rounded-full bg-txt-muted';
+                label.textContent = 'Not found';
+                label.className = 'font-mono text-[10px] uppercase font-semibold text-txt-muted tracking-[0.06em]';
+                body.innerHTML = '<div class="font-mono text-[12px] text-txt-muted">Not found: <span class="text-accent">' + q + '</span></div>';
+            }
+        } catch (e) {
+            dot.style.animation = '';
+            dot.className = 'w-[5px] h-[5px] rounded-full bg-red-400';
+            label.textContent = 'Error';
+            label.className = 'font-mono text-[10px] uppercase font-semibold text-red-400 tracking-[0.06em]';
+            body.innerHTML = '<div class="font-mono text-[12px] text-red-400">' + (e.message || 'Resolution failed') + '</div>';
+        }
+        btn.disabled = false;
+    }
+    document.getElementById('sdkQuery').addEventListener('keydown', function(e) { if (e.key === 'Enter') sdkDoQuery(); });
+</script>
+{% endblock %}

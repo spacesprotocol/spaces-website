@@ -1,0 +1,557 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+.fd1{animation-delay:.08s} .fd2{animation-delay:.18s} .fd3{animation-delay:.3s}
+        .fd4{animation-delay:.42s} .fd5{animation-delay:.56s} .fd6{animation-delay:.68s}
+
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+        .dot-grid {
+            background-image: radial-gradient(circle, #2a2a31 0.6px, transparent 0.6px);
+            background-size: 28px 28px;
+        }
+
+        /* Slot machine effect */
+        .word-slot {
+            position: relative;
+            overflow: hidden;
+            height: 2.6rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        .word-slot-inner {
+            transition: transform .4s cubic-bezier(.22,1,.36,1);
+        }
+
+        /* Dice button */
+        .dice-btn {
+            transition: all .2s ease;
+        }
+        .dice-btn:hover {
+            background: rgba(224,114,46,.12);
+            border-color: rgba(224,114,46,.3);
+        }
+        .dice-btn:active {
+            transform: scale(.92) rotate(90deg);
+        }
+
+        /* Handle preview glow */
+        .handle-glow {
+            position: absolute;
+            inset: -1px;
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity .4s ease;
+            background: linear-gradient(135deg, rgba(224,114,46,.08), rgba(63,188,139,.06));
+            pointer-events: none;
+        }
+        .handle-card:hover .handle-glow,
+        .handle-card.active .handle-glow {
+            opacity: 1;
+        }
+
+        /* Tier indicator */
+        .tier-dot { width:6px; height:6px; border-radius:50%; }
+
+        /* Claim button states */
+        .claim-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .claim-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+            background-size: 200% 100%;
+            opacity: 0;
+            transition: opacity .3s;
+        }
+        .claim-btn.loading::after {
+            opacity: 1;
+            animation: shimmer 1.5s linear infinite;
+        }
+
+        /* Availability badge */
+        @keyframes checkPop {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .avail-badge {
+            animation: checkPop .35s cubic-bezier(.22,1,.36,1) forwards;
+        }
+
+        /* Word chip in the builder */
+        .word-chip {
+            transition: all .25s cubic-bezier(.22,1,.36,1);
+        }
+        .word-chip:hover {
+            border-color: rgba(224,114,46,.4);
+            transform: translateY(-1px);
+        }
+        .word-chip.selected {
+            background: rgba(224,114,46,.1);
+            border-color: rgba(224,114,46,.4);
+            color: #e0722e;
+        }
+
+        /* Stat counter */
+        .stat-num { font-variant-numeric: tabular-nums; }
+
+        /* Toast */
+        @keyframes toastIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes toastOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-8px)} }
+        .toast { animation: toastIn .3s ease forwards; }
+        .toast.out { animation: toastOut .3s ease forwards; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ═══ HERO ═══ -->
+    <section class="relative pt-16 pb-10 md:pt-24 md:pb-14 border-b border-border-subtle overflow-hidden">
+        <div class="absolute inset-0 dot-grid opacity-[0.06] pointer-events-none"></div>
+        <div class="relative z-10 max-w-[1222px] mx-auto px-8">
+            <div class="max-w-6xl space-y-6 mx-auto text-center">
+                <div>
+                <div class="fade-up fd1 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface/50 mb-5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-sp-green shadow-[0_0_6px_#3fbc8b]" style="animation:pulse-dot 2.5s ease infinite"></span>
+                    <span class="font-mono text-[11px] text-txt-secondary font-medium tracking-[0.1em] uppercase">Free handles</span>
+                </div>
+
+                <h1 class="fade-up fd2 text-[2rem] md:text-[2.8rem] font-extrabold text-white tracking-[-0.04em] mb-4 leading-[1.1]">
+                    Handle faucet
+                </h1>
+                    <p class="fade-up fd3 text-[15px] text-txt-secondary max-w-md mx-auto leading-relaxed mb-3">
+                        Grab a free handle to start experimenting with spaces. The whole faucet? 100M handles in just 32 bytes on chain.
+                    </p>
+            </div>
+                <div class="fade-up fd5 flex items-center justify-center gap-8 md:gap-12 ">
+
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="font-mono text-[36px] md:text-[48px] font-extrabold tracking-[-0.04em] text-white leading-none">100M</div>
+                        <div class="font-mono text-[10px] text-txt-muted tracking-[0.06em] uppercase">                     <iconify-icon icon="solar:infinity-linear" class="text-txt-secondary text-xs"></iconify-icon>
+                            handles issued</div>
+                    </div>
+
+
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="font-mono text-[36px] md:text-[48px] font-extrabold tracking-[-0.04em] text-sp-green leading-none" id="statsClaimed">—</div>
+                        <div class="font-mono text-[10px] text-txt-muted tracking-[0.06em] uppercase">                    <iconify-icon icon="solar:wallet-linear" class="text-txt-secondary text-xs"></iconify-icon>
+                            claimed</div>
+                    </div>
+
+
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="font-mono text-[36px] md:text-[48px] font-extrabold tracking-[-0.04em] text-txt-muted leading-none">32<span class="inline ml-2 text-sm">bytes</span></div>
+                        <div class="font-mono text-[10px] text-txt-muted tracking-[0.06em] uppercase">                     <iconify-icon icon="solar:database-linear" class="text-txt-secondary text-xs"></iconify-icon>
+                            On-chain footprint</div>
+                    </div>
+                </div>
+
+            </div>
+
+        <div class="max-w-[680px] mx-auto px-6 md:px-8 mt-24">
+
+            <!-- Handle picker -->
+            <div class="fade-up fd4 mb-6">
+                <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_8px_60px_rgba(0,0,0,.5)]">
+
+                    <!-- Top bar -->
+                    <div class="flex items-center justify-between border-b border-border-subtle px-5 py-2.5">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="solar:magic-stick-3-linear" class="text-accent text-sm"></iconify-icon>
+                            <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em]">Handle Picker</span>
+                        </div>
+                        <button onclick="randomize()" class="dice-btn flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border text-txt-muted hover:text-accent transition-all" title="Shuffle">
+                            <iconify-icon icon="solar:refresh-linear" class="text-sm"></iconify-icon>
+                            <span class="font-mono text-[10px] font-medium">Shuffle</span>
+                        </button>
+                    </div>
+
+                    <!-- Handle display -->
+                    <div class="px-6 py-5">
+                        <div class="handle-card relative rounded-lg border border-border bg-base p-4 transition-all" id="handleCard">
+                            <div class="handle-glow"></div>
+                            <div class="relative">
+                                <div class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.06em] mb-2">Your handle</div>
+                                <div class="font-mono text-[18px] md:text-[22px] font-bold tracking-tight leading-tight break-all" id="handlePreview">
+                                    <span class="text-accent" id="previewWords">shuffling...</span><span class="text-txt-muted">.genesis</span><span class="text-txt-muted/40">@key</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Claim area -->
+                    <div class="border-t border-border-subtle px-6 py-4 bg-base/50">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span id="availDot" class="w-[6px] h-[6px] rounded-full bg-txt-muted transition-colors"></span>
+                            <span id="availLabel" class="font-mono text-[10px] uppercase font-semibold text-txt-muted tracking-[0.06em] transition-colors">Loading...</span>
+                        </div>
+
+                        <!-- Two claim options -->
+                        <div id="claimButtons" class="space-y-2">
+                            <a id="orbeeClaimBtn" href="#" class="claim-btn w-full font-mono text-[13px] font-semibold text-white px-6 py-3 rounded-lg transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(139,92,246,.25)] flex items-center justify-center gap-2 no-underline" style="background:#8b5cf6;text-decoration:none">
+                                <iconify-icon icon="solar:chat-round-dots-linear" class="text-sm"></iconify-icon>
+                                Claim on Orbee
+                                <span class="font-mono text-[9px] font-medium px-1.5 py-0.5 rounded bg-white/15 ml-1">recommended</span>
+                            </a>
+                            <button id="claimBtn" onclick="claimHandle()" disabled class="claim-btn w-full font-mono text-[12px] font-semibold text-txt-muted bg-raised hover:bg-border border border-border disabled:cursor-not-allowed px-6 py-2.5 rounded-lg transition-all flex items-center justify-center gap-2">
+                                <iconify-icon icon="solar:pen-new-round-linear" class="text-sm"></iconify-icon>
+                                Setup manually
+                            </button>
+                        </div>
+
+                        <!-- Post-claim (manual flow, hidden until claimed) -->
+                        <div id="keypairReveal" class="hidden mt-4">
+                            <div class="relative rounded-lg border border-sp-green/30 bg-sp-green/[0.03] p-4">
+                                <div class="flex items-start gap-2.5 mb-4 pb-3.5 border-b border-sp-green/10">
+                                    <iconify-icon icon="solar:check-circle-linear" class="text-sp-green text-sm mt-0.5 shrink-0"></iconify-icon>
+                                    <div>
+                                        <div class="font-mono text-[11px] font-semibold text-sp-green mb-0.5">Handle claimed!</div>
+                                        <div class="text-[11px] text-txt-muted leading-relaxed">Download your certificate and set up records in the editor.</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.06em] mb-1">Handle</div>
+                                    <div class="flex items-center justify-between bg-base border border-border rounded-md px-3 py-2">
+                                        <span id="claimedHandle" class="font-mono text-[13px] font-bold text-accent break-all">—</span>
+                                        <button onclick="copyField('claimedHandle')" class="copy-btn shrink-0 ml-2 p-1 rounded hover:bg-raised transition-colors" title="Copy">
+                                            <iconify-icon icon="solar:copy-linear" class="text-txt-muted text-sm"></iconify-icon>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="secretReveal" class="hidden mb-3">
+                                    <div class="flex items-start gap-2.5 mb-2 p-2.5 rounded-md bg-red-500/[0.05] border border-red-500/15">
+                                        <iconify-icon icon="solar:danger-triangle-linear" class="text-red-400 text-xs mt-0.5 shrink-0"></iconify-icon>
+                                        <div class="text-[10px] text-txt-muted leading-relaxed">Save this secret to manage your handle from the record editor.</div>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 mb-1">
+                                        <div class="font-mono text-[9px] text-red-400 uppercase tracking-[0.06em] font-semibold">Secret</div>
+                                        <iconify-icon icon="solar:lock-linear" class="text-red-400 text-[10px]"></iconify-icon>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-base border border-red-500/20 rounded-md px-3 py-2">
+                                        <span id="claimedSecret" class="font-mono text-[11px] text-red-400 break-all select-all">—</span>
+                                        <button onclick="copyField('claimedSecret')" class="copy-btn shrink-0 ml-2 p-1 rounded hover:bg-raised transition-colors" title="Copy">
+                                            <iconify-icon icon="solar:copy-linear" class="text-red-400 text-sm"></iconify-icon>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <button onclick="downloadCert()" class="w-full font-mono text-[11px] font-semibold text-sp-green bg-sp-green/10 hover:bg-sp-green/15 border border-sp-green/20 px-4 py-2 rounded-lg transition-all flex items-center justify-center gap-2">
+                                        <iconify-icon icon="solar:download-linear" class="text-sm"></iconify-icon>
+                                        Download .spacecert
+                                    </button>
+                                    <button onclick="confirmGoToEditor()" class="w-full font-mono text-[11px] font-semibold text-accent bg-accent-dim hover:bg-accent/15 border border-accent/15 px-4 py-2 rounded-lg transition-all flex items-center justify-center gap-2">
+                                        <iconify-icon icon="solar:pen-new-round-linear" class="text-sm"></iconify-icon>
+                                        Open record editor
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your handles (populated from localStorage) -->
+            <div id="yourHandles" class="hidden mb-6">
+                <div class="bg-surface border border-border rounded-xl overflow-hidden">
+                    <div class="flex items-center gap-2 border-b border-border-subtle px-5 py-2.5">
+                        <iconify-icon icon="solar:wallet-linear" class="text-accent text-sm"></iconify-icon>
+                        <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em]">Your handles</span>
+                    </div>
+                    <div id="yourHandlesList" class="divide-y divide-border-subtle"></div>
+                </div>
+            </div>
+
+            <!-- Info section -->
+            <div class="fade-up fd6 space-y-4">
+                <!-- How it works -->
+                <div class="bg-surface border border-border rounded-xl p-5">
+                    <div class="flex items-center gap-2 mb-4">
+                        <iconify-icon icon="solar:info-circle-linear" class="text-accent text-sm"></iconify-icon>
+                        <span class="font-mono text-[11px] font-semibold text-txt-primary">How it works</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0">
+                                <span class="font-mono text-[10px] font-bold text-accent">1</span>
+                            </div>
+                            <div>
+                                <div class="font-mono text-[11px] font-semibold text-txt-primary mb-0.5">Shuffle to pick a handle</div>
+                                <div class="text-[11px] text-txt-muted leading-relaxed">Handles are built from the BIP-39 wordlist. These are the same 2,048 words used to generate Bitcoin seed phrases.</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0">
+                                <span class="font-mono text-[10px] font-bold text-accent">2</span>
+                            </div>
+                            <div>
+                                <div class="font-mono text-[11px] font-semibold text-txt-primary mb-0.5">Pre-generated keypairs</div>
+                                <div class="text-[11px] text-txt-muted leading-relaxed">Every handle is pre-assigned a Bitcoin keypair. The public keys (SPKs) are included in the Merkle tree <em>before</em> the batch is committed - that's how the entire 100M names fit in 32 bytes.</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0">
+                                <span class="font-mono text-[10px] font-bold text-accent">3</span>
+                            </div>
+                            <div>
+                                <div class="font-mono text-[11px] font-semibold text-txt-primary mb-0.5">Claim = receive private key</div>
+                                <div class="text-[11px] text-txt-muted leading-relaxed">When you claim, we hand you the private key and delete it from our server. You now have sole ownership - no one else can control your handle.</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0">
+                                <span class="font-mono text-[10px] font-bold text-accent">4</span>
+                            </div>
+                            <div>
+                                <div class="font-mono text-[11px] font-semibold text-txt-primary mb-0.5">Yours forever</div>
+                                <div class="text-[11px] text-txt-muted leading-relaxed">Once claimed, it's cryptographically yours. No annual fees, no registrar, no one can revoke it. Bind it on-chain and rotate the key, if you wish.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <div id="toastContainer" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 items-center pointer-events-none"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const FAUCET_API = 'https://faucet.spacesprotocol.org';
+    const $ = id => document.getElementById(id);
+
+    let peekNames = [];
+    let currentName = null;
+    let claimedCert = null;
+    let claimedName = null;
+    let claimedSecret = null;
+
+    // ── LOCAL STORAGE FOR CLAIMED HANDLES ──
+    const HANDLES_KEY = 'faucet:handles';
+
+    function getSavedHandles() {
+        try { return JSON.parse(localStorage.getItem(HANDLES_KEY)) || []; } catch { return []; }
+    }
+
+    function saveHandle(name, cert, secret) {
+        const handles = getSavedHandles();
+        if (handles.find(h => h.name === name)) return;
+        handles.unshift({ name, cert, secret, ts: Date.now() });
+        localStorage.setItem(HANDLES_KEY, JSON.stringify(handles));
+    }
+
+    function renderSavedHandles() {
+        const handles = getSavedHandles();
+        if (handles.length === 0) { $('yourHandles').classList.add('hidden'); return; }
+        $('yourHandles').classList.remove('hidden');
+        const list = $('yourHandlesList');
+        list.innerHTML = handles.map((h, i) => `
+            <div class="px-5 py-3 flex items-center gap-3">
+                <div class="flex-1 min-w-0">
+                    <div class="font-mono text-[13px] font-bold text-accent truncate">${h.name}.genesis@key</div>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button onclick="downloadSavedCert(${i})" class="p-1.5 rounded-md hover:bg-raised transition-colors" title="Download certificate"><iconify-icon icon="solar:download-linear" class="text-txt-muted text-xs"></iconify-icon></button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function downloadSavedCert(index) {
+        const h = getSavedHandles()[index];
+        if (!h || !h.cert) return;
+        const binary = atob(h.cert);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        const blob = new Blob([bytes], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `${h.name}.spacecert`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard', 'info'));
+    }
+
+    // ── FETCH PEEK NAMES ──
+    async function fetchPeekNames() {
+        try {
+            const res = await fetch(`${FAUCET_API}/peek`);
+            const data = await res.json();
+            peekNames = data.names || [];
+        } catch (e) {
+            console.error('Failed to fetch names:', e);
+        }
+    }
+
+    // ── SHUFFLE ──
+    async function randomize() {
+        if (peekNames.length === 0) await fetchPeekNames();
+        if (peekNames.length === 0) return;
+
+        currentName = peekNames[Math.floor(Math.random() * peekNames.length)];
+        $('previewWords').textContent = currentName;
+
+        // Reset claim UI
+        $('keypairReveal').classList.add('hidden');
+        $('claimButtons').classList.remove('hidden');
+        $('claimBtn').innerHTML = '<iconify-icon icon="solar:pen-new-round-linear" class="text-sm"></iconify-icon> Setup manually';
+        $('claimBtn').style.background = '';
+        $('claimBtn').style.cursor = '';
+        $('claimBtn').disabled = false;
+
+        // Update Orbee link
+        const orbeeBase = location.protocol === 'https:' ? 'https://orbee.chat' : 'http://localhost:5173';
+        $('orbeeClaimBtn').href = orbeeBase + '/n?pick=' + encodeURIComponent(currentName);
+
+        $('availDot').className = 'w-[6px] h-[6px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b] avail-badge';
+        $('availLabel').textContent = 'Available';
+        $('availLabel').className = 'font-mono text-[10px] uppercase font-semibold text-sp-green tracking-[0.06em]';
+        $('handleCard').classList.add('active');
+
+        // Animate shuffle button
+        const btn = document.querySelector('.dice-btn');
+        btn.style.transform = 'scale(.92) rotate(180deg)';
+        setTimeout(() => btn.style.transform = '', 200);
+    }
+
+    // ── CLAIM ──
+    async function claimHandle() {
+        if (!currentName) return;
+        const btn = $('claimBtn');
+
+        btn.classList.add('loading');
+        btn.textContent = 'Claiming...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`${FAUCET_API}/claim`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: currentName,
+                    space: '#944203-189-0',
+                    suffix: '.genesis@key'
+                })
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || `Request failed (${res.status})`);
+            }
+            const data = await res.json();
+
+            claimedCert = data.certificate;
+            claimedName = data.name || currentName;
+
+            $('claimedHandle').textContent = claimedName + '.genesis@key';
+
+            if (data.secret_key) {
+                claimedSecret = data.secret_key;
+                $('claimedSecret').textContent = data.secret_key;
+                $('secretReveal').classList.remove('hidden');
+            }
+
+            $('claimButtons').classList.add('hidden');
+            $('keypairReveal').classList.remove('hidden');
+
+            btn.classList.remove('loading');
+
+            $('availDot').className = 'w-[6px] h-[6px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b]';
+            $('availLabel').textContent = 'Claimed';
+            $('availLabel').className = 'font-mono text-[10px] uppercase font-semibold text-sp-green tracking-[0.06em]';
+
+            saveHandle(claimedName, claimedCert, claimedSecret);
+            renderSavedHandles();
+            showToast('Handle claimed!', 'success');
+            $('keypairReveal').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            fetchPeekNames();
+            fetchStats();
+        } catch (e) {
+            btn.classList.remove('loading');
+            btn.innerHTML = '<iconify-icon icon="solar:pen-new-round-linear" class="text-sm"></iconify-icon> Setup manually';
+            btn.disabled = false;
+            showToast(e.message || 'Failed to claim handle', 'error');
+        }
+    }
+
+    // ── DOWNLOAD CERT (base64 to binary .spacecert) ──
+    function downloadCert() {
+        if (!claimedCert || !claimedName) return;
+        const binary = atob(claimedCert);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${claimedName}.spacecert`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // ── FETCH STATS ──
+    async function fetchStats() {
+        try {
+            const res = await fetch(`${FAUCET_API}/stats?cache=no`);
+            const data = await res.json();
+            if ($('statsClaimed')) $('statsClaimed').textContent = data.claimed.toLocaleString();
+        } catch (e) {
+            console.error('Failed to fetch stats:', e);
+        }
+    }
+
+    // ── COPY HELPERS ──
+    function copyField(id) {
+        const text = $(id).textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Copied to clipboard', 'info');
+        });
+    }
+
+    // ── TOAST ──
+    function showToast(msg, type = 'info') {
+        const container = $('toastContainer');
+        const toast = document.createElement('div');
+        const colors = { success: 'border-sp-green/30 bg-sp-green/10 text-sp-green', error: 'border-red-500/30 bg-red-500/10 text-red-400', info: 'border-accent/30 bg-accent-dim text-accent' };
+        toast.className = `toast pointer-events-auto px-4 py-2.5 rounded-lg border font-mono text-[12px] font-medium shadow-[0_8px_30px_rgba(0,0,0,.5)] ${colors[type] || colors.info}`;
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.add('out');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // ── EDITOR HANDOFF ──
+    function confirmGoToEditor() {
+        const handle = claimedName + '.genesis@key';
+        const data = {};
+        if (claimedCert) data.cert = claimedCert;
+        if (claimedSecret) data.secret = claimedSecret;
+        sessionStorage.setItem('editor:' + handle, JSON.stringify(data));
+        window.location.href = '/editor/?handle=' + encodeURIComponent(handle);
+    }
+
+    // ── INIT ──
+    renderSavedHandles();
+    fetchPeekNames().then(() => randomize());
+    fetchStats();
+    setInterval(fetchStats, 5000);
+</script>
+{% endblock %}

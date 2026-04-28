@@ -1,0 +1,999 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+.fade-up { opacity:0; animation:fadeUp .6s cubic-bezier(.22,1,.36,1) forwards }
+        .fd1{animation-delay:.08s} .fd2{animation-delay:.18s} .fd3{animation-delay:.3s}
+        .fd4{animation-delay:.42s} .fd5{animation-delay:.56s} .fd6{animation-delay:.68s}
+
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        @keyframes checkPop { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.2)} 100%{transform:scale(1);opacity:1} }
+        @keyframes toastIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes toastOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-8px)} }
+
+        .dot-grid { background-image:radial-gradient(circle,#2a2a31 .6px,transparent .6px); background-size:28px 28px }
+        .toast { animation:toastIn .3s ease forwards } .toast.out { animation:toastOut .3s ease forwards }
+        .stat-num { font-variant-numeric:tabular-nums }
+
+        .action-btn { position:relative; overflow:hidden }
+        .action-btn::after {
+            content:''; position:absolute; inset:0;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);
+            background-size:200% 100%; opacity:0; transition:opacity .3s;
+        }
+        .action-btn.loading::after { opacity:1; animation:shimmer 1.5s linear infinite }
+
+        /* Record row */
+        .record-row { transition:all .25s cubic-bezier(.22,1,.36,1); }
+        .record-row:hover { border-color:rgba(138,138,148,.15); }
+        @keyframes rowIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .row-enter { animation:rowIn .3s cubic-bezier(.22,1,.36,1) forwards }
+
+        /* Delete button */
+        .del-btn { opacity:.4; transition:all .2s }
+        .del-btn:hover { opacity:1; color:#ef4444 }
+
+        /* Drop zone drag-over */
+        .drop-active { border-color:rgba(224,114,46,.5) !important; background:rgba(224,114,46,.04) !important; }
+        .drop-active .drop-icon { transform:scale(1.1); }
+
+        /* JSON preview */
+        .json-line { font-size:11px; line-height:1.7 }
+        .j-key { color:#5e9de0 } .j-str { color:#3fbc8b } .j-num { color:#e0722e } .j-punc { color:#585862 }
+
+        /* Input focus ring */
+        .rec-input:focus { border-color:rgba(224,114,46,.4); outline:none; }
+
+        /* Dropdown */
+        .type-dropdown { max-height:280px; }
+        .type-opt { transition:background .15s }
+        .type-opt:hover { background:#1c1c22 }
+        .type-opt.active { background:rgba(224,114,46,.08); color:#e0722e }
+
+        /* Toggle */
+        .toggle-track { width:36px; height:20px; border-radius:10px; transition:background .2s; cursor:pointer; position:relative }
+        .toggle-track::after {
+            content:''; position:absolute; width:16px; height:16px; border-radius:50%;
+            top:2px; left:2px; background:#dcdce0; transition:transform .2s;
+        }
+        .toggle-track.on { background:#3fbc8b }
+        .toggle-track.on::after { transform:translateX(16px) }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+    <section class="relative pt-16 pb-10 md:pt-24 md:pb-14 border-b border-border-subtle overflow-hidden">
+        <div class="absolute inset-0 dot-grid opacity-[0.06] pointer-events-none"></div>
+        <div class="relative z-10 max-w-[1222px] mx-auto px-8">
+            <div class="max-w-5xl mx-auto text-center">
+                <div class="fade-up fd1 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface/50 mb-5">
+                    <iconify-icon icon="solar:pen-new-square-linear" class="text-accent text-xs"></iconify-icon>
+                    <span class="font-mono text-[11px] text-txt-secondary font-medium tracking-[0.1em] uppercase">SIP-7 Records</span>
+                </div>
+                <h1 class="fade-up fd2 text-[2rem] md:text-[2.8rem] font-extrabold text-white tracking-[-0.04em] mb-4 leading-[1.1]">
+                    Record Editor
+                </h1>
+                <p class="fade-up fd3 text-[15px] text-txt-secondary max-w-lg mx-auto leading-relaxed mb-12">
+                    Attach records such as payment addresses, identities, and metadata to your handle - signed locally, broadcast to the relay network                </p>
+                <div class="fade-up fd4 flex items-center justify-center gap-5 font-mono text-[11px] text-txt-muted">
+                <span class="flex items-center gap-1.5">
+                    <iconify-icon icon="solar:document-text-linear" class="text-txt-secondary text-xs"></iconify-icon>
+                    Sign locally
+                </span>
+                    <span class="text-border">&bull;</span>
+                    <span class="flex items-center gap-1.5">
+                    <iconify-icon icon="solar:key-linear" class="text-txt-secondary text-xs"></iconify-icon>
+                    Keys stay in the browser
+                </span>
+                    <span class="text-border">&bull;</span>
+                    <span class="flex items-center gap-1.5">
+                    <iconify-icon icon="solar:global-linear" class="text-txt-secondary text-xs"></iconify-icon>
+                    Broadcast to certrelay
+                </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EDITOR -->
+    <section class="py-14 md:py-20 bg-base relative">
+        <div class="max-w-[760px] mx-auto px-6 md:px-8">
+
+            <!-- Query / Resolve bar -->
+            <div class="fade-up fd4 mb-5">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-txt-muted">Handle</span>
+                </div>
+                <div class="relative flex items-center bg-surface border border-border rounded-xl p-1.5 shadow-[0_4px_30px_rgba(0,0,0,.3)] focus-within:border-accent/40 transition-colors">
+                    <div class="pl-3 text-txt-muted">
+                        <iconify-icon icon="solar:magnifer-linear" width="15"></iconify-icon>
+                    </div>
+                    <input type="text" id="handleInput" placeholder="alice@bitcoin" class="w-full bg-transparent border-none text-txt-primary text-[14px] px-3 py-2 focus:ring-0 focus:outline-none placeholder:text-txt-muted font-mono font-semibold" autocomplete="off" spellcheck="false" />
+                    <button onclick="resolveHandle()" id="resolveBtn" class="bg-accent hover:bg-accent-strong text-black font-mono text-[11px] font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5">
+                        <iconify-icon icon="solar:download-minimalistic-linear" class="text-sm"></iconify-icon>
+                        Load
+                    </button>
+                </div>
+                <!-- Status -->
+                <div id="resolveStatus" class="mt-2 px-1 hidden">
+                </div>
+            </div>
+
+            <!-- Editor card -->
+            <div class="fade-up fd5 mb-6">
+                <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_8px_60px_rgba(0,0,0,.5)]">
+
+                    <!-- Top bar -->
+                    <div class="flex items-center justify-between border-b border-border-subtle px-5 py-2.5">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="solar:document-text-linear" class="text-accent text-sm"></iconify-icon>
+                            <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em]">Records</span>
+                            <span id="recordCount" class="font-mono text-[10px] text-txt-muted bg-raised px-1.5 py-0.5 rounded border border-border stat-num">0</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.06em]">Seq</span>
+                            <div class="relative">
+                                <input type="number" id="seqInput" value="1" min="0" class="rec-input w-[60px] bg-base border border-border rounded px-2 py-1 font-mono text-[11px] text-txt-primary text-center transition-colors" />
+                            </div>
+                            <span id="seqBump" class="hidden font-mono text-[9px] text-accent font-semibold"></span>
+                        </div>
+                    </div>
+
+                    <!-- Records list -->
+                    <div id="recordList" class="divide-y divide-border-subtle min-h-[80px]">
+                    </div>
+
+                    <!-- Add record - inline picker -->
+                    <div class="border-t border-border-subtle">
+                        <button onclick="toggleAddPanel()" id="addBtn" class="w-full flex items-center justify-between px-5 py-3 hover:bg-raised/30 transition-colors">
+                            <div class="flex items-center gap-2 font-mono text-[12px] font-medium text-accent">
+                                <iconify-icon icon="solar:add-circle-linear" class="text-sm"></iconify-icon>
+                                Add record
+                            </div>
+                            <iconify-icon id="addChevron" icon="solar:alt-arrow-down-linear" class="text-txt-muted text-xs transition-transform"></iconify-icon>
+                        </button>
+
+                        <div id="addPanel" class="hidden border-t border-border-subtle bg-base/50">
+                            <div class="px-5 pt-3 pb-2">
+                                <input type="text" id="addSearch" placeholder="Filter..." class="rec-input w-full bg-base border border-border rounded-lg px-3 py-2 font-mono text-[11px] text-txt-primary transition-colors placeholder:text-txt-muted" autocomplete="off" />
+                            </div>
+                            <div id="addPanelList" class="px-5 pb-4">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON Output (primary output) -->
+            <div class="fade-up fd5 mb-6">
+                <div class="bg-surface border border-border rounded-xl overflow-hidden">
+                    <div class="flex items-center justify-between border-b border-border-subtle px-5 py-2.5">
+                        <div class="flex items-center gap-2">
+                            <span class="w-[5px] h-[5px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b]" style="animation:pulse-dot 2s ease infinite"></span>
+                            <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em]">JSON Output</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono text-[9px] text-txt-muted" id="jsonSize">0 bytes</span>
+                            <button onclick="copyJSON()" class="flex items-center gap-1.5 font-mono text-[11px] font-medium text-accent hover:text-accent-strong transition-colors">
+                                <iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-5 overflow-x-auto bg-base">
+                        <pre id="jsonPreview" class="font-mono text-[11px] leading-[1.7] text-txt-secondary whitespace-pre">[]</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sign & Broadcast (optional, collapsible) -->
+            <div class="fade-up fd6 mb-6">
+                <button onclick="toggleSignSection()" id="signToggle" class="w-full flex items-center justify-between bg-surface border border-border rounded-xl px-5 py-3.5 transition-all hover:border-txt-muted/20 group">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-md bg-sp-green-dim border border-sp-green/15 flex items-center justify-center shrink-0">
+                            <iconify-icon icon="solar:global-linear" class="text-sp-green text-xs"></iconify-icon>
+                        </div>
+                        <div class="text-left">
+                            <div class="font-mono text-[12px] font-semibold text-txt-primary">Sign &amp; Broadcast</div>
+                            <div class="font-mono text-[10px] text-txt-muted">Publish records to the certrelay network</div>
+                        </div>
+                    </div>
+                    <iconify-icon id="signChevron" icon="solar:alt-arrow-down-linear" class="text-txt-muted text-sm transition-transform"></iconify-icon>
+                </button>
+
+                <div id="signSection" class="hidden mt-[-1px]">
+                    <div class="bg-surface border border-border border-t-0 rounded-b-xl overflow-hidden shadow-[0_8px_60px_rgba(0,0,0,.5)]">
+                        <div class="p-5 space-y-4">
+
+                            <!-- Spacecert upload -->
+                            <div>
+                                <div class="flex items-center gap-1.5 mb-1.5">
+                                    <span class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.06em]">Certificate</span>
+                                    <iconify-icon icon="solar:file-check-linear" class="text-txt-muted text-[10px]"></iconify-icon>
+                                </div>
+
+                                <!-- Drop zone -->
+                                <div id="certDropZone" class="relative group">
+                                    <input type="file" id="certFileInput" accept=".spacecert" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                    <div id="certDropUI" class="bg-base border-2 border-dashed border-border rounded-lg px-4 py-5 text-center transition-all group-hover:border-accent/30 group-hover:bg-accent/[0.02]">
+                                        <div class="flex items-center justify-center gap-3">
+                                            <div class="w-8 h-8 rounded-lg bg-accent-dim border border-accent/15 flex items-center justify-center shrink-0">
+                                                <iconify-icon icon="solar:file-check-linear" class="text-accent text-sm"></iconify-icon>
+                                            </div>
+                                            <div class="text-left">
+                                                <div class="font-mono text-[12px] font-medium text-txt-primary">Drop .spacecert or click to browse</div>
+                                                <div class="font-mono text-[9px] text-txt-muted">Contains your handle certificate &amp; Merkle proofs</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cert loaded -->
+                                <div id="certLoaded" class="hidden">
+                                    <div class="bg-base border border-sp-green/25 rounded-lg px-4 py-3 flex items-center gap-3">
+                                        <div class="w-7 h-7 rounded-md bg-sp-green-dim border border-sp-green/20 flex items-center justify-center shrink-0">
+                                            <iconify-icon icon="solar:verified-check-linear" class="text-sp-green text-xs"></iconify-icon>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2">
+                                                <span id="certHandle" class="font-mono text-[13px] font-bold text-accent truncate">—</span>
+                                                <span class="font-mono text-[8px] text-sp-green bg-sp-green-dim px-1.5 py-0.5 rounded border border-sp-green/20 uppercase font-semibold shrink-0">Loaded</span>
+                                            </div>
+                                            <div class="flex items-center gap-2 font-mono text-[9px] text-txt-muted mt-0.5">
+                                                <span id="certFileName" class="truncate">—</span>
+                                                <span class="text-border">&bull;</span>
+                                                <span id="certSize" class="shrink-0">—</span>
+                                            </div>
+                                        </div>
+                                        <button onclick="removeCert()" class="del-btn p-1 rounded hover:bg-raised transition-colors shrink-0" title="Remove">
+                                            <iconify-icon icon="solar:close-circle-linear" class="text-sm"></iconify-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Private key -->
+                            <div>
+                                <div class="flex items-center gap-1.5 mb-1.5">
+                                    <span class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.06em]">Private key</span>
+                                    <iconify-icon icon="solar:lock-linear" class="text-txt-muted text-[10px]"></iconify-icon>
+                                </div>
+                                <div class="relative">
+                                    <input type="password" id="privKeyInput" placeholder="64-character hex private key" class="rec-input w-full bg-base border border-border rounded-lg px-3 py-2.5 font-mono text-[12px] text-txt-primary transition-colors placeholder:text-txt-muted pr-10" autocomplete="off" />
+                                    <button onclick="toggleKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-txt-muted hover:text-txt-secondary transition-colors" id="eyeBtn">
+                                        <iconify-icon icon="solar:eye-closed-linear" class="text-sm" id="eyeIcon"></iconify-icon>
+                                    </button>
+                                </div>
+                                <div class="font-mono text-[9px] text-txt-muted mt-1.5">Your key never leaves the browser. Signing happens locally.</div>
+                            </div>
+
+                            <!-- Broadcast button -->
+                            <button onclick="signAndBroadcast()" id="broadcastBtn" class="action-btn w-full font-mono text-[13px] font-semibold text-black bg-accent hover:bg-accent-strong px-6 py-3 rounded-lg transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(224,114,46,.25)] flex items-center justify-center gap-2">
+                                <iconify-icon icon="solar:global-linear" class="text-sm"></iconify-icon>
+                                Sign &amp; Broadcast
+                            </button>
+
+                            <!-- Status -->
+                            <div id="broadcastStatus" class="hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIP-7 reference -->
+            <div class="mt-6 flex items-center justify-center gap-4">
+                <a href="/paper" class="inline-flex items-center gap-1.5 font-mono text-[11px] font-medium text-txt-muted hover:text-txt-secondary transition-colors">
+                    <iconify-icon icon="solar:document-text-linear" class="text-xs"></iconify-icon>
+                    SIP-7 Spec
+                </a>
+                <span class="text-border">&bull;</span>
+                <a href="/docs" class="inline-flex items-center gap-1.5 font-mono text-[11px] font-medium text-txt-muted hover:text-txt-secondary transition-colors">
+                    <iconify-icon icon="solar:book-2-linear" class="text-xs"></iconify-icon>
+                    Docs
+                </a>
+                <span class="text-border">&bull;</span>
+                <a href="https://github.com/spacesprotocol" class="inline-flex items-center gap-1.5 font-mono text-[11px] font-medium text-txt-muted hover:text-txt-secondary transition-colors">
+                    <iconify-icon icon="mdi:github" class="text-xs"></iconify-icon>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+    <div id="toastContainer" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 items-center pointer-events-none"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const $ = id => document.getElementById(id);
+    function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+    // ── FABRIC (lazy-loaded) ──
+    let fabricMod = null;
+    let fabricInstance = null;
+    async function loadFabric() {
+        if (!fabricMod) {
+            fabricMod = await import(`https://esm.sh/@spacesprotocol/fabric-web@${FABRIC_VERSION}`);
+            if (fabricMod.init) await fabricMod.init();
+        }
+        if (!fabricInstance) {
+            fabricInstance = new fabricMod.Fabric();
+        }
+        return { fab: fabricInstance, mod: fabricMod };
+    }
+
+    let fabricSigning = null;
+    async function loadSigning() {
+        if (!fabricSigning) {
+            fabricSigning = await import(`https://esm.sh/@spacesprotocol/fabric-web@${FABRIC_VERSION}/signing`);
+        }
+        return fabricSigning;
+    }
+
+    // ── CERT FILE HANDLING ──
+    let certBytes = null;    // ArrayBuffer - raw .spacecert bytes for WASM
+    let certHandleName = ''; // extracted handle name
+    let certFileName = '';
+
+    const certFileInput = $('certFileInput');
+    const certDropZone = $('certDropZone');
+    const certDropUI = $('certDropUI');
+
+    function loadCertFile(file) {
+        if (!file) return;
+        if (!file.name.endsWith('.spacecert')) {
+            showToast('Expected a .spacecert file', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            certBytes = e.target.result; // ArrayBuffer
+            certFileName = file.name;
+
+            // Extract handle name from filename (e.g. "alice@bitcoin.spacecert" → "alice@bitcoin")
+            certHandleName = file.name.replace(/\.spacecert$/i, '');
+
+            // Update UI
+            $('certDropZone').classList.add('hidden');
+            $('certLoaded').classList.remove('hidden');
+            $('certHandle').textContent = certHandleName;
+            $('certFileName').textContent = certFileName;
+            $('certSize').textContent = formatBytes(certBytes.byteLength);
+
+            showToast(`Certificate loaded: ${certHandleName}`, 'success');
+        };
+        reader.onerror = () => showToast('Failed to read file', 'error');
+        reader.readAsArrayBuffer(file);
+    }
+
+    function removeCert() {
+        certBytes = null;
+        certHandleName = '';
+        certFileName = '';
+        certFileInput.value = '';
+        $('certDropZone').classList.remove('hidden');
+        $('certLoaded').classList.add('hidden');
+        $('broadcastStatus').classList.add('hidden');
+    }
+
+    function formatBytes(b) {
+        if (b < 1024) return b + ' B';
+        if (b < 1024*1024) return (b/1024).toFixed(1) + ' KB';
+        return (b/(1024*1024)).toFixed(1) + ' MB';
+    }
+
+    // File input change
+    certFileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) loadCertFile(e.target.files[0]);
+    });
+
+    // Drag and drop
+    ['dragenter','dragover'].forEach(ev => {
+        certDropUI.addEventListener(ev, (e) => { e.preventDefault(); certDropUI.classList.add('drop-active'); });
+    });
+    ['dragleave','drop'].forEach(ev => {
+        certDropUI.addEventListener(ev, (e) => { e.preventDefault(); certDropUI.classList.remove('drop-active'); });
+    });
+    certDropUI.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files.length) loadCertFile(e.dataTransfer.files[0]);
+    });
+
+    // Also handle drop on the whole zone (covers the invisible input too)
+    certDropZone.addEventListener('dragover', (e) => e.preventDefault());
+    certDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        certDropUI.classList.remove('drop-active');
+        if (e.dataTransfer.files.length) loadCertFile(e.dataTransfer.files[0]);
+    });
+
+    // ── RESOLVE HANDLE (load existing records via Fabric) ──
+    async function resolveHandle() {
+        const handle = $('handleInput').value.trim();
+        const btn = $('resolveBtn');
+        const status = $('resolveStatus');
+
+        if (!handle) {
+            showToast('Enter a handle to resolve', 'error');
+            $('handleInput').focus();
+            return;
+        }
+
+        btn.innerHTML = '<iconify-icon icon="solar:refresh-linear" class="text-sm animate-spin"></iconify-icon> Loading';
+        btn.disabled = true;
+
+        try {
+            const { fab } = await loadFabric();
+            const [resolved, exportedCert] = await Promise.all([
+                fab.resolve(handle),
+                fab.export(handle).catch(() => null),
+            ]);
+
+            // Auto-fill cert if export succeeded
+            if (exportedCert && !certBytes) {
+                const bytes = exportedCert instanceof Uint8Array ? exportedCert : new Uint8Array(exportedCert);
+                certBytes = bytes.buffer;
+                certHandleName = handle;
+                certFileName = handle + '.spacecert';
+                $('certDropZone').classList.add('hidden');
+                $('certLoaded').classList.remove('hidden');
+                $('certHandle').textContent = handle;
+                $('certFileName').textContent = certFileName;
+                $('certSize').textContent = formatBytes(certBytes.byteLength);
+            }
+
+            btn.innerHTML = '<iconify-icon icon="solar:download-minimalistic-linear" class="text-sm"></iconify-icon> Load';
+            btn.disabled = false;
+
+            const json = resolved?.toJson();
+            const recs = json?.records;
+
+            if (recs && Array.isArray(recs) && recs.length > 0) {
+                prefillRecords(recs);
+                const oldSeq = recs.find(d => d.type === 'seq')?.version || 0;
+                const recCount = recs.filter(d => d.type !== 'seq').length;
+                status.classList.remove('hidden');
+                status.innerHTML = `<div class="flex items-center gap-2 font-mono text-[10px] flex-wrap">
+                  <span class="w-[5px] h-[5px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b] shrink-0"></span>
+                  <span class="text-sp-green font-semibold">Loaded ${recCount} record${recCount !== 1 ? 's' : ''} for</span>
+                  <span class="text-accent font-bold">${escHtml(handle)}</span>
+                  <span class="text-txt-muted">·</span>
+                  <span class="text-accent">seq auto-incremented ${oldSeq} → ${oldSeq + 1}</span>
+              </div>`;
+                showToast(`Loaded records for ${handle}`, 'success');
+            } else {
+                status.classList.remove('hidden');
+                status.innerHTML = `<div class="flex items-center gap-2 font-mono text-[10px]">
+                  <span class="w-[5px] h-[5px] rounded-full bg-txt-muted"></span>
+                  <span class="text-txt-muted">No existing records for</span>
+                  <span class="text-accent font-semibold">${escHtml(handle)}</span>
+                  <span class="text-txt-muted">— start fresh below</span>
+              </div>`;
+            }
+        } catch (e) {
+            btn.innerHTML = '<iconify-icon icon="solar:download-minimalistic-linear" class="text-sm"></iconify-icon> Load';
+            btn.disabled = false;
+            status.classList.remove('hidden');
+            status.innerHTML = `<div class="flex items-center gap-2 font-mono text-[10px]">
+              <span class="w-[5px] h-[5px] rounded-full bg-red-400"></span>
+              <span class="text-red-400 font-semibold">${escHtml(e.message || 'Resolution failed')}</span>
+          </div>`;
+            showToast(e.message || 'Failed to resolve handle', 'error');
+        }
+    }
+
+
+    function prefillRecords(data) {
+        records = [];
+        nextId = 0;
+        let seq = 1;
+
+        data.forEach(entry => {
+            if (entry.type === 'seq') {
+                seq = entry.version || 1;
+                return;
+            }
+
+            // Find matching known record template
+            const tmpl = KNOWN_RECORDS.find(k => !k.isCustom && k.key === entry.key && (!k.recType || k.recType === entry.type || (!k.recType && entry.type === 'txt')));
+            const id = nextId++;
+
+            // Normalize value to array
+            const vals = Array.isArray(entry.value) ? entry.value.map(String) : [String(entry.value || '')];
+
+            if (tmpl) {
+                records.push({
+                    id,
+                    type: entry.type,
+                    key: entry.key,
+                    values: vals,
+                    label: tmpl.label,
+                    icon: tmpl.icon,
+                    color: tmpl.color,
+                    placeholder: tmpl.placeholder,
+                    isCustom: false,
+                });
+            } else {
+                // Unknown key - use custom type
+                const t = entry.type || 'txt';
+                const labels = { blob: 'Custom BLOB', addr: 'Custom ADDR', sig: 'Custom SIG', txt: 'Custom TXT' };
+                const icons = { blob: 'solar:file-linear', addr: 'solar:map-point-linear', sig: 'solar:pen-linear', txt: 'solar:text-linear' };
+                const placeholders = { blob: 'base64-encoded data', addr: 'address', sig: 'hex signature', txt: 'value' };
+                records.push({
+                    id,
+                    type: t,
+                    key: entry.key,
+                    values: vals,
+                    label: labels[t] || 'Custom TXT',
+                    icon: icons[t] || 'solar:text-linear',
+                    color: 'txt-muted',
+                    placeholder: placeholders[t] || 'value',
+                    isCustom: true,
+                });
+            }
+        });
+
+        // Set seq - auto-increment and show notice
+        const newSeq = seq + 1;
+        const seqEl = $('seqInput');
+        const bumpEl = $('seqBump');
+
+        seqEl.value = newSeq;
+
+        // Flash the input to draw attention
+        seqEl.style.borderColor = 'rgba(224,114,46,.6)';
+        seqEl.style.background = 'rgba(224,114,46,.08)';
+        setTimeout(() => {
+            seqEl.style.borderColor = '';
+            seqEl.style.background = '';
+        }, 2000);
+
+        // Show bump notice
+        bumpEl.textContent = `${seq} → ${newSeq}`;
+        bumpEl.classList.remove('hidden');
+        setTimeout(() => bumpEl.classList.add('hidden'), 6000);
+
+        renderRecords();
+    }
+
+    // Enter to resolve
+    $('handleInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') resolveHandle();
+    });
+
+    // ── KNOWN RECORD TYPES ──
+    // Friendly name, key, placeholder, category, icon
+    const KNOWN_RECORDS = [
+        // Payment (addr)
+        { label: 'Bitcoin', key: 'btc', placeholder: 'bc1q...', category: 'Payment', icon: 'solar:wallet-linear', color: 'accent', recType: 'addr' },
+        { label: 'Lightning', key: 'ln', placeholder: 'lno1...', category: 'Payment', icon: 'solar:bolt-linear', color: 'accent', recType: 'addr' },
+        { label: 'Ethereum', key: 'eth', placeholder: '0x...', category: 'Payment', icon: 'solar:wallet-linear', color: 'accent', recType: 'addr' },
+        // Identity (addr)
+        { label: 'Nostr', key: 'nostr', placeholder: 'npub1...', category: 'Identity', icon: 'solar:chat-round-dots-linear', color: 'sp-blue', recType: 'addr' },
+        { label: 'Tor', key: 'tor', placeholder: 'pg6mm...d.onion', category: 'Identity', icon: 'solar:shield-check-linear', color: 'sp-blue', recType: 'addr' },
+        { label: 'SSH', key: 'ssh', placeholder: 'ssh-ed25519 AAAA...', category: 'Identity', icon: 'solar:key-linear', color: 'sp-blue', recType: 'addr' },
+        { label: 'PGP', key: 'pgp', placeholder: '3e7ba00a1b47...', category: 'Identity', icon: 'solar:lock-linear', color: 'sp-blue', recType: 'addr' },
+        { label: 'Age', key: 'age', placeholder: 'age1...', category: 'Identity', icon: 'solar:lock-linear', color: 'sp-blue', recType: 'addr' },
+        { label: 'DID', key: 'did', placeholder: 'did:key:z6Mk...', category: 'Identity', icon: 'solar:user-id-linear', color: 'sp-blue', recType: 'addr' },
+        { label: 'HyperDHT', key: 'hyper', placeholder: 'a1b2c3... (hex)', category: 'Identity', icon: 'solar:global-linear', color: 'sp-blue', recType: 'addr' },
+        { label: 'BEP 44', key: 'bep44', placeholder: 'd4e5f6... (hex)', category: 'Identity', icon: 'solar:global-linear', color: 'sp-blue', recType: 'addr' },
+        // General (txt)
+        { label: 'Website', key: 'website', placeholder: 'https://example.com', category: 'General', icon: 'solar:global-linear', color: 'sp-green' },
+        { label: 'Email', key: 'email', placeholder: 'alice@example.com', category: 'General', icon: 'solar:letter-linear', color: 'sp-green' },
+        { label: 'Matrix', key: 'matrix', placeholder: '@alice:matrix.org', category: 'General', icon: 'solar:chat-round-dots-linear', color: 'sp-green' },
+        { label: 'XMPP', key: 'xmpp', placeholder: 'alice@jabber.org', category: 'General', icon: 'solar:chat-round-dots-linear', color: 'sp-green' },
+        // Custom
+        { label: 'Custom TXT', key: '', placeholder: 'value', category: 'Advanced', icon: 'solar:text-linear', color: 'txt-muted', isCustom: true, recType: 'txt' },
+        { label: 'Custom ADDR', key: '', placeholder: 'address', category: 'Advanced', icon: 'solar:map-point-linear', color: 'txt-muted', isCustom: true, recType: 'addr' },
+        { label: 'Custom SIG', key: '', placeholder: 'hex signature', category: 'Advanced', icon: 'solar:pen-linear', color: 'txt-muted', isCustom: true, recType: 'sig' },
+        { label: 'Custom BLOB', key: '', placeholder: 'base64-encoded data', category: 'Advanced', icon: 'solar:file-linear', color: 'txt-muted', isCustom: true, recType: 'blob' },
+    ];
+
+    let records = []; // { id, type:'txt'|'blob', key, value, label, icon, color }
+    let nextId = 0;
+
+    // ── BUILD ADD PANEL (inline chips) ──
+    function buildAddPanel(filter = '') {
+        const list = $('addPanelList');
+        const q = filter.toLowerCase();
+        let html = '';
+        let lastCat = '';
+        let isFirst = true;
+
+        KNOWN_RECORDS.forEach((r, i) => {
+            if (q && !r.label.toLowerCase().includes(q) && !r.key.toLowerCase().includes(q) && !r.category.toLowerCase().includes(q)) return;
+            if (r.category !== lastCat) {
+                lastCat = r.category;
+                html += `<div class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.06em] font-semibold ${isFirst ? 'mt-1' : 'mt-3'} mb-1.5">${r.category}</div>`;
+                isFirst = false;
+            }
+            const bgHover = r.color === 'accent' ? 'hover:bg-accent-dim hover:border-accent/25' : r.color === 'sp-blue' ? 'hover:bg-sp-blue-dim hover:border-sp-blue/25' : r.color === 'sp-green' ? 'hover:bg-sp-green-dim hover:border-sp-green/25' : 'hover:bg-raised hover:border-txt-muted/20';
+
+            html += `<button onclick="addRecord(${i})" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 mr-1.5 mb-1.5 rounded-lg border border-border bg-surface text-txt-primary font-mono text-[11px] font-medium transition-all ${bgHover}" title="${r.key || r.label}">
+            <iconify-icon icon="${r.icon}" class="text-${r.color} text-xs"></iconify-icon>
+            ${r.label}
+            ${r.recType && r.recType !== 'txt' ? `<span class="text-[8px] text-sp-blue opacity-60">${r.recType}</span>` : ''}
+        </button>`;
+        });
+
+        if (!html) html = '<div class="py-3 text-center font-mono text-[11px] text-txt-muted">No matching records</div>';
+        list.innerHTML = html;
+    }
+
+    function toggleAddPanel() {
+        const panel = $('addPanel');
+        const chevron = $('addChevron');
+        const isHidden = panel.classList.contains('hidden');
+
+        if (isHidden) {
+            panel.classList.remove('hidden');
+            chevron.style.transform = 'rotate(180deg)';
+            buildAddPanel();
+            $('addSearch').value = '';
+            $('addSearch').focus();
+        } else {
+            panel.classList.add('hidden');
+            chevron.style.transform = '';
+        }
+    }
+
+    $('addSearch').addEventListener('input', () => buildAddPanel($('addSearch').value));
+
+    // ── ADD RECORD ──
+    function addRecord(templateIndex) {
+        const t = KNOWN_RECORDS[templateIndex];
+        const id = nextId++;
+        const rec = {
+            id,
+            type: t.recType || 'txt',
+            key: t.key,
+            values: [''],
+            label: t.label,
+            icon: t.icon,
+            color: t.color,
+            placeholder: t.placeholder,
+            isCustom: !!t.isCustom,
+        };
+        records.push(rec);
+        renderRecords();
+
+        // Focus the value input
+        setTimeout(() => {
+            const el = document.querySelector(`[data-id="${id}"] .val-input`);
+            if (el) el.focus();
+        }, 50);
+    }
+
+    // ── REMOVE RECORD ──
+    function removeRecord(id) {
+        records = records.filter(r => r.id !== id);
+        renderRecords();
+    }
+
+    // ── RENDER RECORDS ──
+    function renderRecords() {
+        const list = $('recordList');
+
+        if (records.length === 0) {
+            list.innerHTML = `<div class="px-5 py-8 text-center">
+            <div class="font-mono text-[12px] text-txt-muted mb-1">No records yet</div>
+            <div class="font-mono text-[10px] text-txt-muted/60">Click "Add record" to get started</div>
+        </div>`;
+        } else {
+            list.innerHTML = records.map(r => {
+                const bgCls = r.color === 'accent' ? 'accent-dim' : r.color === 'sp-blue' ? 'sp-blue-dim' : r.color === 'sp-green' ? 'sp-green-dim' : 'raised';
+                const borderCls = r.color === 'accent' ? 'accent/15' : r.color === 'sp-blue' ? 'sp-blue/15' : r.color === 'sp-green' ? 'sp-green/15' : 'border';
+                const typeBadge = r.isCustom ? r.type : r.key;
+                const multi = r.values.length > 1;
+
+                const valInputs = r.values.map((v, i) => `
+                    <div class="flex items-center gap-1 ${i > 0 ? 'mt-1' : ''}">
+                        <input type="text" class="val-input rec-input flex-1 bg-base border border-border rounded px-2.5 py-1.5 font-mono text-[11px] text-txt-primary transition-colors placeholder:text-txt-muted" placeholder="${i === 0 ? r.placeholder : 'additional value'}" value="${escHtml(v)}" oninput="updateRecordValue(${r.id}, ${i}, this.value)" />
+                        ${multi ? `<button onclick="removeRecordValue(${r.id}, ${i})" class="p-1 rounded text-txt-muted hover:text-red-400 transition-colors shrink-0" title="Remove value"><iconify-icon icon="solar:minus-circle-linear" class="text-xs"></iconify-icon></button>` : ''}
+                    </div>
+                `).join('');
+
+                return `
+            <div class="record-row row-enter px-5 py-3.5 flex items-start gap-3 group" data-id="${r.id}">
+                <div class="w-7 h-7 rounded-md bg-${bgCls} border border-${borderCls} flex items-center justify-center mt-0.5 shrink-0">
+                    <iconify-icon icon="${r.icon}" class="text-${r.color} text-xs"></iconify-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="font-mono text-[11px] font-semibold text-txt-primary">${r.label}</span>
+                        <span class="font-mono text-[9px] text-txt-muted bg-raised px-1.5 py-0.5 rounded border border-border">${typeBadge}</span>
+                        ${multi ? `<span class="font-mono text-[8px] text-accent bg-accent-dim px-1 py-0.5 rounded">${r.values.length} values</span>` : ''}
+                    </div>
+                    ${r.isCustom ? `
+                        <div class="mb-2">
+                            <input type="text" class="key-input rec-input w-full bg-base border border-border rounded px-2.5 py-1.5 font-mono text-[11px] text-txt-primary transition-colors placeholder:text-txt-muted" placeholder="key (lowercase, a-z, 0-9, -)" value="${r.key}" oninput="updateRecordKey(${r.id}, this.value)" />
+                        </div>
+                    ` : ''}
+                    ${valInputs}
+                    <button onclick="addRecordValue(${r.id})" class="mt-1.5 flex items-center gap-1 font-mono text-[10px] text-txt-muted hover:text-accent transition-colors">
+                        <iconify-icon icon="solar:add-circle-linear" class="text-xs"></iconify-icon>
+                        Add value
+                    </button>
+                </div>
+                <button onclick="removeRecord(${r.id})" class="mt-1 p-1.5 rounded text-txt-muted hover:text-red-400 hover:bg-red-400/10 transition-all shrink-0" title="Remove record" style="opacity:.35" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='.35'">
+                    <iconify-icon icon="solar:trash-bin-minimalistic-linear" class="text-sm"></iconify-icon>
+                </button>
+            </div>`;
+            }).join('');
+        }
+
+        $('recordCount').textContent = records.length;
+        updateJSON();
+    }
+
+    function updateRecordValue(id, idx, val) {
+        const r = records.find(r => r.id === id);
+        if (r) { r.values[idx] = val; updateJSON(); }
+    }
+
+    function addRecordValue(id) {
+        const r = records.find(r => r.id === id);
+        if (r) { r.values.push(''); renderRecords(); }
+    }
+
+    function removeRecordValue(id, idx) {
+        const r = records.find(r => r.id === id);
+        if (r && r.values.length > 1) { r.values.splice(idx, 1); renderRecords(); }
+    }
+
+    function updateRecordKey(id, val) {
+        const r = records.find(r => r.id === id);
+        if (r) r.key = val.toLowerCase().replace(/[^a-z0-9\-]/g, '');
+        updateJSON();
+    }
+
+    // ── BUILD JSON ──
+    function buildJSON() {
+        const seq = parseInt($('seqInput').value) || 0;
+        const arr = [{ type: 'seq', version: seq }];
+
+        records.forEach(r => {
+            const vals = r.values.filter(v => v.length > 0);
+            if (!r.key || vals.length === 0) return;
+            arr.push({ type: r.type, key: r.key, value: vals });
+        });
+
+        return arr;
+    }
+
+    function updateJSON() {
+        const json = buildJSON();
+        const str = JSON.stringify(json, null, 2);
+        $('jsonPreview').innerHTML = syntaxHighlight(str);
+        $('jsonSize').textContent = new Blob([str]).size + ' bytes';
+    }
+
+    function syntaxHighlight(json) {
+        return json
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?/g, (match) => {
+                let cls = 'j-str';
+                if (match.endsWith(':')) {
+                    cls = 'j-key';
+                    match = match.slice(0, -1) + '<span class="j-punc">:</span>';
+                }
+                return `<span class="${cls}">${match}</span>`;
+            })
+            .replace(/\b(\d+)\b/g, '<span class="j-num">$1</span>')
+            .replace(/[{}\[\],]/g, '<span class="j-punc">$&</span>');
+    }
+
+    // ── COPY JSON ──
+    function copyJSON() {
+        const json = buildJSON();
+        navigator.clipboard.writeText(JSON.stringify(json, null, 2)).then(() => {
+            showToast('JSON copied to clipboard', 'info');
+        });
+    }
+
+    // ── SIGN & BROADCAST ──
+    async function signAndBroadcast() {
+        const privKey = $('privKeyInput').value.trim();
+        const btn = $('broadcastBtn');
+        const status = $('broadcastStatus');
+
+        if (!certBytes) {
+            showToast('Load a .spacecert file first', 'error');
+            return;
+        }
+
+        if (!privKey) {
+            showToast('Enter your private key to sign', 'error');
+            $('privKeyInput').focus();
+            return;
+        }
+
+        const validRecords = records.filter(r => r.key && r.values.some(v => v.length > 0));
+        if (validRecords.length === 0) {
+            showToast('Add at least one record', 'error');
+            return;
+        }
+
+        if (!/^[0-9a-fA-F]{64}$/.test(privKey)) {
+            showToast('Invalid private key format (expected 64 hex chars)', 'error');
+            return;
+        }
+
+        btn.classList.add('loading');
+        btn.innerHTML = '<iconify-icon icon="solar:global-linear" class="text-sm"></iconify-icon> Loading library...';
+        btn.disabled = true;
+
+        try {
+            const [{ fab, mod }, signing] = await Promise.all([loadFabric(), loadSigning()]);
+
+            // Build record set
+            btn.innerHTML = '<iconify-icon icon="solar:global-linear" class="text-sm"></iconify-icon> Packing records...';
+
+            const json = buildJSON();
+            const recordSet = mod.RecordSet.pack(json);
+
+            // Publish
+            btn.innerHTML = '<iconify-icon icon="solar:global-linear" class="text-sm"></iconify-icon> Publishing...';
+            const cert = new Uint8Array(certBytes);
+            await fab.publish({
+                cert,
+                records: recordSet,
+                secretKey: privKey,
+            });
+
+            // Success
+            btn.classList.remove('loading');
+            btn.disabled = false;
+            btn.innerHTML = '<iconify-icon icon="solar:check-read-linear" class="text-sm"></iconify-icon> Broadcast successful';
+            btn.style.background = '#3fbc8b';
+
+            status.classList.remove('hidden');
+            status.innerHTML = `
+                <div class="bg-sp-green/[0.04] border border-sp-green/20 rounded-lg p-3.5">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-[5px] h-[5px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b]"></span>
+                        <span class="font-mono text-[10px] text-sp-green font-semibold uppercase tracking-[0.06em]">Published to certrelay</span>
+                    </div>
+                    <div class="space-y-1.5">
+                        <div class="flex items-start gap-2">
+                            <span class="font-mono text-[9px] text-txt-muted shrink-0 mt-0.5 w-10">Handle</span>
+                            <span class="font-mono text-[11px] text-accent font-semibold break-all">${escHtml(certHandleName)}</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="font-mono text-[9px] text-txt-muted shrink-0 mt-0.5 w-10">Cert</span>
+                            <span class="font-mono text-[10px] text-txt-secondary">${formatBytes(certBytes.byteLength)}</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="font-mono text-[9px] text-txt-muted shrink-0 mt-0.5 w-10">Recs</span>
+                            <span class="font-mono text-[10px] text-txt-secondary">${validRecords.length} record${validRecords.length > 1 ? 's' : ''}</span>
+                        </div>
+                    </div>
+                </div>`;
+
+            showToast('Records published to relay network', 'success');
+
+            setTimeout(() => {
+                btn.innerHTML = '<iconify-icon icon="solar:global-linear" class="text-sm"></iconify-icon> Sign &amp; Broadcast';
+                btn.style.background = '';
+            }, 4000);
+        } catch (e) {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+            btn.innerHTML = '<iconify-icon icon="solar:global-linear" class="text-sm"></iconify-icon> Sign &amp; Broadcast';
+
+            status.classList.remove('hidden');
+            status.innerHTML = `
+                <div class="bg-red-500/[0.04] border border-red-500/20 rounded-lg p-3.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-[5px] h-[5px] rounded-full bg-red-400"></span>
+                        <span class="font-mono text-[10px] text-red-400 font-semibold">${escHtml(e.message || 'Broadcast failed')}</span>
+                    </div>
+                </div>`;
+
+            showToast(e.message || 'Failed to broadcast', 'error');
+        }
+    }
+
+    // ── TOGGLE SIGN SECTION ──
+    function toggleSignSection() {
+        const section = $('signSection');
+        const chevron = $('signChevron');
+        const toggle = $('signToggle');
+        const isHidden = section.classList.contains('hidden');
+
+        if (isHidden) {
+            section.classList.remove('hidden');
+            chevron.style.transform = 'rotate(180deg)';
+            toggle.classList.remove('rounded-xl');
+            toggle.classList.add('rounded-t-xl', 'rounded-b-none', 'border-b-0');
+        } else {
+            section.classList.add('hidden');
+            chevron.style.transform = '';
+            toggle.classList.add('rounded-xl');
+            toggle.classList.remove('rounded-t-xl', 'rounded-b-none', 'border-b-0');
+        }
+    }
+
+    // ── TOGGLE KEY VISIBILITY ──
+    function toggleKeyVisibility() {
+        const input = $('privKeyInput');
+        const icon = $('eyeIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.setAttribute('icon', 'solar:eye-linear');
+        } else {
+            input.type = 'password';
+            icon.setAttribute('icon', 'solar:eye-closed-linear');
+        }
+    }
+
+    // ── TOAST ──
+    function showToast(msg, type = 'info') {
+        const container = $('toastContainer');
+        const toast = document.createElement('div');
+        const colors = { success:'border-sp-green/30 bg-sp-green/10 text-sp-green', error:'border-red-500/30 bg-red-500/10 text-red-400', info:'border-accent/30 bg-accent-dim text-accent' };
+        toast.className = `toast pointer-events-auto px-4 py-2.5 rounded-lg border font-mono text-[12px] font-medium shadow-[0_8px_30px_rgba(0,0,0,.5)] ${colors[type]||colors.info}`;
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(() => { toast.classList.add('out'); setTimeout(() => toast.remove(), 300) }, 3000);
+    }
+
+    // ── KEYBOARD SHORTCUTS ──
+    document.addEventListener('keydown', (e) => {
+        // Cmd/Ctrl+Enter to broadcast
+        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+            e.preventDefault();
+            signAndBroadcast();
+        }
+    });
+
+    // ── INIT ──
+    renderRecords();
+    buildAddPanel();
+
+    // ── PREFILL FROM FAUCET (sessionStorage, keyed by handle) ──
+    (function checkFaucetHandoff() {
+        const params = new URLSearchParams(window.location.search);
+        const handle = params.get('handle');
+        if (!handle) return;
+
+        const key = 'editor:' + handle;
+        const raw = sessionStorage.getItem(key);
+        if (!raw) {
+            // No stored data, just fill the handle input
+            $('handleInput').value = handle;
+            return;
+        }
+
+        const data = JSON.parse(raw);
+        sessionStorage.removeItem(key);
+
+        // Fill cert
+        if (data.cert) {
+            const binary = atob(data.cert);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            certBytes = bytes.buffer;
+            certFileName = handle + '.spacecert';
+            certHandleName = handle;
+            $('certDropZone').classList.add('hidden');
+            $('certLoaded').classList.remove('hidden');
+            $('certHandle').textContent = handle;
+            $('certFileName').textContent = certFileName;
+            $('certSize').textContent = formatBytes(certBytes.byteLength);
+        }
+
+        // Fill handle input
+        $('handleInput').value = handle;
+
+        // Fill private key and auto-open sign section
+        if (data.secret) {
+            $('privKeyInput').value = data.secret;
+            toggleSignSection();
+        }
+    })();
+</script>
+{% endblock %}

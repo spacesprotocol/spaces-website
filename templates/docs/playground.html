@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric Playground - Spaces Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: {
+                base:'#0e0e11',surface:'#151519',raised:'#1c1c22',
+                border:'#2a2a31','border-subtle':'#1f1f26',
+                accent:'#e0722e','accent-strong':'#eb7e3a','accent-dim':'rgba(224,114,46,0.12)',
+                'txt-primary':'#dcdce0','txt-secondary':'#8a8a94','txt-muted':'#585862',
+            }, fontFamily: { sans:['"DM Sans"','sans-serif'], mono:['"JetBrains Mono"','monospace'] } } }
+        }
+    </script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script src="/js/qr.js"></script>
+    <script src="/js/trust-popover.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0e0e11; margin: 0; overflow: hidden; }
+        #playground-container { background: #1e1e1e; }
+        #playground-container iframe { border: none; border-radius: 0; background: #1e1e1e; }
+        .example-chip { transition: all .2s; }
+        .example-chip:hover { border-color: rgba(224,114,46,.4); background: rgba(224,114,46,.06); color: #e0722e; }
+    </style>
+</head>
+<body class="bg-base text-txt-secondary font-sans">
+
+<div class="flex flex-col h-screen">
+    <!-- Toolbar -->
+    <div class="flex items-center justify-between border-b border-border-subtle bg-surface px-4 py-2 shrink-0">
+        <div class="flex items-center gap-3">
+            <a href="/docs/developers/sdk/" class="font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors flex items-center gap-1.5">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xs"></iconify-icon>
+                Back to docs
+            </a>
+            <span class="text-border">|</span>
+            <span class="font-mono text-[11px] font-semibold text-txt-primary flex items-center gap-1.5">
+                <iconify-icon icon="solar:code-linear" class="text-accent text-sm"></iconify-icon>
+                Fabric Playground
+            </span>
+            <span class="text-border">|</span>
+            <button id="navTrustBtn" data-trust-popover class="text-txt-muted hover:text-white transition-colors p-1" title="Trust ID">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 180 188" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M102 72H78C72.4772 72 68 76.4772 68 82V106C68 111.523 72.4772 116 78 116H102C107.523 116 112 111.523 112 106V82C112 76.4772 107.523 72 102 72Z" fill-opacity="0.88"/>
+                    <path d="M99 0H81C76.0294 0 72 4.02944 72 9V27C72 31.9706 76.0294 36 81 36H99C103.971 36 108 31.9706 108 27V9C108 4.02944 103.971 0 99 0Z" fill-opacity="0.55"/>
+                    <path d="M99 152H81C76.0294 152 72 156.029 72 161V179C72 183.971 76.0294 188 81 188H99C103.971 188 108 183.971 108 179V161C108 156.029 103.971 152 99 152Z" fill-opacity="0.55"/>
+                    <path d="M24 76H8C3.58172 76 0 79.5817 0 84V100C0 104.418 3.58172 108 8 108H24C28.4183 108 32 104.418 32 100V84C32 79.5817 28.4183 76 24 76Z" fill-opacity="0.38"/>
+                    <path d="M172 76H156C151.582 76 148 79.5817 148 84V100C148 104.418 151.582 108 156 108H172C176.418 108 180 104.418 180 100V84C180 79.5817 176.418 76 172 76Z" fill-opacity="0.38"/>
+                </svg>
+            </button>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.06em]">Examples:</span>
+            <button onclick="loadExample('resolve')" class="example-chip font-mono text-[10px] text-txt-muted px-2 py-0.5 rounded border border-border cursor-pointer">Resolve</button>
+            <button onclick="loadExample('records')" class="example-chip font-mono text-[10px] text-txt-muted px-2 py-0.5 rounded border border-border cursor-pointer">Read records</button>
+            <button onclick="loadExample('publish')" class="example-chip font-mono text-[10px] text-txt-muted px-2 py-0.5 rounded border border-border cursor-pointer">Publish</button>
+            <button onclick="loadExample('search')" class="example-chip font-mono text-[10px] text-txt-muted px-2 py-0.5 rounded border border-border cursor-pointer">Search addr</button>
+            <span class="text-border ml-1">|</span>
+            <button onclick="runCode()" class="font-mono text-[10px] font-semibold text-black bg-accent hover:bg-accent-strong px-2.5 py-0.5 rounded transition-colors cursor-pointer flex items-center gap-1">
+                <iconify-icon icon="solar:play-linear" class="text-xs"></iconify-icon> Run
+            </button>
+        </div>
+    </div>
+
+    <!-- StackBlitz embed -->
+    <div id="playground-container" class="flex-1">
+        <div class="flex items-center justify-center h-full">
+            <div class="text-center">
+                <iconify-icon icon="solar:code-linear" class="text-accent text-3xl mb-3"></iconify-icon>
+                <div class="font-mono text-[12px] text-txt-muted">Loading playground...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    const examples = {
+        resolve: `import { Fabric } from "@spacesprotocol/fabric-web";
+
+const fabric = new Fabric();
+const resolved = await fabric.resolve("alice@bitcoin");
+
+if (resolved) {
+  const json = resolved.toJson();
+  console.log("Handle:", json.handle);
+  console.log("Records:", JSON.stringify(json.records, null, 2));
+} else {
+  console.log("Handle not found");
+}
+`,
+        records: `import { Fabric } from "@spacesprotocol/fabric-web";
+
+const fabric = new Fabric();
+const resolved = await fabric.resolve("alice@bitcoin");
+
+if (resolved) {
+  const json = resolved.toJson();
+  for (const record of json.records) {
+    if (record.type === "seq") continue;
+    console.log(\`[\${record.type}] \${record.key} = \${record.value.join(", ")}\`);
+  }
+} else {
+  console.log("No records found");
+}
+`,
+        publish: `import { Fabric, RecordSet } from "@spacesprotocol/fabric-web";
+import "@spacesprotocol/fabric-web/signing";
+import { readFileSync } from "fs";
+
+// Load your certificate and secret key
+// const cert = readFileSync("./your-handle.spacecert");
+// const secretKey = "your-64-char-hex-secret-key";
+
+const records = [
+  { type: "seq", version: 1 },
+  { type: "addr", key: "nostr", value: ["npub1..."] },
+  { type: "txt", key: "website", value: ["https://example.com"] },
+];
+
+const recordSet = RecordSet.pack(records);
+console.log("Packed", records.length - 1, "records");
+console.log("To publish, uncomment the cert/key lines and run:");
+console.log('  await fabric.publish({ cert, records: recordSet, secretKey })');
+`,
+        search: `import { Fabric } from "@spacesprotocol/fabric-web";
+
+const fabric = new Fabric();
+
+// Search for handles that have a specific address record
+const results = await fabric.searchAddr("nostr", "npub1...");
+console.log("Found", results.length, "handles");
+
+for (const result of results) {
+  console.log("-", result.handle);
+}
+`,
+    };
+
+    const project = {
+        title: 'Fabric Playground',
+        description: 'Interactive Spaces Protocol playground',
+        template: 'node',
+        files: {
+            'index.mjs': examples['resolve'],
+            'package.json': JSON.stringify({
+                name: 'fabric-playground',
+                type: 'module',
+                scripts: {
+                    start: 'node index.mjs',
+                },
+                dependencies: {
+                    '@spacesprotocol/fabric-web': 'latest',
+                },
+            }, null, 2),
+        },
+        settings: {
+            compile: { trigger: 'save' },
+        },
+    };
+
+    const sdk = await import('https://esm.sh/@stackblitz/sdk@1');
+    const vm = await sdk.default.embedProject(
+        'playground-container',
+        project,
+        {
+            openFile: 'index.mjs',
+            terminalHeight: 40,
+            hideDevTools: false,
+            hideExplorer: true,
+            theme: 'dark',
+            height: '100%',
+        }
+    );
+
+    window.loadExample = async function(name) {
+        const code = examples[name];
+        if (!code || !vm) return;
+        await vm.applyFsDiff({
+            create: { 'index.mjs': code },
+            destroy: [],
+        });
+    };
+
+    window.runCode = async function() {
+        if (!vm) return;
+        await vm.terminal.execute('node index.mjs');
+    };
+</script>
+</body>
+</html>

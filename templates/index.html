@@ -1,0 +1,1276 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/tomorrow-night.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+    .hljs{background:transparent!important;padding:0!important;color:#dcdce0}
+    .hljs-keyword,.hljs-built_in,.hljs-type,.hljs-literal,.hljs-selector-tag{color:#c084fc}
+    .hljs-string,.hljs-addition{color:#3fbc8b}
+    .hljs-comment,.hljs-quote,.hljs-deletion{color:#585862}
+    .hljs-title,.hljs-title\.class_,.hljs-title\.function_{color:#d4a94e}
+    .hljs-number{color:#e0722e}
+    .hljs-attr,.hljs-attribute,.hljs-property{color:#5e9de0}
+    .hljs-symbol,.hljs-bullet{color:#e0722e}
+    .hljs-meta,.hljs-meta .hljs-keyword{color:#8a8a94}
+    .hljs-variable,.hljs-template-variable,.hljs-function .hljs-params{color:#dcdce0}
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .cursor-blink { animation: blink 1s step-end infinite; }
+
+    @keyframes resultSlideIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .result-enter { animation: resultSlideIn .35s ease forwards; }
+
+    .dot-grid {
+        background-image: radial-gradient(circle, #2a2a31 0.6px, transparent 0.6px);
+        background-size: 28px 28px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display:none; }
+    .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+
+    .hardware-accel { transform:translateZ(0); will-change:opacity,transform; }
+
+    .code-keyword { color:#c084fc } .code-func { color:#5e9de0 } .code-string { color:#3fbc8b }
+    .code-comment { color:#585862 } .code-type { color:#d4a94e } .code-prop { color:#5e9de0 }
+
+    .tab-active { background:rgba(255,255,255,.05); color:#dcdce0; border-bottom:2px solid #e0722e; }
+    .tab-inactive { color:#585862; border-bottom:2px solid transparent; }
+    .tab-inactive:hover { color:#8a8a94; }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity:0; transform:translateY(24px); transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1); }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ── Hero glow ── */
+    .hero-glow {
+        position:absolute; top:50%; left:50%; transform:translate(-50%,-55%);
+        width:800px; height:500px;
+        background: radial-gradient(ellipse at center, rgba(224,114,46,0.06) 0%, rgba(224,114,46,0.02) 35%, transparent 70%);
+        pointer-events:none;
+    }
+
+    /* ── Handle glow ── */
+    .handle-glow {
+        position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+        width:320px; height:120px;
+        background: radial-gradient(ellipse, rgba(224,114,46,0.06) 0%, transparent 70%);
+        pointer-events:none;
+    }
+
+    /* ── Stat counter ── */
+    .stat-num { font-variant-numeric: tabular-nums; }
+
+    /* ── Stage step numbers ── */
+    .step-num {
+        width:40px; height:40px; border-radius:50%;
+        display:flex; align-items:center; justify-content:center;
+        font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700;
+        position:relative; z-index:2; transition:all .4s ease;
+    }
+    .step-num.active { box-shadow:0 0 24px rgba(224,114,46,.25); }
+
+    /* ── Bid cards ── */
+    .bid-card { transition:all .3s ease; cursor:default; }
+    .bid-card:hover { border-color:rgba(224,114,46,.3); transform:translateY(-2px); }
+    .bid-card.winning { border-color:rgba(224,114,46,.5); background:rgba(224,114,46,.04); }
+
+    @keyframes countdown-pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ── Factory ── */
+    @keyframes beltMove { to{transform:translateX(-26px)} }
+    @keyframes rSpin { to{transform:rotate(360deg)} }
+    @keyframes cw { to{transform:rotate(360deg)} }
+    @keyframes ccw { to{transform:rotate(-360deg)} }
+    @keyframes iPulse { 0%,100%{opacity:.2} 50%{opacity:.8} }
+    @keyframes pGlow { 0%{transform:translateY(-100%)} 100%{transform:translateY(100%)} }
+    @keyframes tkMove {
+        0%{transform:translateX(0);opacity:0} 4%{opacity:1} 78%{opacity:1}
+        91%{opacity:0;transform:translateX(var(--t))} 100%{opacity:0;transform:translateX(var(--t))}
+    }
+    @keyframes chipIn { to{opacity:.8} }
+    @keyframes logIn { to{opacity:1} }
+    @keyframes sparkOut { 0%{opacity:1;transform:translate(0,0) scale(1)} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)} }
+
+    .htk {
+        position:absolute; top:140px; height:36px; padding:0 10px;
+        display:flex; align-items:center; background:#1c1c22;
+        border:1px solid #2a2a31; border-radius:5px;
+        font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:500;
+        white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,.35);
+        animation:tkMove linear forwards; will-change:transform; z-index:2;
+    }
+    .htk .nm { color:#e0722e } .htk .at { color:#585862; margin:0 1px } .htk .dm { color:#3fbc8b }
+    .hchip {
+        font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:500;
+        padding:1px 4px; background:rgba(224,114,46,.12); border:1px solid rgba(224,114,46,.16);
+        border-radius:3px; color:#e0722e; opacity:0; animation:chipIn .2s forwards;
+    }
+    .alog-e { font-family:'JetBrains Mono',monospace; font-size:8px; display:flex; gap:5px; opacity:0; animation:logIn .2s forwards; }
+    .alog-e .t { color:#585862; flex-shrink:0 } .alog-e .m { color:#8a8a94 }
+    .spark { position:absolute; width:3px; height:3px; border-radius:50%; pointer-events:none; z-index:10; animation:sparkOut .6s ease-out forwards; }
+
+    /* ── Relay ── */
+    @keyframes dhtOrbit { to{transform:rotate(360deg)} }
+    @keyframes dhtRingPulse { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.02)} }
+    @keyframes relayPacketRight { 0%{transform:translateX(0);opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translateX(52px);opacity:0} }
+
+    /* ── Trust model ── */
+    .trust-dns { border-left:2px solid rgba(239,68,68,.15); }
+    .trust-spaces { border-left:2px solid rgba(63,188,139,.15); }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+    <section class="relative flex items-center pt-28 pb-20 md:pt-36 md:pb-28 border-b border-border-subtle overflow-hidden">
+        <div class="hero-glow"></div>
+        <div class="absolute inset-0 dot-grid opacity-[0.07] pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-[1222px] mx-auto px-8 w-full">
+
+            <!-- Tight centered header -->
+            <div class="max-w-3xl mx-auto text-center mb-12">
+                <div class="fade-up fd1 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface/50 mb-6">
+                    <span class="w-1.5 h-1.5 rounded-full bg-sp-green shadow-[0_0_6px_#3fbc8b]" style="animation:pulse-dot 2.5s ease infinite"></span>
+                    <span class="font-mono text-[11px] text-txt-secondary font-medium tracking-[0.1em] uppercase">Live on Bitcoin mainnet alpha</span>
+                </div>
+
+                <h1 class="fade-up fd2 text-[2.8rem] md:text-[3.8rem] font-extrabold text-white tracking-[-0.04em] mb-5 leading-[1.08]">
+                    Your name.<br>
+                    <span class="text-accent">Your keys.</span>
+                    <span class="text-txt-muted font-medium text-[2rem] md:text-[2.6rem] block mt-1 tracking-[-0.02em]">No registrars. No rent.</span>
+                </h1>
+
+                <p class="fade-up fd3 text-[16px] text-txt-secondary font-normal max-w-[500px] mx-auto mb-8 leading-relaxed">
+                    Sovereign handles native to Bitcoin. <br />
+                    Off-chain by default, on-chain when you need it.
+                </p>
+
+                <div class="fade-up fd4 flex items-center justify-center gap-3.5 mb-14">
+                    <a href="/faucet" class="font-mono text-[13px] font-semibold text-black bg-accent hover:bg-accent-strong px-6 py-3 rounded-md transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(224,114,46,0.25)] inline-flex items-center gap-2">
+                        Get a free handle
+                    </a>
+                    <a href="/docs/use/veritas/" class="font-mono text-[13px] font-medium text-txt-secondary bg-transparent border border-border hover:border-txt-muted hover:text-txt-primary px-6 py-3 rounded-md transition-all">
+                        Install trust anchor
+                    </a>
+                </div>
+            </div>
+
+            <!-- Live demo - unified card -->
+            <div class="fade-up fd5 max-w-[820px] mx-auto">
+                <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
+                    <!-- Top bar -->
+                    <div class="flex items-center justify-between border-b border-border-subtle px-5 py-2.5">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <div class="w-[9px] h-[9px] rounded-full bg-raised-hover border border-border"></div>
+                                <div class="w-[9px] h-[9px] rounded-full bg-raised-hover border border-border"></div>
+                                <div class="w-[9px] h-[9px] rounded-full bg-raised-hover border border-border"></div>
+                            </div>
+                            <span class="font-mono text-[10px] text-txt-muted">beam-cli</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                        <span class="relative flex h-[5px] w-[5px]">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sp-green opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-sp-green shadow-[0_0_5px_#3fbc8b]"></span>
+                        </span>
+                            <span class="font-mono text-[10px] text-txt-muted">connected to relay network</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr,1.3fr] divide-y md:divide-y-0 md:divide-x divide-border-subtle">
+                        <!-- Left: Handle identity -->
+                        <div class="p-6">
+                            <div class="font-mono text-[9px] uppercase font-semibold text-txt-muted tracking-[0.08em] mb-4">Sovereign handle</div>
+
+                            <div class="relative mb-4">
+                                <div class="handle-glow"></div>
+                                <div class="relative flex items-center gap-0.5 text-[1.6rem] md:text-[1.85rem] font-mono font-bold tracking-tight select-none">
+                                    <span id="handle-prefix" class="text-txt-primary transition-all duration-300 hardware-accel">alice</span>
+                                    <span id="handle-suffix" class="text-txt-muted transition-colors duration-300 hardware-accel">@bitcoin</span>
+                                    <span class="w-[2px] h-6 bg-accent/50 cursor-blink ml-1"></span>
+                                </div>
+                            </div>
+
+                            <div class="h-4 w-px bg-gradient-to-b from-border to-transparent ml-5"></div>
+
+                            <div class="relative group cursor-help mb-4">
+                                <div class="relative flex items-center gap-2.5 px-3 py-1.5 bg-base border border-border rounded-lg transition-all duration-300 group-hover:border-txt-muted/30" id="hash-container">
+                                    <div class="flex items-center gap-1.5 border-r border-border pr-2.5">
+                                        <span class="w-[5px] h-[5px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b]" style="animation:pulse-dot 2s ease-in-out infinite"></span>
+                                        <span class="font-mono text-[9px] uppercase font-semibold text-txt-muted tracking-[0.06em]">Root</span>
+                                    </div>
+                                    <span id="merkle-root" class="font-mono text-[10px] text-txt-secondary group-hover:text-txt-primary transition-colors hardware-accel">0xe3b0...985a</span>
+                                    <span class="font-mono text-[8px] text-txt-muted bg-raised px-1 py-0.5 rounded border border-border ml-auto">32B</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 font-mono text-[10px] text-txt-muted font-medium uppercase tracking-[0.04em]">
+                                <span class="flex items-center gap-1.5"><iconify-icon icon="solar:database-linear" class="text-txt-secondary text-xs"></iconify-icon> Off-chain</span>
+                                <span class="text-border">&bull;</span>
+                                <span class="flex items-center gap-1.5"><iconify-icon icon="solar:shield-check-linear" class="text-txt-secondary text-xs"></iconify-icon> Trustless</span>
+                                <span class="text-border">&bull;</span>
+                                <span class="flex items-center gap-1.5"><iconify-icon icon="solar:infinity-linear" class="text-txt-secondary text-xs"></iconify-icon> Permanent</span>
+                            </div>
+                        </div>
+
+                        <!-- Right: Query demo -->
+                        <div class="p-6">
+                            <div class="flex items-center gap-2 mb-3 px-0.5">
+                                <span class="font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-txt-muted">Resolve a handle</span>
+                            </div>
+                            <div class="relative flex items-center bg-base border border-border rounded-lg p-1.5 mb-4 focus-within:border-accent/50 transition-colors">
+                                <div class="pl-3 text-txt-muted">
+                                    <iconify-icon icon="solar:magnifer-linear" width="14"></iconify-icon>
+                                </div>
+                                <input id="heroQuery" type="text" placeholder="alice@bitcoin" class="w-full bg-transparent border-none text-txt-primary text-sm px-2.5 py-1.5 focus:ring-0 focus:outline-none placeholder:text-txt-muted font-mono" />
+                                <button id="heroQueryBtn" class="bg-accent hover:bg-accent-strong text-black font-mono text-[11px] font-semibold px-3.5 py-1.5 rounded-md transition-colors whitespace-nowrap">
+                                    Query
+                                </button>
+                            </div>
+
+                            <!-- Result -->
+                            <div id="heroResult" class="bg-base border border-border-subtle rounded-lg overflow-hidden">
+                                 <div class="border-b border-border-subtle px-3.5 py-2 flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span id="resultDot" class="w-[5px] h-[5px] rounded-full bg-txt-muted"></span>
+                                        <span id="resultLabel" class="font-mono text-[10px] uppercase font-semibold text-txt-muted tracking-[0.06em]">Waiting</span>
+                                    </div>
+                                    <div id="resultTabs" class="hidden flex items-center gap-0.5">
+                                        <button onclick="showResultTab('records')" id="tab-records" class="font-mono text-[10px] font-semibold px-2 py-0.5 rounded transition-colors text-accent bg-accent-dim">Records</button>
+                                        <button onclick="showResultTab('raw')" id="tab-raw" class="font-mono text-[10px] font-semibold px-2 py-0.5 rounded transition-colors text-txt-muted hover:text-txt-secondary">Raw</button>
+                                    </div>
+                                </div>
+                                <div class="p-4 min-h-[140px] max-h-[320px] overflow-y-auto no-scrollbar" id="resultBody">
+                                    <div class="flex items-center justify-center h-full min-h-[108px]">
+                                        <div class="text-center">
+                                            <div class="font-mono text-[11px] text-txt-muted mb-1">Enter a handle to resolve</div>
+                                            <div class="font-mono text-[10px] text-txt-muted/60">e.g. alice@bitcoin, satoshi@bitcoin</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════ SOCIAL PROOF STRIP ═══════════════════════════ -->
+    <section class="py-6 border-b border-border-subtle bg-surface/30">
+        <div class="max-w-[1222px] mx-auto px-8">
+            <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
+                <span class="font-mono text-[10px] text-txt-muted uppercase tracking-[0.08em]">Presented at</span>
+                <a href="https://www.youtube.com/watch?v=NtcGuGuFUlM" class="font-mono text-[12px] text-txt-secondary hover:text-txt-primary transition-colors font-semibold flex items-center gap-1.5">
+                    <iconify-icon icon="solar:microphone-3-linear" class="text-accent text-xs"></iconify-icon> TABConf
+                </a>
+                <span class="w-px h-3 bg-border hidden sm:block"></span>
+                <span class="font-mono text-[10px] text-txt-muted uppercase tracking-[0.08em]">Ecosystem</span>
+                <a href="https://akron.io" class="font-mono text-[12px] text-txt-secondary hover:text-txt-primary transition-colors font-semibold">Akron Wallet</a>
+                <a href="https://spaces.market" class="font-mono text-[12px] text-txt-secondary hover:text-txt-primary transition-colors font-semibold">Spaces Market</a>
+                <a href="https://explorer.spacesprotocol.org" class="font-mono text-[12px] text-txt-secondary hover:text-txt-primary transition-colors font-semibold">Explorer</a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════ DEVELOPER INTEGRATION ═══════════════════════════ -->
+    <section class="py-24 md:py-32 bg-base relative overflow-hidden border-b border-border-subtle" id="developer">
+        <div class="absolute inset-0 dot-grid opacity-15 pointer-events-none"></div>
+        <div class="max-w-[1222px] mx-auto px-6 md:px-8 relative">
+            <div class="reveal">
+                <div class="text-center mb-14 max-w-lg mx-auto">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface/50 mb-5">
+                        <iconify-icon icon="solar:code-square-linear" class="text-accent text-xs"></iconify-icon>
+                        <span class="font-mono text-[10px] text-txt-secondary font-semibold tracking-[0.1em] uppercase">For Developers</span>
+                    </div>
+                    <h2 class="text-[clamp(1.6rem,3.2vw,2.4rem)] font-bold text-txt-primary tracking-[-0.03em] mb-4 leading-tight">
+                        Resolve in a few lines of code
+                    </h2>
+                    <p class="text-[15px] text-txt-secondary max-w-xl mx-auto leading-relaxed">
+                        Integrate trustless name resolution into any app. Anchor to Bitcoin, resolve off-chain, verify locally.
+                    </p>
+                </div>
+
+                <div class="max-w-[720px] mx-auto">
+                    <div class="bg-surface border border-border rounded-[10px] overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.4)] relative">
+                        <div class="flex items-center justify-between border-b border-border-subtle px-2 overflow-x-auto no-scrollbar">
+                            <div class="flex items-center">
+                                <button onclick="switchCodeTab('rust')" id="tab-rust" class="tab-active px-4 py-3 font-mono text-xs transition-colors focus:outline-none whitespace-nowrap">Rust</button>
+                                <button onclick="switchCodeTab('js')" id="tab-js" class="tab-inactive px-4 py-3 font-mono text-xs transition-colors focus:outline-none whitespace-nowrap">JavaScript</button>
+                                <button onclick="switchCodeTab('go')" id="tab-go" class="tab-inactive px-4 py-3 font-mono text-xs transition-colors focus:outline-none whitespace-nowrap">Go</button>
+                                <button onclick="switchCodeTab('swift')" id="tab-swift" class="tab-inactive px-4 py-3 font-mono text-xs transition-colors focus:outline-none whitespace-nowrap">Swift</button>
+                                <button onclick="switchCodeTab('kotlin')" id="tab-kotlin" class="tab-inactive px-4 py-3 font-mono text-xs transition-colors focus:outline-none whitespace-nowrap">Kotlin</button>
+                                <button onclick="switchCodeTab('python')" id="tab-python" class="tab-inactive px-4 py-3 font-mono text-xs transition-colors focus:outline-none whitespace-nowrap">Python</button>
+                            </div>
+                            <div class="hidden md:flex px-4 items-center gap-1.5">
+                                <div class="w-2.5 h-2.5 rounded-full bg-raised-hover"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-raised-hover"></div>
+                            </div>
+                        </div>
+                        <div class="p-5 overflow-x-auto bg-base min-h-[5.5rem]">
+                            {% set ri_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/resolve-intro.txt", format="plain") %}
+                            <pre id="code-rust" class="block font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-rust">{{ ri_rust | safe }}</code></pre>
+                            {% set ri_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/resolve-intro.txt", format="plain") %}
+                            <pre id="code-js" class="hidden font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-javascript">{{ ri_js | safe }}</code></pre>
+                            {% set ri_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/resolve-intro.txt", format="plain") %}
+                            <pre id="code-go" class="hidden font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-go">{{ ri_go | safe }}</code></pre>
+                            {% set ri_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/resolve-intro.txt", format="plain") %}
+                            <pre id="code-swift" class="hidden font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-swift">{{ ri_swift | safe }}</code></pre>
+                            {% set ri_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/resolve-intro.txt", format="plain") %}
+                            <pre id="code-kotlin" class="hidden font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-kotlin">{{ ri_kotlin | safe }}</code></pre>
+                            {% set ri_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/resolve-intro.txt", format="plain") %}
+                            <pre id="code-python" class="hidden font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-python">{{ ri_python | safe }}</code></pre>
+                        </div>
+                        <div class="border-t border-border-subtle bg-surface p-5">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-[5px] h-[5px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b]"></span>
+                                <span class="font-mono text-[10px] uppercase font-semibold text-txt-muted tracking-[0.06em]">JSON Result</span>
+                            </div>
+                            <pre class="font-mono text-xs leading-6 whitespace-pre"><code class="language-json">[
+  { "type": "txt", "key": "website", "value": ["https://example.com"] },
+  { "type": "addr", "key": "nostr", "value": ["npub1abc...", "wss://relay.example.com"] }
+]</code></pre>
+                        </div>
+                    </div>
+                    <div class="mt-5 flex items-center justify-center gap-6">
+                        <a href="/docs/developers/sdk/" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-accent hover:text-accent-strong transition-colors">
+                            Read the docs <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                        </a>
+                        <a href="https://github.com/spacesprotocol" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-txt-muted hover:text-txt-secondary transition-colors">
+                            <iconify-icon icon="mdi:github" class="text-sm"></iconify-icon> View on GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════ HOW IT WORKS ═══════════════════════════ -->
+    <section class="py-24 md:py-32 bg-base relative overflow-hidden border-b border-border" id="how-it-works">
+        <div class="absolute inset-0 dot-grid opacity-20 pointer-events-none"></div>
+        <div class="max-w-[1222px] mx-auto px-6 md:px-8 relative">
+
+            <!-- Header -->
+            <div class="text-center mb-20 reveal">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface/50 mb-5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-accent" style="animation:pulse-dot 2s ease infinite"></span>
+                    <span class="font-mono text-[10px] text-txt-secondary font-semibold tracking-[0.1em] uppercase">Architecture</span>
+                </div>
+                <h2 class="text-[clamp(1.6rem,3.2vw,2.4rem)] font-bold text-txt-primary tracking-[-0.03em] mb-4 leading-tight">
+                    From auction to resolution
+                </h2>
+                <p class="text-[15px] text-txt-secondary max-w-xl mx-auto leading-relaxed">
+                    A three-stage pipeline anchored to Bitcoin's proof of work. Every step is permissionless, every proof is verifiable.
+                </p>
+            </div>
+
+            <!-- ═══ STAGE 1: AUCTION ═══ -->
+            <div class="reveal mb-8">
+                <div class="flex items-center justify-center mb-10">
+                    <div class="flex items-center gap-4">
+                        <div class="step-num bg-accent text-black active">1</div>
+                        <div class="h-px w-8 bg-border"></div>
+                        <div class="step-num bg-surface border border-border text-txt-muted">2</div>
+                        <div class="h-px w-8 bg-border"></div>
+                        <div class="step-num bg-surface border border-border text-txt-muted">3</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-[1.1fr,1fr] gap-8 lg:gap-14 items-center">
+                    <div class="order-2">
+                        <div class="font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-accent mb-3">Stage 1</div>
+                        <h3 class="text-2xl md:text-[1.75rem] font-bold text-txt-primary tracking-tight mb-4 leading-snug">
+                            Permissionless auctions
+                        </h3>
+                        <p class="text-[15px] text-txt-secondary leading-relaxed mb-5">
+                            Top-level spaces like <span class="text-txt-primary font-mono text-[13px] bg-raised px-1.5 py-0.5 rounded border border-border">@bitcoin</span> are distributed through open auctions on Bitcoin. Up to 10 per day - bids are burned, no entity profits.
+                        </p>
+
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0">
+                                    <iconify-icon icon="solar:fire-linear" class="text-accent text-xs"></iconify-icon>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-[12px] font-semibold text-txt-primary mb-0.5">Burn mechanism</div>
+                                    <div class="text-xs text-txt-muted leading-relaxed">No entity profits from auctions. Fair distribution by design.</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0">
+                                    <iconify-icon icon="solar:clock-circle-linear" class="text-accent text-xs"></iconify-icon>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-[12px] font-semibold text-txt-primary mb-0.5">~1440 blocks</div>
+                                    <div class="text-xs text-txt-muted leading-relaxed">Each auction runs for roughly ten days. Highest bid at close wins.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="https://docs.spacesprotocol.org/getting-started/auctions" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-accent hover:text-accent-strong transition-colors">
+                            Learn about auctions <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                        </a>
+                    </div>
+
+                    <!-- Auction visual -->
+                    <div class="order-1">
+                        <div class="relative p-5">
+                            <div class="text-center mb-5">
+                                <div class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.06em] mb-2">Currently auctioning</div>
+                                <div class="inline-flex items-center gap-1 px-4 py-2 bg-raised border border-border rounded-lg">
+                                    <span class="font-mono text-[20px] font-bold text-txt-primary">@</span>
+                                    <span class="font-mono text-[20px] font-bold text-accent" id="auctionName">bitcoin</span>
+                                </div>
+                                <div class="mt-2 flex items-center justify-center gap-3">
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-accent" style="animation:countdown-pulse 1s ease infinite"></div>
+                                        <span class="font-mono text-[10px] text-txt-muted"><span class="text-accent font-semibold stat-num" id="blocksLeft">47</span> blocks left</span>
+                                    </div>
+                                    <span class="text-border">·</span>
+                                    <span class="font-mono text-[10px] text-txt-muted">4 bids</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="bid-card winning flex items-center justify-between px-3.5 py-2.5 bg-raised border border-accent/30 rounded-lg">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-5 h-5 rounded-full bg-accent/15 flex items-center justify-center">
+                                            <iconify-icon icon="solar:crown-linear" class="text-accent text-[10px]"></iconify-icon>
+                                        </div>
+                                        <span class="font-mono text-[11px] font-semibold text-txt-primary">bc1q...8wlh</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="font-mono text-[13px] font-bold text-accent">0.52 BTC</span>
+                                        <div class="font-mono text-[9px] text-sp-green uppercase font-semibold">Leading</div>
+                                    </div>
+                                </div>
+                                <div class="bid-card flex items-center justify-between px-3.5 py-2.5 bg-raised border border-border rounded-lg opacity-70">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-5 h-5 rounded-full bg-surface flex items-center justify-center"><span class="font-mono text-[9px] text-txt-muted">2</span></div>
+                                        <span class="font-mono text-[11px] text-txt-secondary">bc1q...f3a9</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="font-mono text-[13px] font-semibold text-txt-secondary">0.38 BTC</span>
+                                        <div class="font-mono text-[9px] text-txt-muted uppercase">Outbid</div>
+                                    </div>
+                                </div>
+                                <div class="bid-card flex items-center justify-between px-3.5 py-2.5 bg-raised border border-border rounded-lg opacity-50">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-5 h-5 rounded-full bg-surface flex items-center justify-center"><span class="font-mono text-[9px] text-txt-muted">3</span></div>
+                                        <span class="font-mono text-[11px] text-txt-secondary">bc1q...2d7c</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="font-mono text-[13px] font-semibold text-txt-secondary">0.24 BTC</span>
+                                        <div class="font-mono text-[9px] text-txt-muted uppercase">Outbid</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between mt-3 px-1">
+                                <div class="flex items-center gap-1.5">
+                                    <iconify-icon icon="solar:fire-bold" class="text-accent text-xs"></iconify-icon>
+                                    <span class="font-mono text-[10px] text-txt-muted">Proceeds burned via OP_RETURN</span>
+                                </div>
+                                <span class="font-mono text-[9px] text-txt-muted">10 spaces / day</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connector 1→2 -->
+            <div class="flex justify-center my-12 md:my-16 reveal">
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-px h-12 bg-gradient-to-b from-accent/30 to-sp-green/30"></div>
+                    <div class="px-3 py-1.5 rounded-full border border-border bg-surface/80 backdrop-blur flex items-center justify-center">
+                        <span class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.08em] leading-none">Space acquired → Issue handles</span>
+                    </div>
+                    <div class="w-px h-12 bg-gradient-to-b from-sp-green/30 to-border/30"></div>
+                </div>
+            </div>
+
+            <!-- ═══ STAGE 2: HANDLE ISSUANCE ═══ -->
+            <div class="reveal mb-8">
+                <div class="flex items-center justify-center mb-10">
+                    <div class="flex items-center gap-4">
+                        <div class="step-num bg-surface border border-border text-txt-muted">
+                            <iconify-icon icon="solar:check-read-linear" class="text-accent text-sm"></iconify-icon>
+                        </div>
+                        <div class="h-px w-8 bg-accent/30"></div>
+                        <div class="step-num bg-sp-green text-black active" style="box-shadow:0 0 24px rgba(63,188,139,.25)">2</div>
+                        <div class="h-px w-8 bg-border"></div>
+                        <div class="step-num bg-surface border border-border text-txt-muted">3</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-[0.65fr,1fr] gap-8 lg:gap-24 items-center">
+                    <!-- Factory visual -->
+                    <div class="order-1 lg:order-2">
+                        <div class="relative w-full">
+                            <div class="flex items-center justify-end gap-4 mb-2 px-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="font-mono text-[12px] font-bold text-txt-primary stat-num" id="sH">0</span>
+                                    <span class="font-mono text-[9px] text-txt-muted uppercase">handles</span>
+                                </div>
+                                <div class="w-px h-3 bg-border"></div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="font-mono text-[12px] font-bold text-sp-green stat-num" id="sC">0</span>
+                                    <span class="font-mono text-[9px] text-txt-muted uppercase">committed</span>
+                                </div>
+                                <div class="w-px h-3 bg-border"></div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="font-mono text-[12px] font-bold text-sp-blue stat-num" id="sB">0</span>
+                                    <span class="font-mono text-[9px] text-txt-muted uppercase">batches</span>
+                                </div>
+                            </div>
+
+                            <div class="relative w-full h-[340px] bg-base overflow-hidden rounded-[10px]" id="fv">
+                                <div class="absolute inset-0 dot-grid opacity-25 pointer-events-none"></div>
+
+                                <!-- Hopper -->
+                                <div class="absolute left-4 top-3 w-[175px] z-[3]">
+                                    <div class="bg-raised border border-border rounded-lg p-2.5">
+                                        <div class="font-mono text-[9px] font-semibold uppercase tracking-[0.06em] text-txt-muted mb-2">&#9654; Input Hopper</div>
+                                        <div class="flex flex-wrap gap-1 max-h-[60px] overflow-hidden" id="hChips"></div>
+                                    </div>
+                                </div>
+
+                                <div class="absolute left-[91px] top-[88px] w-[2px] h-[42px] bg-border"></div>
+
+                                <!-- Conveyor -->
+                                <div class="absolute left-0 top-[130px] h-[56px] right-[240px]">
+                                    <div class="absolute inset-0 bg-surface border-t-2 border-b-2 border-border overflow-hidden">
+                                        <div class="absolute inset-[2px_0] opacity-30" style="background:repeating-linear-gradient(90deg,transparent,transparent 24px,#2a2a31 24px,#2a2a31 26px);animation:beltMove 1.4s linear infinite"></div>
+                                    </div>
+                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[35px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[115px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[195px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[275px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[355px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[435px]" style="animation:rSpin .7s linear infinite"></div>
+                                </div>
+
+                                <div id="tks"></div>
+
+                                <!-- Machine -->
+                                <div class="absolute right-3 top-[48px] w-[220px] h-[200px] z-[5]">
+                                    <div class="absolute left-[-12px] w-[13px] h-[36px] bg-border rounded-l z-[6]" style="top:110px;transform:translateY(-50%)">
+                                        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-accent/50" style="animation:iPulse 1s ease-in-out infinite"></div>
+                                    </div>
+                                    <div class="absolute inset-0 bg-gradient-to-b from-raised to-surface border border-border rounded-[10px] overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,.4)]">
+                                        <div class="absolute top-[-1px] left-1/2 -translate-x-1/2 w-[72px] h-[3px] bg-sp-green shadow-[0_0_14px_rgba(63,188,139,.3)] rounded-b"></div>
+                                        <div class="absolute top-3 left-1/2 -translate-x-1/2 font-mono text-[9px] font-semibold uppercase tracking-[0.06em] text-txt-muted whitespace-nowrap">Commitment Engine</div>
+                                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100px] h-[100px]">
+                                            <div class="absolute w-[66px] h-[66px] rounded-full border-2 border-sp-green/25 bg-raised-hover top-[17px] left-[17px]" style="animation:cw 4s linear infinite">
+                                                <div class="absolute inset-[28%] rounded-full bg-base border border-border"></div>
+                                                <div class="absolute inset-[36%] rounded-full bg-sp-green/18 shadow-[0_0_16px_rgba(63,188,139,.25)]"></div>
+                                            </div>
+                                            <div class="absolute w-[38px] h-[38px] rounded-full border-2 border-border bg-raised-hover top-[-2px] right-0" style="animation:ccw 2.4s linear infinite">
+                                                <div class="absolute inset-[28%] rounded-full bg-base border border-border"></div>
+                                            </div>
+                                            <div class="absolute w-[24px] h-[24px] rounded-full border-2 border-border bg-raised-hover bottom-[8px] left-[6px]" style="animation:cw 1.8s linear infinite">
+                                                <div class="absolute inset-[28%] rounded-full bg-base border border-border"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Output -->
+                                <div class="absolute right-3 bottom-4 w-[220px] z-[5]">
+                                    <div class="absolute right-[110px] top-[-50px] w-[2px] h-[50px] bg-border">
+                                        <div class="absolute left-[-3px] w-[8px] h-full bg-gradient-to-b from-transparent via-sp-green/12 to-transparent" style="animation:pGlow 2s linear infinite"></div>
+                                    </div>
+                                    <div class="bg-raised border border-border rounded-lg p-2.5">
+                                        <div class="flex items-center gap-2 mb-1.5">
+                                            <span class="w-[5px] h-[5px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b]" style="animation:pulse-dot 2s ease-in-out infinite"></span>
+                                            <span class="font-mono text-[9px] font-semibold uppercase tracking-[0.06em] text-txt-muted">Root &middot; 32 Bytes</span>
+                                        </div>
+                                        <div class="font-mono text-[10px] text-txt-secondary bg-base border border-border-subtle rounded px-2 py-1 break-all leading-relaxed min-h-[2em]" id="hOut">awaiting input&hellip;</div>
+                                    </div>
+                                </div>
+
+                                <!-- Activity log -->
+                                <div class="hidden md:block absolute left-4 bottom-4 w-[175px] z-[5]">
+                                    <div class="font-mono text-[9px] font-semibold uppercase tracking-[0.06em] text-txt-muted mb-1.5">&#9654; Activity Log</div>
+                                    <div class="flex flex-col gap-0.5 max-h-[80px] overflow-hidden" id="logE"></div>
+                                </div>
+
+                                <div class="absolute bottom-0 left-0 right-0 h-[3px] bg-border-subtle z-[10]">
+                                    <div class="h-full w-0 bg-accent transition-[width] duration-300 ease" id="pFill"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text -->
+                    <div class="order-2 lg:order-1">
+                        <div class="font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-sp-green mb-3">Stage 2</div>
+                        <h3 class="text-2xl md:text-[1.75rem] font-bold text-txt-primary tracking-tight mb-4 leading-snug">
+                            Batch handle issuance
+                        </h3>
+                        <p class="text-[15px] text-txt-secondary leading-relaxed mb-5">
+                            Space owners issue handles in batches using <span class="text-txt-primary font-mono text-[13px] bg-raised px-1.5 py-0.5 rounded border border-border">subs</span>. Millions of handles are organized into a Merkle tree and committed with a single 32-byte root hash - one transaction, unlimited names.
+                        </p>
+
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded-md bg-sp-green-dim border border-sp-green/15 flex items-center justify-center mt-0.5 shrink-0">
+                                    <iconify-icon icon="solar:layers-minimalistic-linear" class="text-sp-green text-xs"></iconify-icon>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-[12px] font-semibold text-txt-primary mb-0.5">Merkle tree batching</div>
+                                    <div class="text-xs text-txt-muted leading-relaxed">Each committed batch proves names didn't exist in a prior batch with exclusion proofs off-chain.</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded-md bg-sp-green-dim border border-sp-green/15 flex items-center justify-center mt-0.5 shrink-0">
+                                    <iconify-icon icon="solar:verified-check-linear" class="text-sp-green text-xs"></iconify-icon>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-[12px] font-semibold text-txt-primary mb-0.5">Irrevocable certificates</div>
+                                    <div class="text-xs text-txt-muted leading-relaxed">Each handle gets a Merkle inclusion proof linking to an on-chain root - verifiable, uncensorable, permanent.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Certificate preview -->
+                        <div class="bg-surface border border-border rounded-lg p-3.5 mb-5">
+                            <div class="flex items-center gap-2.5 mb-3">
+                                <div class="w-6 h-6 rounded-md bg-sp-green-dim border border-sp-green/20 flex items-center justify-center">
+                                    <iconify-icon icon="solar:verified-check-linear" class="text-sp-green text-xs"></iconify-icon>
+                                </div>
+                                <span class="font-mono text-[11px] font-semibold text-txt-primary">Certificate</span>
+                                <span class="ml-auto font-mono text-[9px] text-sp-green bg-sp-green-dim px-1.5 py-0.5 rounded border border-sp-green/20 uppercase font-semibold">Verified</span>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-mono text-[10px] text-txt-muted">Handle</span>
+                                    <span class="font-mono text-[11px] font-bold text-txt-primary">alice<span class="text-txt-muted">@</span><span class="text-sp-green">bitcoin</span></span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-mono text-[10px] text-txt-muted">Owner</span>
+                                    <span class="font-mono text-[10px] text-txt-secondary">bc1qxy2k...fjhx0wlh</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-mono text-[10px] text-txt-muted">Proof</span>
+                                    <span class="font-mono text-[10px] text-txt-secondary"><code>{ proof bytes }</code></span>
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-2.5 border-t border-border-subtle flex items-center gap-1.5">
+                                <iconify-icon icon="solar:lock-linear" class="text-sp-green text-[10px]"></iconify-icon>
+                                <span class="font-mono text-[9px] text-sp-green font-semibold">Anchored to Bitcoin PoW</span>
+                            </div>
+                        </div>
+
+                        <a href="https://docs.spacesprotocol.org/getting-started/subspaces" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-accent hover:text-accent-strong transition-colors">
+                            Learn about subspaces <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connector 2→3 -->
+            <div class="flex justify-center my-12 md:my-16 reveal">
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-px h-12 bg-gradient-to-b from-sp-green/30 to-sp-blue/30"></div>
+                    <div class="px-3 py-1.5 rounded-full border border-border bg-surface/80 backdrop-blur flex items-center justify-center">
+                        <span class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.08em] leading-none">Handles issued → Relay &amp; resolve</span>
+                    </div>
+                    <div class="w-px h-12 bg-gradient-to-b from-sp-blue/30 to-border/30"></div>
+                </div>
+            </div>
+
+            <!-- ═══ STAGE 3: RELAY ═══ -->
+            <div class="reveal">
+                <div class="flex items-center justify-center mb-10">
+                    <div class="flex items-center gap-4">
+                        <div class="step-num bg-surface border border-border text-txt-muted">
+                            <iconify-icon icon="solar:check-read-linear" class="text-accent text-sm"></iconify-icon>
+                        </div>
+                        <div class="h-px w-8 bg-accent/30"></div>
+                        <div class="step-num bg-surface border border-border text-txt-muted">
+                            <iconify-icon icon="solar:check-read-linear" class="text-sp-green text-sm"></iconify-icon>
+                        </div>
+                        <div class="h-px w-8 bg-sp-green/30"></div>
+                        <div class="step-num bg-sp-blue text-black active" style="box-shadow:0 0 24px rgba(94,157,224,.25)">3</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr,0.75fr] gap-8 lg:gap-24 items-center">
+                    <div class="order-2">
+                        <div class="font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-sp-blue mb-3">Stage 3</div>
+                        <h3 class="text-2xl md:text-[1.75rem] font-bold text-txt-primary tracking-tight mb-4 leading-snug">
+                            Off-chain relay network
+                        </h3>
+                        <p class="text-[15px] text-txt-secondary leading-relaxed mb-5">
+                            Users publish records & certificates to <span class="text-txt-primary font-mono text-[13px] bg-raised px-1.5 py-0.5 rounded border border-border">Certrelay</span> - an HTTP based browser-resolvable network. Apps resolve handles with zero on-chain footprint, verified against the Bitcoin-anchored state root.
+                        </p>
+
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded-md bg-sp-blue-dim border border-sp-blue/15 flex items-center justify-center mt-0.5 shrink-0">
+                                    <iconify-icon icon="solar:global-linear" class="text-sp-blue text-xs"></iconify-icon>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-[12px] font-semibold text-txt-primary mb-0.5">Zero on-chain bytes</div>
+                                    <div class="text-xs text-txt-muted leading-relaxed">Resolution happens entirely off-chain. Records travel through certrelay, not the blockchain.</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded-md bg-sp-blue-dim border border-sp-blue/15 flex items-center justify-center mt-0.5 shrink-0">
+                                    <iconify-icon icon="solar:shield-check-linear" class="text-sp-blue text-xs"></iconify-icon>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-[12px] font-semibold text-txt-primary mb-0.5">Trustless verification</div>
+                                    <div class="text-xs text-txt-muted leading-relaxed">Every response includes a Merkle proof. Verify locally against the Bitcoin state root.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="https://github.com/spacesprotocol/fabric" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-accent hover:text-accent-strong transition-colors">
+                            View Certrelay on GitHub <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                        </a>
+                    </div>
+
+                    <!-- Network visual -->
+                    <div class="order-1">
+                        <div class="relative">
+                            <div class="flex items-center justify-start gap-2 mb-2 px-1">
+                            <span class="relative flex h-[5px] w-[5px]">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sp-blue opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-sp-blue shadow-[0_0_5px_#5e9de0]"></span>
+                            </span>
+                                <span class="font-mono text-[10px] text-txt-muted">Peers:</span>
+                                <span class="font-mono text-[11px] font-bold text-sp-blue stat-num" id="peerCount">0</span>
+                            </div>
+
+                            <div class="relative overflow-hidden rounded-[10px]" style="height:360px" id="networkViz">
+                                <div class="absolute inset-0 dot-grid opacity-15 pointer-events-none"></div>
+
+                                <div class="absolute left-4 top-1/2 -translate-y-1/2 w-[100px] z-10">
+                                    <div class="bg-surface border border-accent/25 rounded-lg p-2.5 text-center shadow-[0_2px_12px_rgba(0,0,0,.3)]">
+                                        <div class="font-mono text-[8px] font-semibold text-txt-muted uppercase tracking-[0.06em] mb-1">User</div>
+                                        <div class="font-mono text-[11px] font-bold text-accent mb-1">alice@btc</div>
+                                        <div class="font-mono text-[7px] text-txt-muted">publish records</div>
+                                    </div>
+                                </div>
+
+                                <svg class="absolute left-[108px] top-1/2 -translate-y-[1px] w-[60px] h-[2px] z-[5]" viewBox="0 0 60 2" preserveAspectRatio="none">
+                                    <line x1="0" y1="1" x2="60" y2="1" stroke="#e0722e" stroke-opacity=".25" stroke-width="1.5" stroke-dasharray="4 3">
+                                        <animate attributeName="stroke-dashoffset" values="7;0" dur=".8s" repeatCount="indefinite"/>
+                                    </line>
+                                </svg>
+                                <div class="absolute left-[108px] top-1/2 -translate-y-1/2 z-[6]">
+                                    <div class="w-2 h-2 rounded-full bg-accent shadow-[0_0_6px_#e0722e]" style="animation:relayPacketRight 1.6s ease-in-out infinite"></div>
+                                </div>
+
+                                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160px] h-[160px] z-[3]">
+                                    <div class="absolute inset-0 rounded-full border border-sp-blue/10" style="animation:dhtRingPulse 4s ease-in-out infinite"></div>
+                                    <div class="absolute inset-3 rounded-full border border-sp-blue/8" style="animation:dhtRingPulse 4s ease-in-out infinite .5s"></div>
+                                    <div class="absolute inset-0 rounded-full bg-sp-blue/[0.03] blur-sm"></div>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <div class="font-mono text-[9px] font-semibold text-sp-blue uppercase tracking-[0.08em] mb-1">Certrelay</div>
+                                        <div class="font-mono text-[7px] text-txt-muted">peer-to-peer relay</div>
+                                    </div>
+                                    <div class="absolute inset-[-8px]" style="animation:dhtOrbit 12s linear infinite">
+                                        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-raised border border-sp-blue/30 flex items-center justify-center">
+                                            <div class="w-1.5 h-1.5 rounded-full bg-sp-blue/60" style="animation:pulse-dot 2s ease infinite"></div>
+                                        </div>
+                                    </div>
+                                    <div class="absolute inset-[-12px]" style="animation:dhtOrbit 18s linear infinite reverse">
+                                        <div class="absolute bottom-0 right-[15%] w-2.5 h-2.5 rounded-full bg-raised border border-sp-blue/25 flex items-center justify-center">
+                                            <div class="w-1 h-1 rounded-full bg-sp-blue/50" style="animation:pulse-dot 2.5s ease infinite .3s"></div>
+                                        </div>
+                                    </div>
+                                    <div class="absolute inset-[-4px]" style="animation:dhtOrbit 15s linear infinite">
+                                        <div class="absolute top-[20%] right-0 w-2 h-2 rounded-full bg-raised border border-sp-blue/20 flex items-center justify-center">
+                                            <div class="w-1 h-1 rounded-full bg-sp-blue/40" style="animation:pulse-dot 3s ease infinite .8s"></div>
+                                        </div>
+                                    </div>
+                                    <div class="absolute inset-[-16px]" style="animation:dhtOrbit 22s linear infinite reverse">
+                                        <div class="absolute top-[35%] left-0 w-2 h-2 rounded-full bg-raised border border-sp-blue/15">
+                                            <div class="absolute inset-[3px] rounded-full bg-sp-blue/30" style="animation:pulse-dot 2.8s ease infinite 1.2s"></div>
+                                        </div>
+                                    </div>
+                                    <div class="absolute inset-[-6px]" style="animation:dhtOrbit 20s linear infinite">
+                                        <div class="absolute bottom-[10%] left-[20%] w-2.5 h-2.5 rounded-full bg-raised border border-sp-blue/20">
+                                            <div class="absolute inset-[3px] rounded-full bg-sp-blue/40" style="animation:pulse-dot 2.2s ease infinite .5s"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <svg class="absolute right-[108px] top-1/2 -translate-y-[1px] w-[60px] h-[2px] z-[5]" viewBox="0 0 60 2" preserveAspectRatio="none">
+                                    <line x1="0" y1="1" x2="60" y2="1" stroke="#3fbc8b" stroke-opacity=".25" stroke-width="1.5" stroke-dasharray="4 3">
+                                        <animate attributeName="stroke-dashoffset" values="7;0" dur=".8s" repeatCount="indefinite"/>
+                                    </line>
+                                </svg>
+                                <div class="absolute right-[108px] top-1/2 -translate-y-1/2 z-[6]">
+                                    <div class="w-2 h-2 rounded-full bg-sp-green shadow-[0_0_6px_#3fbc8b]" style="animation:relayPacketRight 1.6s ease-in-out infinite .5s"></div>
+                                </div>
+
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 w-[100px] z-10">
+                                    <div class="bg-surface border border-sp-green/25 rounded-lg p-2.5 text-center shadow-[0_2px_12px_rgba(0,0,0,.3)]">
+                                        <div class="font-mono text-[8px] font-semibold text-txt-muted uppercase tracking-[0.06em] mb-1">App</div>
+                                        <div class="font-mono text-[10px] font-semibold text-sp-green mb-1">resolve()</div>
+                                        <div class="font-mono text-[7px] text-txt-muted">verify proof</div>
+                                    </div>
+                                </div>
+
+                                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
+                                    <div class="px-3 py-1.5 rounded-md bg-sp-blue/[0.06] border border-sp-blue/15">
+                                        <span class="font-mono text-[10px] text-sp-blue font-medium">zero on-chain bytes</span>
+                                    </div>
+                                    <span class="font-mono text-[8px] text-txt-muted">verified against Bitcoin state root</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-3 px-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="font-mono text-[9px] font-semibold uppercase tracking-[0.06em] text-txt-muted">Resolution Log</span>
+                                </div>
+                                <div class="space-y-1" id="resLog">
+                                    <div class="flex items-center gap-2 font-mono text-[10px]">
+                                        <span class="text-txt-muted">&rarr;</span>
+                                        <span class="text-sp-blue">resolve</span>
+                                        <span class="text-txt-muted">(</span><span class="text-accent">"alice@bitcoin"</span><span class="text-txt-muted">)</span>
+                                        <span class="text-sp-green ml-auto">&check; verified</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════ TRUST MODEL ═══════════════════════════ -->
+    <section class="py-24 md:py-32 border-t border-border bg-base relative overflow-hidden" id="trust-model">
+        <div class="max-w-[1222px] mx-auto px-8">
+            <div class="text-center mb-16 reveal">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface/50 mb-5">
+                    <iconify-icon icon="solar:shield-check-linear" class="text-accent text-xs"></iconify-icon>
+                    <span class="font-mono text-[10px] text-txt-secondary font-semibold tracking-[0.1em] uppercase">Trust Model</span>
+                </div>
+                <h2 class="text-[clamp(1.4rem,2.8vw,2rem)] font-bold text-txt-primary tracking-[-0.025em] mb-4 leading-tight">Trust vs. Verify</h2>
+                <p class="text-[15px] text-txt-secondary max-w-2xl mx-auto leading-relaxed">
+                    DNS requires you to trust a chain of authorities. Spaces requires you to <button data-trust-popover class="inline-flex items-center gap-1 text-accent hover:text-accent-strong transition-colors cursor-pointer">trust math<svg class="w-3.5 h-3.5" viewBox="0 0 180 188" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M102 72H78C72.4772 72 68 76.4772 68 82V106C68 111.523 72.4772 116 78 116H102C107.523 116 112 111.523 112 106V82C112 76.4772 107.523 72 102 72Z" fill-opacity="0.88"/><path d="M99 0H81C76.0294 0 72 4.02944 72 9V27C72 31.9706 76.0294 36 81 36H99C103.971 36 108 31.9706 108 27V9C108 4.02944 103.971 0 99 0Z" fill-opacity="0.55"/><path d="M99 152H81C76.0294 152 72 156.029 72 161V179C72 183.971 76.0294 188 81 188H99C103.971 188 108 183.971 108 179V161C108 156.029 103.971 152 99 152Z" fill-opacity="0.55"/><path d="M24 76H8C3.58172 76 0 79.5817 0 84V100C0 104.418 3.58172 108 8 108H24C28.4183 108 32 104.418 32 100V84C32 79.5817 28.4183 76 24 76Z" fill-opacity="0.38"/><path d="M172 76H156C151.582 76 148 79.5817 148 84V100C148 104.418 151.582 108 156 108H172C176.418 108 180 104.418 180 100V84C180 79.5817 176.418 76 172 76Z" fill-opacity="0.38"/></svg></button>
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto reveal">
+                <!-- DNS -->
+                <div class="bg-surface border border-border rounded-xl p-7 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent"></div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="px-2.5 py-1 rounded-md bg-red-500/[0.06] border border-red-500/15 font-mono text-[11px] text-red-400 font-semibold">DNS / BIP-353</span>
+                        <span class="font-mono text-[10px] text-txt-muted uppercase tracking-[0.06em]">Chain of Trust</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="trust-dns pl-4 py-2">
+                            <div class="flex items-center gap-2 mb-1">
+                                <iconify-icon icon="solar:shield-warning-linear" class="text-txt-muted text-sm"></iconify-icon>
+                                <span class="font-mono text-[12px] font-semibold text-txt-primary">ICANN Root Keys</span>
+                                <span class="px-1.5 py-px rounded border border-border font-mono text-[8px] text-txt-muted uppercase">Delegated</span>
+                            </div>
+                            <p class="text-[11px] text-txt-muted ml-6">Root zone keys held by 7 keyholders</p>
+                        </div>
+                        <div class="trust-dns pl-4 py-2">
+                            <div class="flex items-center gap-2 mb-1">
+                                <iconify-icon icon="solar:folder-security-linear" class="text-txt-muted text-sm"></iconify-icon>
+                                <span class="font-mono text-[12px] font-semibold text-txt-primary">Registry</span>
+                                <span class="px-1.5 py-px rounded border border-border font-mono text-[8px] text-txt-muted uppercase">Delegated</span>
+                            </div>
+                            <p class="text-[11px] text-txt-muted ml-6">Authority delegated to Verisign, etc.</p>
+                        </div>
+                        <div class="trust-dns border-l-red-500/30 pl-4 py-2">
+                            <div class="flex items-center gap-2 mb-1">
+                                <iconify-icon icon="solar:user-circle-linear" class="text-red-400 text-sm"></iconify-icon>
+                                <span class="font-mono text-[12px] font-semibold text-txt-primary">Registrar / User</span>
+                                <span class="px-1.5 py-px rounded border border-red-900/50 bg-red-900/10 font-mono text-[8px] text-red-400 uppercase">Centralized</span>
+                            </div>
+                            <p class="text-[11px] text-txt-muted ml-6">Certificate signed by above chain</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 pt-4 border-t border-border-subtle">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="solar:danger-triangle-linear" class="text-red-400/60 text-xs"></iconify-icon>
+                            <span class="font-mono text-[10px] text-red-400/60">Any authority in the chain can revoke your name</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spaces -->
+                <div class="bg-surface border border-border rounded-xl p-7 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sp-green/40 to-transparent"></div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="px-2.5 py-1 rounded-md bg-sp-green/[0.06] border border-sp-green/15 font-mono text-[11px] text-sp-green font-semibold">Spaces Protocol</span>
+                        <span class="font-mono text-[10px] text-txt-muted uppercase tracking-[0.06em]">Chain of Verification</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="trust-spaces pl-4 py-2">
+                            <div class="flex items-center gap-2 mb-1">
+                                <iconify-icon icon="solar:layers-minimalistic-linear" class="text-txt-secondary text-sm"></iconify-icon>
+                                <span class="font-mono text-[12px] font-semibold text-txt-primary">Bitcoin PoW</span>
+                                <span class="px-1.5 py-px rounded border border-border font-mono text-[8px] text-txt-muted uppercase">Decentralized</span>
+                            </div>
+                            <p class="text-[11px] text-txt-muted ml-6">Consensus from proof of work</p>
+                        </div>
+                        <div class="trust-spaces pl-4 py-2">
+                            <div class="flex items-center gap-2 mb-1">
+                                <iconify-icon icon="solar:link-circle-linear" class="text-txt-secondary text-sm"></iconify-icon>
+                                <button data-trust-popover class="font-mono text-[12px] font-semibold text-txt-primary hover:text-accent transition-colors cursor-pointer">Merkle Root</button>
+                                <span class="px-1.5 py-px rounded border border-border font-mono text-[8px] text-txt-muted uppercase">Verifiable</span>
+                            </div>
+                            <p class="text-[11px] text-txt-muted ml-6">Verifiable with a Bitcoin node</p>
+                        </div>
+                        <div class="trust-spaces border-l-sp-green/30 pl-4 py-2">
+                            <div class="flex items-center gap-2 mb-1">
+                                <iconify-icon icon="solar:check-read-linear" class="text-sp-green text-sm"></iconify-icon>
+                                <span class="font-mono text-[12px] font-semibold text-txt-primary">Client Verification</span>
+                                <span class="px-1.5 py-px rounded border border-green-900/50 bg-sp-green-dim font-mono text-[8px] text-sp-green uppercase">Trustless</span>
+                            </div>
+                            <p class="text-[11px] text-txt-muted ml-6">Mathematically proven state</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 pt-4 border-t border-border-subtle">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="solar:shield-check-linear" class="text-sp-green/60 text-xs"></iconify-icon>
+                            <span class="font-mono text-[10px] text-sp-green/60">No authority can revoke what Bitcoin has confirmed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════ ECOSYSTEM ═══════════════════════════ -->
+    <section class="py-24 bg-base relative overflow-hidden border-t border-border-subtle" id="ecosystem">
+        <div class="max-w-[1222px] mx-auto px-8">
+            <div class="text-center mb-14 reveal">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface/50 mb-5">
+                    <iconify-icon icon="solar:users-group-rounded-linear" class="text-accent text-xs"></iconify-icon>
+                    <span class="font-mono text-[10px] text-txt-secondary font-semibold tracking-[0.1em] uppercase">Ecosystem</span>
+                </div>
+                <h2 class="text-[clamp(1.4rem,2.8vw,2rem)] font-bold text-txt-primary tracking-[-0.025em] mb-4 leading-tight">Ship with Spaces</h2>
+                <p class="text-[15px] text-txt-secondary max-w-xl mx-auto leading-relaxed">
+                    Open source protocol with a growing ecosystem of tools, wallets, and community builders.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-3xl mx-auto reveal">
+                <a href="https://github.com/spacesprotocol" class="group bg-surface border border-border rounded-[10px] p-5 transition-all hover:border-txt-muted/30 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,.3)]">
+                    <div class="w-8 h-8 rounded-lg bg-raised border border-border flex items-center justify-center mb-3">
+                        <iconify-icon icon="mdi:github" class="text-txt-primary text-sm"></iconify-icon>
+                    </div>
+                    <h3 class="text-[13px] font-semibold text-txt-primary mb-1.5 leading-snug group-hover:text-txt-primary transition-colors font-mono">spacesprotocol</h3>
+                    <p class="text-[11px] text-txt-muted leading-relaxed mb-3">Protocol, wallet, certrelay, explorer. MIT licensed.</p>
+                    <span class="inline-flex items-center gap-1 font-mono text-[10px] text-txt-secondary group-hover:text-txt-primary transition-colors">View repos <iconify-icon icon="solar:arrow-right-up-linear" class="text-[10px]"></iconify-icon></span>
+                </a>
+
+                <a href="https://akron.io" class="group bg-surface border border-border rounded-[10px] p-5 transition-all hover:border-txt-muted/30 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,.3)]">
+                    <div class="w-8 h-8 rounded-lg bg-sp-green-dim border border-sp-green/15 flex items-center justify-center mb-3">
+                        <iconify-icon icon="solar:wallet-linear" class="text-sp-green text-sm"></iconify-icon>
+                    </div>
+                    <h3 class="text-[13px] font-semibold text-txt-primary mb-1.5 leading-snug group-hover:text-sp-green transition-colors font-mono">Akron Wallet</h3>
+                    <p class="text-[11px] text-txt-muted leading-relaxed mb-3">Cypherpunk wallet in Rust. Verify headers without a full node.</p>
+                    <span class="inline-flex items-center gap-1 font-mono text-[10px] text-sp-green group-hover:text-sp-green transition-colors">Download <iconify-icon icon="solar:arrow-right-up-linear" class="text-[10px]"></iconify-icon></span>
+                </a>
+
+                <a href="https://spaces.market" class="group bg-surface border border-border rounded-[10px] p-5 transition-all hover:border-txt-muted/30 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,.3)]">
+                    <div class="w-8 h-8 rounded-lg bg-accent-dim border border-accent/15 flex items-center justify-center mb-3">
+                        <iconify-icon icon="solar:tag-price-linear" class="text-accent text-sm"></iconify-icon>
+                    </div>
+                    <h3 class="text-[13px] font-semibold text-txt-primary mb-1.5 leading-snug group-hover:text-accent transition-colors font-mono">Spaces Market</h3>
+                    <p class="text-[11px] text-txt-muted leading-relaxed mb-3">Permissionless marketplace. No middlemen, no custody.</p>
+                    <span class="inline-flex items-center gap-1 font-mono text-[10px] text-accent group-hover:text-accent-strong transition-colors">Browse <iconify-icon icon="solar:arrow-right-up-linear" class="text-[10px]"></iconify-icon></span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════ FOOTER CTA ═══════════════════════════ -->
+    <section class="py-32 relative overflow-hidden border-t border-border bg-base reveal">
+        <div class="absolute inset-0 dot-grid opacity-[0.06] pointer-events-none"></div>
+        <div class="relative z-10 max-w-3xl mx-auto px-8 text-center">
+            <div class="font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-txt-muted mb-3">Open Source</div>
+            <h2 class="text-[clamp(1.4rem,2.8vw,2rem)] font-bold text-txt-primary tracking-[-0.025em] mb-4 leading-tight">Build on Spaces</h2>
+            <p class="text-[15px] text-txt-secondary mb-8 max-w-lg mx-auto leading-relaxed">
+                Spaces Protocol is open source infrastructure. Contribute to the codebase, run a node, or integrate resolution into your app.
+            </p>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-3.5">
+                <a href="/faucet" class="w-full md:w-auto font-mono text-[13px] font-semibold text-black bg-accent hover:bg-accent-strong px-6 py-3 rounded-md transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(224,114,46,.2)] text-center">
+                    Get a free handle
+                </a>
+                <a href="/docs/use/veritas/" class="w-full md:w-auto font-mono text-[13px] font-medium text-txt-secondary border border-border hover:border-txt-muted hover:text-txt-primary px-6 py-3 rounded-md transition-all flex items-center justify-center gap-2 text-center">
+                    Install trust anchor
+                </a>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const $=id=>document.getElementById(id);
+    const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+    // ── FABRIC (lazy-loaded) ──
+    let fabric = null;
+    async function loadFabric() {
+        if (!fabric) {
+            const mod = await import(`https://esm.sh/@spacesprotocol/fabric-web@${FABRIC_VERSION}`);
+            fabric = mod;
+            if (typeof fabric.default === 'function') await fabric.default();
+        }
+        return fabric;
+    }
+
+    // ── HERO QUERY ──
+    const queryInput=$('heroQuery'), queryBtn=$('heroQueryBtn'), resultBody=$('resultBody'), resultDot=$('resultDot'), resultLabel=$('resultLabel');
+    let lastResolved = null;
+    let currentTab = 'records';
+
+    function syntaxHighlight(json) {
+        return json.replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*")\s*:/g, '<span class="code-prop">$1</span>:')
+                   .replace(/:\s*("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*")/g, ': <span class="code-string">$1</span>')
+                   .replace(/:\s*(true|false)/g, ': <span class="code-keyword">$1</span>')
+                   .replace(/:\s*(\d+)/g, ': <span class="text-accent">$1</span>')
+                   .replace(/:\s*(null)/g, ': <span class="text-txt-muted">$1</span>');
+    }
+
+    function renderResult(tab) {
+        currentTab = tab;
+        if (!lastResolved) return;
+        const { records, raw } = lastResolved;
+
+        if (tab === 'records') {
+            const json = JSON.stringify(records, null, 2);
+            resultBody.innerHTML = `<div class="w-full result-enter"><pre class="font-mono text-[11px] leading-6 whitespace-pre-wrap break-all">${syntaxHighlight(json)}</pre></div>`;
+        } else {
+            const json = JSON.stringify(raw, null, 2);
+            resultBody.innerHTML = `<div class="w-full result-enter"><pre class="font-mono text-[11px] leading-6 whitespace-pre-wrap break-all text-txt-secondary">${syntaxHighlight(json)}</pre></div>`;
+        }
+    }
+
+    function showResultTab(tab) {
+        currentTab = tab;
+        $('tab-records').className = 'font-mono text-[10px] font-semibold px-2 py-0.5 rounded transition-colors ' + (tab === 'records' ? 'text-accent bg-accent-dim' : 'text-txt-muted hover:text-txt-secondary');
+        $('tab-raw').className = 'font-mono text-[10px] font-semibold px-2 py-0.5 rounded transition-colors ' + (tab === 'raw' ? 'text-accent bg-accent-dim' : 'text-txt-muted hover:text-txt-secondary');
+        renderResult(tab);
+    }
+
+    async function doQuery() {
+        const q = queryInput.value.trim() || 'alice@bitcoin';
+        queryInput.value = q;
+        lastResolved = null;
+        $('resultTabs').classList.add('hidden');
+
+        resultDot.className = 'w-[5px] h-[5px] rounded-full bg-accent';
+        resultDot.style.animation = 'pulse-dot .6s ease infinite';
+        resultLabel.textContent = 'Loading library...';
+        resultLabel.className = 'font-mono text-[10px] uppercase font-semibold text-accent tracking-[0.06em]';
+        resultBody.innerHTML = '<div class="flex items-center justify-center w-full min-h-[108px]"><div class="font-mono text-[11px] text-txt-muted">Initializing...</div></div>';
+
+        try {
+            const {init, Fabric} = await loadFabric();
+            if (init) await init();
+            resultLabel.textContent = 'Resolving...';
+            resultBody.innerHTML = '<div class="flex items-center justify-center w-full min-h-[108px]"><div class="font-mono text-[11px] text-txt-muted">Querying relay network...</div></div>';
+
+            const fab = new Fabric;
+            const resolved = await fab.resolve(q);
+            resultDot.style.animation = '';
+
+            const json = resolved?.toJson();
+            const records = json?.records;
+            if (records && Array.isArray(records) && records.length > 0) {
+                lastResolved = { records, raw: json };
+                resultDot.className = 'w-[5px] h-[5px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b]';
+                resultLabel.textContent = 'Resolved';
+                resultLabel.className = 'font-mono text-[10px] uppercase font-semibold text-sp-green tracking-[0.06em]';
+                $('resultTabs').classList.remove('hidden');
+                showResultTab('records');
+            } else {
+                resultDot.className = 'w-[5px] h-[5px] rounded-full bg-txt-muted';
+                resultLabel.textContent = 'No records';
+                resultLabel.className = 'font-mono text-[10px] uppercase font-semibold text-txt-muted tracking-[0.06em]';
+                if (resolved) {
+                    lastResolved = { records: {}, raw: resolved };
+                    $('resultTabs').classList.remove('hidden');
+                    resultBody.innerHTML = `<div class="w-full result-enter text-center py-4"><div class="font-mono text-[12px] text-txt-muted mb-1">No records for <span class="text-accent">${q}</span></div><div class="font-mono text-[10px] text-txt-muted/60 mt-1">Handle exists but has no records set</div></div>`;
+                } else {
+                    resultBody.innerHTML = `<div class="w-full result-enter text-center py-4"><div class="font-mono text-[12px] text-txt-muted mb-1">Not found: <span class="text-accent">${q}</span></div><div class="font-mono text-[10px] text-txt-muted/60 mt-1">Try alice@bitcoin or satoshi@bitcoin</div></div>`;
+                }
+            }
+        } catch (e) {
+            resultDot.style.animation = '';
+            resultDot.className = 'w-[5px] h-[5px] rounded-full bg-red-400';
+            resultLabel.textContent = 'Error';
+            resultLabel.className = 'font-mono text-[10px] uppercase font-semibold text-red-400 tracking-[0.06em]';
+            resultBody.innerHTML = `<div class="w-full result-enter text-center py-4"><div class="font-mono text-[12px] text-red-400 mb-1">${e.message || 'Resolution failed'}</div></div>`;
+        }
+    }
+
+    queryBtn.addEventListener('click', doQuery);
+    queryInput.addEventListener('keydown', e => { if (e.key === 'Enter') doQuery() });
+
+    // ── CODE TABS ──
+    function switchCodeTab(lang){
+        ['rust','js','go','swift','kotlin','python'].forEach(l=>{
+            $('code-'+l).classList.toggle('hidden',l!==lang);
+            $('code-'+l).classList.toggle('block',l===lang);
+            $('tab-'+l).classList.toggle('tab-active',l===lang);
+            $('tab-'+l).classList.toggle('tab-inactive',l!==lang);
+        });
+    }
+    // Highlight code blocks on load
+    document.querySelectorAll('pre[id^="code-"] code').forEach(el => hljs.highlightElement(el));
+
+    // ── HANDLE ANIMATION ──
+    const prefixEl=$("handle-prefix"), suffixEl=$("handle-suffix"), rootEl=$("merkle-root");
+    const protocolData=[
+        {suffix:"@bitcoin",root:"0xe3b0...985a",prefixes:["alice","bob","satoshi","builder","miner"]},
+        {suffix:"@nostr",root:"0x8f2a...1b4d",prefixes:["damus","jack","relay","zap","note"]},
+        {suffix:"@dev",root:"0x5c7e...3f9a",prefixes:["api","git","status","test","main"]}
+    ];
+    const scrambleChars="abcdef0123456789";
+    function scrambleText(el,final,dur=300){
+        return new Promise(res=>{
+            const start=performance.now(),origLen=el.innerText.length;let fc=0;
+            function upd(t){
+                const p=Math.min((t-start)/dur,1);
+                if(fc++%2===0){
+                    const cl=Math.floor(origLen+(final.length-origLen)*p);
+                    let s="";const ri=Math.floor(p*final.length);
+                    for(let i=0;i<Math.max(cl,ri);i++){
+                        if(i<ri)s+=final[i];else s+=scrambleChars[Math.floor(Math.random()*16)];
+                    }
+                    el.innerText=s;
+                }
+                if(p<1)requestAnimationFrame(upd);else{el.innerText=final;res();}
+            }
+            requestAnimationFrame(upd);
+        });
+    }
+    async function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+    async function runSeq(){
+        let ni=0;
+        while(true){
+            const ns=protocolData[ni];
+            for(let i=0;i<ns.prefixes.length;i++){
+                if(i===0){
+                    scrambleText(rootEl,ns.root,250);
+                    await Promise.all([scrambleText(suffixEl,ns.suffix,400),scrambleText(prefixEl,ns.prefixes[i],400)]);
+                } else {
+                    await scrambleText(prefixEl,ns.prefixes[i],350);
+                }
+                await wait(1200);
+            }
+            ni=(ni+1)%protocolData.length;
+        }
+    }
+    document.addEventListener('DOMContentLoaded',runSeq);
+
+    // ── AUCTION ──
+    const auctionNames=['bitcoin','nostr','lightning','taproot','ordinals','mempool','satoshi','genesis','signet'];
+    let aIdx=0, bVal=47;
+    setInterval(()=>{
+        bVal--;
+        if(bVal<=0){bVal=Math.floor(80+Math.random()*64);aIdx=(aIdx+1)%auctionNames.length;const e=$('auctionName');if(e)e.textContent=auctionNames[aIdx];}
+        const e=$('blocksLeft');if(e)e.textContent=bVal;
+    },2000);
+
+    // ── FACTORY ──
+    const NAMES=['alice','bob','charlie','dave','eve','frank','grace','heidi','ivan','judy','karl','liam','mallory','nina','oscar','peggy','quinn','rupert','sybil','trent','satoshi','vitalik','hal','wei','ada','turing','gavin','nick','genesis','taproot','ordinals','nostr','bolt','nakamoto','lightning','mempool','utxo','signet'];
+    const rH=()=>{const n=pick(NAMES);return{n,f:n+'@bitcoin'};};
+    const fakeHash=()=>{let h='';for(let i=0;i<64;i++)h+='0123456789abcdef'[Math.floor(Math.random()*16)];return h;};
+    let hC=0,bC=0,cC=0,fSC=0;const BS=8;
+    const fv=$('fv'),tks=$('tks'),hChips=$('hChips'),hOut=$('hOut'),logE=$('logE'),pFill=$('pFill');
+
+    function spawn(){
+        if(!fv)return;
+        const h=rH();hC++;fSC=hC%BS||BS;
+        $('sH').textContent=hC;
+        pFill.style.width=`${(fSC/BS)*100}%`;
+        const ch=document.createElement('div');ch.className='hchip';ch.textContent=h.f;
+        hChips.prepend(ch);while(hChips.children.length>18)hChips.lastChild.remove();
+        const tk=document.createElement('div');tk.className='htk';
+        tk.innerHTML=`<span class="nm">${h.n}</span><span class="at">@</span><span class="dm">bitcoin</span>`;
+        const w=fv.offsetWidth,edge=w-240;
+        tk.style.left='-10px';tk.style.setProperty('--t',`${edge+10}px`);
+        const dur=2.5+Math.random();tk.style.animationDuration=`${dur}s`;
+        tks.appendChild(tk);
+        setTimeout(()=>sparks(edge+10,160,3),dur*810);
+        setTimeout(()=>tk.remove(),dur*1000+200);
+        if(hC%BS===0)setTimeout(()=>fCommit(),dur*830);
+        fLog(`ingested <span style="color:#e0722e">${h.f}</span>`);
+    }
+    function fCommit(){
+        bC++;cC+=BS;
+        $('sB').textContent=bC;$('sC').textContent=cC;
+        pFill.style.width='0%';
+        const hash=fakeHash();hOut.textContent='';
+        let i=0;const iv=setInterval(()=>{hOut.textContent+=hash[i];i++;if(i>=64)clearInterval(iv);},6);
+        sparks(fv.offsetWidth-120,290,6);
+        fLog(`batch <span style="color:#3fbc8b">#${bC}</span> → committed`);
+    }
+    function sparks(x,y,n){
+        for(let i=0;i<n;i++){
+            const s=document.createElement('div');s.className='spark';s.style.left=x+'px';s.style.top=y+'px';
+            s.style.setProperty('--dx',`${(Math.random()-.5)*46}px`);
+            s.style.setProperty('--dy',`${(Math.random()-.5)*46}px`);
+            s.style.background=Math.random()>.5?'#e0722e':'#3fbc8b';
+            fv.appendChild(s);setTimeout(()=>s.remove(),600);
+        }
+    }
+    function fLog(msg){
+        const e=document.createElement('div');e.className='alog-e';
+        const d=new Date();
+        const t=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+        e.innerHTML=`<span class="t">${t}</span><span class="m">${msg}</span>`;
+        logE.prepend(e);while(logE.children.length>8)logE.lastChild.remove();
+    }
+    if(fv){fLog('factory online');fLog('awaiting handles…');setInterval(spawn,1050);setTimeout(spawn,120);setTimeout(spawn,450);}
+
+    // ── RELAY ──
+    let peerVal=0;
+    const peerEl=$('peerCount'), resLogEl=$('resLog');
+    const relayNames=['alice@bitcoin','bob@nostr','satoshi@lightning','eve@taproot','hal@signet','ada@ordinals'];
+    function animatePeers(){
+        const target=12+Math.floor(Math.random()*8);
+        const step=()=>{if(peerVal<target){peerVal++;if(peerEl)peerEl.textContent=peerVal;setTimeout(step,80+Math.random()*120);}};
+        step();
+    }
+    setTimeout(animatePeers,800);
+    function addRes(){
+        if(!resLogEl)return;
+        const name=pick(relayNames);
+        const e=document.createElement('div');
+        e.className='flex items-center gap-2 font-mono text-[10px]';
+        e.style.opacity='0';e.style.transition='opacity .3s ease';
+        e.innerHTML=`<span class="text-txt-muted">→</span><span class="text-sp-blue">resolve</span><span class="text-txt-muted">(</span><span class="text-accent">"${name}"</span><span class="text-txt-muted">)</span><span class="text-sp-green ml-auto">✓ verified</span>`;
+        resLogEl.prepend(e);
+        requestAnimationFrame(()=>e.style.opacity='1');
+        while(resLogEl.children.length>4)resLogEl.lastChild.remove();
+    }
+    setInterval(addRes,3000);setTimeout(addRes,1500);
+    setInterval(()=>{peerVal+=Math.random()>.5?1:-1;peerVal=Math.max(8,Math.min(24,peerVal));if(peerEl)peerEl.textContent=peerVal;},5000);
+
+    // ── SCROLL REVEAL ──
+    const obs=new IntersectionObserver(entries=>{
+        entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+    },{threshold:.08});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+{% endblock %}

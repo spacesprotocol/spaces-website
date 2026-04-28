@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block nav_width %}max-w-[1440px]{% endblock %}
+{% block nav_badge %}<span class="font-mono text-[9px] font-semibold text-txt-muted bg-raised border border-border px-1.5 py-0.5 rounded ml-2 uppercase tracking-[0.06em]">docs</span>{% endblock %}
+
+{% block head %}
+<style>
+    .docs-sidebar a.active {
+        color: #dcdce0;
+        background-color: rgba(224, 114, 46, 0.08);
+        border-left: 2px solid #e0722e;
+    }
+    .docs-sidebar a {
+        border-left: 2px solid transparent;
+    }
+    .docs-sidebar { scrollbar-width: thin; scrollbar-color: #2a2a31 transparent; }
+    .docs-sidebar::-webkit-scrollbar { width: 3px; }
+    .docs-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .docs-sidebar::-webkit-scrollbar-thumb { background: #2a2a31; border-radius: 3px; }
+    .docs-content h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(1.6rem, 3vw, 2rem); font-weight: 700; color: #dcdce0; margin-bottom: 1rem; letter-spacing: -0.025em; line-height: 1.15; }
+    .docs-content h2 { font-family: 'DM Sans', sans-serif; font-size: 1.4rem; font-weight: 700; color: #dcdce0; margin-top: 2.5rem; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
+    .docs-content h3 { font-family: 'DM Sans', sans-serif; font-size: 1.1rem; font-weight: 700; color: #dcdce0; margin-top: 2rem; margin-bottom: 0.5rem; }
+    .docs-content h4 { font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; color: #8a8a94; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    .docs-content p { margin-bottom: 1rem; line-height: 1.65; font-size: 15px; color: #8a8a94; }
+    .docs-content ul, .docs-content ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+    .docs-content ul { list-style-type: disc; }
+    .docs-content ol { list-style-type: decimal; }
+    .docs-content li { margin-bottom: 0.375rem; line-height: 1.65; font-size: 15px; color: #8a8a94; }
+    .docs-content a { color: #e0722e; text-decoration: underline; text-underline-offset: 2px; }
+    .docs-content a:hover { color: #eb7e3a; }
+    .docs-content code:not(pre code) {
+        background: rgba(224, 114, 46, 0.08);
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-family: 'JetBrains Mono', monospace;
+        color: #e0722e;
+        border: 1px solid rgba(224, 114, 46, 0.12);
+    }
+    .docs-content pre {
+        background: #0e0e11;
+        border: 1px solid #2a2a31;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
+        overflow-x: auto;
+        font-size: 0.8rem;
+        line-height: 1.7;
+    }
+    .docs-content pre code {
+        font-family: 'JetBrains Mono', monospace;
+        background: none;
+        padding: 0;
+        border: none;
+        font-size: inherit;
+        color: #8a8a94;
+    }
+    .docs-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+    }
+    .docs-content th {
+        text-align: left;
+        padding: 0.625rem 1rem;
+        border-bottom: 1px solid #2a2a31;
+        color: #dcdce0;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+    .docs-content td:first-child {
+        white-space: nowrap;
+    }
+    .docs-content td {
+        padding: 0.625rem 1rem;
+        border-bottom: 1px solid #1f1f26;
+        vertical-align: top;
+        color: #8a8a94;
+    }
+    .docs-content blockquote {
+        border-left: 3px solid #e0722e;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        background: rgba(224, 114, 46, 0.05);
+        border-radius: 0 6px 6px 0;
+    }
+    .docs-content blockquote p { margin-bottom: 0; }
+    .docs-content hr {
+        border: none;
+        border-top: 1px solid #1f1f26;
+        margin: 2rem 0;
+    }
+    .docs-content strong { color: #dcdce0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-[1440px] mx-auto px-8 pt-24 pb-16 flex gap-12">
+    <!-- Sidebar -->
+    <aside class="docs-sidebar hidden lg:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto">
+        <nav class="flex flex-col gap-8 text-sm pb-8">
+            {% set docs_section = get_section(path="docs/_index.md") %}
+
+            <!-- Use -->
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Use</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set gs = get_section(path="docs/use/_index.md") %}
+                    {% for page in gs.pages %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endfor %}
+                    <a href="/editor" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">
+                        Records
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Developers -->
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Developers</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set gs = get_section(path="docs/developers/_index.md") %}
+                    {% for p in gs.pages %}
+                    {% if p.title != "Specification" %}
+                    <a href="{{ p.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == p.path %}active{% endif %}">
+                        {{ p.title }}
+                    </a>
+                    {% if p.extra.toc is defined %}
+                    <nav class="flex flex-col gap-0.5 mt-1 mb-1">
+                        {% for item in p.extra.toc %}
+                        <a href="{{ p.permalink }}#{{ item.anchor }}" class="px-3 pl-6 py-1 rounded-r-md font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors">{{ item.label }}</a>
+                        {% endfor %}
+                    </nav>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Learn</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set gs = get_section(path="docs/learn/_index.md") %}
+                    {% for page in gs.pages %}
+                    {% if page.title != "Resolution" %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                    {% set tl = get_section(path="docs/top-level/_index.md") %}
+                    <span class="px-3 pt-3 pb-1 font-mono text-[9px] text-txt-muted uppercase tracking-[0.08em] font-semibold">Top level names</span>
+                    {% for page in tl.pages %}
+                    <a href="{{ page.permalink }}" class="px-3 pl-5 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Infra</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set infra = get_section(path="docs/infra/_index.md") %}
+                    {% for page in infra.pages %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endfor %}
+                    {% for subsection in infra.subsections %}
+                        {% set sub = get_section(path=subsection) %}
+                        <span class="px-3 pt-3 pb-1 font-mono text-[9px] text-txt-muted uppercase tracking-[0.08em] font-semibold">{{ sub.title }}</span>
+                        {% for page in sub.pages %}
+                        <a href="{{ page.permalink }}" class="px-3 pl-5 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                            {{ page.title }}
+                        </a>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Deep Dive -->
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Deep Dive</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set learn = get_section(path="docs/learn/_index.md") %}
+                    {% for page in learn.pages %}
+                    {% if page.title == "Resolution" %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                    {% set devs = get_section(path="docs/developers/_index.md") %}
+                    {% for page in devs.pages %}
+                    {% if page.title == "Specification" %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                    <a href="/paper" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">
+                        White Paper
+                    </a>
+                </div>
+            </div>
+
+
+
+        </nav>
+    </aside>
+
+    <!-- Content -->
+    <article class="docs-content min-w-0 max-w-3xl flex-1">
+        {{ page.content | safe }}
+    </article>
+</div>
+<script>
+(function() {
+    var sb = document.querySelector('.docs-sidebar');
+    if (!sb) return;
+    var key = 'docs-sidebar-scroll';
+    var saved = sessionStorage.getItem(key);
+    if (saved) sb.scrollTop = parseInt(saved, 10);
+    sb.addEventListener('scroll', function() {
+        sessionStorage.setItem(key, sb.scrollTop);
+    });
+})();
+</script>
+{% endblock %}
