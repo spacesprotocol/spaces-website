@@ -1,5 +1,4 @@
 name = 'spaces-website'
-pages_build_output_dir = "public"
 
 [vars]
 ZOLA_VERSION = "0.22.1"
