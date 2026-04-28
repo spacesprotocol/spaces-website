@@ -1,7 +1,6 @@
 name = 'spaces-website'
-
-[vars]
-ZOLA_VERSION = "0.22.1"
+compatibility_date = "2026-04-28"
 
 [assets]
 directory = './public'
+not_found_handling = "404-page"
