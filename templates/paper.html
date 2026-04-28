@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+
+{% block head %}
+<meta name="author" content="M. Carson, Buffrr">
+<meta name="citation_author" content="M. Carson">
+<meta name="citation_author" content="Buffrr">
+<meta name="citation_title" content="Spaces Protocol: Scalable &amp; Permissionless Bitcoin Identities">
+<meta name="citation_publication_date" content="2024">
+<meta name="citation_technical_report_institution" content="Impervious">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Anybody:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    /* ── Blueprint CSS Variables ── */
+    :root {
+        --bp-deep: #0a1628;
+        --bp-base: #0d1f3c;
+        --bp-mid: #122a4e;
+        --bp-line: #1e4a7a;
+        --bp-line-soft: rgba(30, 74, 122, 0.4);
+        --bp-line-faint: rgba(30, 74, 122, 0.18);
+        --bp-text: #c8ddf5;
+        --bp-text-bright: #e8f0fb;
+        --bp-text-dim: #6b8bb5;
+        --bp-text-muted: #3d6494;
+        --bp-accent: #4da8da;
+        --bp-accent-bright: #7ec8f0;
+        --bp-accent-glow: rgba(77, 168, 218, 0.15);
+        --bp-orange: #e0722e;
+        --bp-orange-dim: rgba(224, 114, 46, 0.2);
+        --bp-grid-color: rgba(30, 74, 122, 0.12);
+        --bp-grid-strong: rgba(30, 74, 122, 0.22);
+    }
+
+    /* ── Override body for blueprint theme ── */
+    body {
+        font-family: 'IBM Plex Mono', monospace !important;
+        background: var(--bp-deep) !important;
+        color: var(--bp-text) !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        line-height: 1.7;
+    }
+
+    ::selection { background: rgba(77, 168, 218, 0.3); color: #fff; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bp-deep); }
+    ::-webkit-scrollbar-thumb { background: var(--bp-line); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--bp-accent); }
+
+    /* ── Override nav to match blueprint theme ── */
+    nav.fixed,
+    body nav,
+    nav {
+        background: rgba(10, 22, 40, 0.88) !important;
+        border-bottom-color: var(--bp-line-soft) !important;
+    }
+    nav a.flex.items-center span {
+        color: var(--bp-text-bright) !important;
+    }
+    nav .hidden a.font-mono {
+        color: var(--bp-text-muted) !important;
+    }
+    nav .hidden a.font-mono:hover {
+        color: var(--bp-accent) !important;
+    }
+    nav .hidden a.bg-accent {
+        color: var(--bp-deep) !important;
+        background: var(--bp-accent) !important;
+    }
+    nav .hidden a.bg-accent:hover {
+        background: var(--bp-accent-bright) !important;
+    }
+
+    /* ── Override footer to match blueprint theme ── */
+    footer {
+        border-top-color: var(--bp-line-faint) !important;
+        background: transparent !important;
+    }
+    footer span, footer a {
+        color: var(--bp-text-muted) !important;
+    }
+    footer a:hover {
+        color: var(--bp-accent) !important;
+    }
+
+    /* ── Grid background ── */
+    .blueprint-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+            linear-gradient(var(--bp-grid-color) 1px, transparent 1px),
+            linear-gradient(90deg, var(--bp-grid-color) 1px, transparent 1px),
+            linear-gradient(var(--bp-grid-strong) 1px, transparent 1px),
+            linear-gradient(90deg, var(--bp-grid-strong) 1px, transparent 1px);
+        background-size:
+            24px 24px,
+            24px 24px,
+            120px 120px,
+            120px 120px;
+        background-position: -1px -1px;
+    }
+    .blueprint-bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 0%, transparent 40%, var(--bp-deep) 80%);
+    }
+
+    /* ── Main container ── */
+    .paper-wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 888px;
+        margin: 0 auto;
+        padding: 100px 2rem 80px;
+    }
+
+    /* ── Blueprint border frame ── */
+    .paper-frame {
+        border: 1px solid var(--bp-line-soft);
+        border-radius: 2px;
+        padding: 48px 52px 60px;
+        position: relative;
+        background: rgba(10, 22, 40, 0.5);
+        animation: fadeIn 0.6s ease forwards;
+    }
+    .paper-frame::before {
+        content: '';
+        position: absolute;
+        inset: 6px;
+        border: 1px solid var(--bp-line-faint);
+        border-radius: 1px;
+        pointer-events: none;
+    }
+
+    /* ── Corner marks ── */
+    .corner-mark {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        pointer-events: none;
+    }
+    .corner-mark::before, .corner-mark::after {
+        content: '';
+        position: absolute;
+        background: var(--bp-line);
+    }
+    .corner-mark--tl { top: -1px; left: -1px; }
+    .corner-mark--tl::before { top: 0; left: 0; width: 16px; height: 1px; }
+    .corner-mark--tl::after { top: 0; left: 0; width: 1px; height: 16px; }
+    .corner-mark--tr { top: -1px; right: -1px; }
+    .corner-mark--tr::before { top: 0; right: 0; width: 16px; height: 1px; }
+    .corner-mark--tr::after { top: 0; right: 0; width: 1px; height: 16px; }
+    .corner-mark--bl { bottom: -1px; left: -1px; }
+    .corner-mark--bl::before { bottom: 0; left: 0; width: 16px; height: 1px; }
+    .corner-mark--bl::after { bottom: 0; left: 0; width: 1px; height: 16px; }
+    .corner-mark--br { bottom: -1px; right: -1px; }
+    .corner-mark--br::before { bottom: 0; right: 0; width: 16px; height: 1px; }
+    .corner-mark--br::after { bottom: 0; right: 0; width: 1px; height: 16px; }
+
+    /* ── Header block ── */
+    .rfc-header {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 24px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid var(--bp-line-faint);
+        font-size: 12px;
+        line-height: 1.9;
+        color: var(--bp-text-dim);
+    }
+    .rfc-header-right { text-align: right; }
+
+    /* ── Typography ── */
+    .paper-frame h1 {
+        font-family: 'Anybody', sans-serif;
+        font-weight: 800;
+        font-size: 2rem;
+        line-height: 1.25;
+        color: var(--bp-text-bright);
+        margin: 2.8em 0 0.8em;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+        position: relative;
+        padding-left: 20px;
+    }
+    .paper-frame h1::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.15em;
+        bottom: 0.15em;
+        width: 3px;
+        background: var(--bp-accent);
+        border-radius: 1px;
+    }
+    .paper-frame h1:first-of-type { margin-top: 0; }
+
+    .paper-frame h2 {
+        font-family: 'Anybody', sans-serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        line-height: 1.3;
+        color: var(--bp-accent);
+        margin: 2.2em 0 0.7em;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .paper-frame h3 {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--bp-text-bright);
+        margin: 1.5em 0 0.5em;
+    }
+
+    .paper-frame p {
+        margin: 1em 0;
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--bp-text);
+    }
+
+    .paper-frame strong { color: var(--bp-text-bright); font-weight: 600; }
+
+    .paper-frame a {
+        color: var(--bp-accent);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s, color 0.2s;
+    }
+    .paper-frame a:hover {
+        color: var(--bp-accent-bright);
+        border-bottom-color: var(--bp-accent-bright);
+    }
+
+    /* ── Blockquote / Note ── */
+    .paper-frame blockquote {
+        margin: 1.5em 0;
+        padding: 14px 18px;
+        border-left: 3px solid var(--bp-orange);
+        background: var(--bp-orange-dim);
+        border-radius: 0 3px 3px 0;
+    }
+    .paper-frame blockquote p {
+        color: var(--bp-text);
+        margin: 0;
+        font-size: 13px;
+    }
+
+    /* ── Code ── */
+    .paper-frame code:not(pre code) {
+        background: rgba(30, 74, 122, 0.2);
+        border: 1px solid var(--bp-line-faint);
+        border-radius: 3px;
+        padding: 1px 5px;
+        font-size: 0.85em;
+        color: var(--bp-accent-bright);
+    }
+
+    .paper-frame pre {
+        margin: 1.5em 0 2em;
+        padding: 20px 24px;
+        background: rgba(10, 22, 40, 0.7);
+        border: 1px solid var(--bp-line-soft);
+        border-radius: 3px;
+        overflow-x: auto;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--bp-text);
+    }
+    .paper-frame pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+
+    /* ── Lists ── */
+    .paper-frame ul, .paper-frame ol {
+        margin: 1em 0;
+        padding-left: 1.8em;
+        font-size: 14px;
+    }
+    .paper-frame li { margin: 0.35em 0; }
+    .paper-frame li::marker { color: var(--bp-text-muted); }
+
+    /* ── TOC ── */
+    .rfc-toc {
+        margin: 1em 0 1.5em;
+        padding-left: 0;
+        list-style: none;
+    }
+    .rfc-toc li {
+        margin: 2px 0;
+        font-size: 13px;
+    }
+    .rfc-toc a {
+        color: var(--bp-text-dim);
+        border-bottom: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: color 0.15s, padding-left 0.15s;
+    }
+    .rfc-toc a:hover {
+        color: var(--bp-accent);
+        padding-left: 4px;
+    }
+    .rfc-toc a::before {
+        content: '\203A';
+        color: var(--bp-line);
+        font-weight: 300;
+        transition: color 0.15s;
+    }
+    .rfc-toc a:hover::before { color: var(--bp-accent); }
+
+    /* ── Figures ── */
+    .rfc-fig {
+        margin: 2.5em 0;
+        text-align: center;
+    }
+    .rfc-fig img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto 12px;
+        border: 1px solid var(--bp-line-faint);
+        border-radius: 3px;
+        padding: 12px;
+        background: rgba(10, 22, 40, 0.6);
+        filter: invert(0.85) sepia(0.3) saturate(1.5) hue-rotate(180deg) brightness(0.9);
+    }
+    .rfc-fig svg {
+        display: block;
+        margin: 0 auto;
+    }
+    .rfc-fig figcaption {
+        font-size: 11px;
+        color: var(--bp-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-top: 8px;
+    }
+
+    /* ── Horizontal rules (section dividers) ── */
+    .paper-frame hr {
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--bp-line-soft) 20%, var(--bp-line-soft) 80%, transparent);
+        margin: 3em 0;
+    }
+
+    /* ── References ── */
+    .rfc-refs {
+        padding-left: 1.5em;
+        font-size: 12px;
+    }
+    .rfc-refs li {
+        margin: 0.6em 0;
+        color: var(--bp-text-dim);
+    }
+    .rfc-refs a { word-break: break-all; }
+
+    /* ── Section numbering tick marks ── */
+    .section-tick {
+        display: inline-block;
+        width: 8px;
+        height: 1px;
+        background: var(--bp-accent);
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    /* ── Drawing reference stamp ── */
+    .dwg-stamp {
+        margin-top: 3em;
+        padding-top: 1.5em;
+        border-top: 1px solid var(--bp-line-faint);
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--bp-text-muted);
+    }
+    .dwg-stamp > div {
+        padding: 8px 12px;
+        border: 1px solid var(--bp-line-faint);
+        margin: -0.5px;
+    }
+    .dwg-stamp .label { font-size: 8px; color: var(--bp-line); margin-bottom: 2px; }
+
+    /* ── Animations ── */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+        .paper-frame { padding: 28px 20px 36px; }
+        .paper-frame h1 { font-size: 1.5rem; }
+        .paper-frame h2 { font-size: 1.1rem; }
+        .rfc-header { flex-direction: column; gap: 8px; }
+        .rfc-header-right { text-align: left; }
+        .dwg-stamp { grid-template-columns: 1fr 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="blueprint-bg"></div>
+
+<div class="paper-wrap">
+    <div class="paper-frame">
+        <div class="corner-mark corner-mark--tl"></div>
+        <div class="corner-mark corner-mark--tr"></div>
+        <div class="corner-mark corner-mark--bl"></div>
+        <div class="corner-mark corner-mark--br"></div>
+
+        {{ section.content | safe }}
+    </div>
+</div>
+{% endblock %}

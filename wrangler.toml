@@ -1,0 +1,6 @@
+name = 'spaces-website'
+compatibility_date = "2026-04-28"
+
+[assets]
+directory = './public'
+not_found_handling = "404-page"

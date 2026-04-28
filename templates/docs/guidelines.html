@@ -1,0 +1,746 @@
+{% extends "base.html" %}
+
+{% block nav_width %}max-w-[1440px]{% endblock %}
+{% block nav_badge %}<span class="font-mono text-[9px] font-semibold text-txt-muted bg-raised border border-border px-1.5 py-0.5 rounded ml-2 uppercase tracking-[0.06em]">docs</span>{% endblock %}
+
+{% block head %}
+<style>
+    .docs-sidebar a.active {
+        color: #dcdce0;
+        background-color: rgba(224, 114, 46, 0.08);
+        border-left: 2px solid #e0722e;
+    }
+    .docs-sidebar a {
+        border-left: 2px solid transparent;
+    }
+    .docs-sidebar { scrollbar-width: thin; scrollbar-color: #2a2a31 transparent; }
+    .docs-sidebar::-webkit-scrollbar { width: 3px; }
+    .docs-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .docs-sidebar::-webkit-scrollbar-thumb { background: #2a2a31; border-radius: 3px; }
+    .docs-content h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(1.6rem, 3vw, 2rem); font-weight: 700; color: #dcdce0; margin-bottom: 1rem; letter-spacing: -0.025em; line-height: 1.15; }
+    .docs-content h2 { font-family: 'DM Sans', sans-serif; font-size: 1.4rem; font-weight: 700; color: #dcdce0; margin-top: 2.5rem; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
+    .docs-content h3 { font-family: 'DM Sans', sans-serif; font-size: 1.1rem; font-weight: 700; color: #dcdce0; margin-top: 2rem; margin-bottom: 0.5rem; }
+    .docs-content h4 { font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; color: #8a8a94; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    .docs-content p { margin-bottom: 1rem; line-height: 1.65; font-size: 15px; color: #8a8a94; }
+    .docs-content ul, .docs-content ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+    .docs-content ul { list-style-type: disc; }
+    .docs-content ol { list-style-type: decimal; }
+    .docs-content li { margin-bottom: 0.375rem; line-height: 1.65; font-size: 15px; color: #8a8a94; }
+    .docs-content a { color: #e0722e; text-decoration: underline; text-underline-offset: 2px; }
+    .docs-content a:hover { color: #eb7e3a; }
+    .docs-content code:not(pre code) {
+        background: rgba(224, 114, 46, 0.08);
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-family: 'JetBrains Mono', monospace;
+        color: #e0722e;
+        border: 1px solid rgba(224, 114, 46, 0.12);
+    }
+    .docs-content pre {
+        background: #0e0e11;
+        border: 1px solid #2a2a31;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
+        overflow-x: auto;
+        font-size: 0.8rem;
+        line-height: 1.7;
+    }
+    .docs-content pre code {
+        font-family: 'JetBrains Mono', monospace;
+        background: none;
+        padding: 0;
+        border: none;
+        font-size: inherit;
+        color: #8a8a94;
+    }
+    .docs-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+    }
+    .docs-content th {
+        text-align: left;
+        padding: 0.625rem 1rem;
+        border-bottom: 1px solid #2a2a31;
+        color: #dcdce0;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+    .docs-content td:first-child {
+        white-space: nowrap;
+    }
+    .docs-content td {
+        padding: 0.625rem 1rem;
+        border-bottom: 1px solid #1f1f26;
+        vertical-align: top;
+        color: #8a8a94;
+    }
+    .docs-content blockquote {
+        border-left: 3px solid #e0722e;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        background: rgba(224, 114, 46, 0.05);
+        border-radius: 0 6px 6px 0;
+    }
+    .docs-content blockquote p { margin-bottom: 0; }
+    .docs-content hr {
+        border: none;
+        border-top: 1px solid #1f1f26;
+        margin: 2rem 0;
+    }
+    .docs-content strong { color: #dcdce0; }
+    .doc-p{color:#8a8a94;font-size:15px;line-height:1.75}
+    .doc-p strong{color:#dcdce0;font-weight:600}
+    .doc-p code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#1c1c22;border:1px solid #2a2a31;padding:1px 6px;border-radius:4px;color:#dcdce0}
+    .gl-do{border-left:3px solid #3fbc8b}
+    .gl-dont{border-left:3px solid #e05e5e}
+    .app{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif}
+    #tocNav .toc-link.active{color:#8a8a94;background:none;border-left-color:transparent}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-[1440px] mx-auto px-8 pt-24 pb-16 flex gap-12">
+    <!-- Sidebar -->
+    <aside class="docs-sidebar hidden lg:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto">
+        <nav class="flex flex-col gap-8 text-sm pb-8">
+            {% set docs_section = get_section(path="docs/_index.md") %}
+
+            <!-- Use -->
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Use</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set gs = get_section(path="docs/use/_index.md") %}
+                    {% for page in gs.pages %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endfor %}
+                    <a href="/editor" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">
+                        Records
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Developers -->
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Developers</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set gs = get_section(path="docs/developers/_index.md") %}
+                    {% for p in gs.pages %}
+                    {% if p.title != "Specification" %}
+                    <a href="{{ p.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == p.path %}active{% endif %}">
+                        {{ p.title }}
+                    </a>
+                    {% if p.extra.toc is defined %}
+                    <nav {% if p.title == 'Design Guidelines' %}id="tocNav"{% endif %} class="flex flex-col gap-0.5 mt-1 mb-1">
+                        {% for item in p.extra.toc %}
+                        <a href="{% if p.title == 'Design Guidelines' %}#{{ item.anchor }}{% else %}{{ p.permalink }}#{{ item.anchor }}{% endif %}" class="toc-link px-3 pl-6 py-1 rounded-r-md font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors">{{ item.label }}</a>
+                        {% endfor %}
+                    </nav>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Learn</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set gs = get_section(path="docs/learn/_index.md") %}
+                    {% for page in gs.pages %}
+                    {% if page.title != "Resolution" %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                    {% set tl = get_section(path="docs/top-level/_index.md") %}
+                    <span class="px-3 pt-3 pb-1 font-mono text-[9px] text-txt-muted uppercase tracking-[0.08em] font-semibold">Top level names</span>
+                    {% for page in tl.pages %}
+                    <a href="{{ page.permalink }}" class="px-3 pl-5 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Infra</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set infra = get_section(path="docs/infra/_index.md") %}
+                    {% for page in infra.pages %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endfor %}
+                    {% for subsection in infra.subsections %}
+                        {% set sub = get_section(path=subsection) %}
+                        <span class="px-3 pt-3 pb-1 font-mono text-[9px] text-txt-muted uppercase tracking-[0.08em] font-semibold">{{ sub.title }}</span>
+                        {% for page in sub.pages %}
+                        <a href="{{ page.permalink }}" class="px-3 pl-5 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                            {{ page.title }}
+                        </a>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Deep Dive -->
+            <div>
+                <h4 class="font-mono text-txt-muted font-semibold text-[10px] uppercase tracking-[0.1em] mb-3 px-3">Deep Dive</h4>
+                <div class="flex flex-col gap-0.5">
+                    {% set learn = get_section(path="docs/learn/_index.md") %}
+                    {% for page in learn.pages %}
+                    {% if page.title == "Resolution" %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                    {% set devs = get_section(path="docs/developers/_index.md") %}
+                    {% for page in devs.pages %}
+                    {% if page.title == "Specification" %}
+                    <a href="{{ page.permalink }}" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors {% if current_path == page.path %}active{% endif %}">
+                        {{ page.title }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                    <a href="/paper" class="px-3 py-1.5 rounded-r-md font-mono text-[12px] text-txt-muted hover:text-txt-secondary hover:bg-raised/50 transition-colors">
+                        White Paper
+                    </a>
+                </div>
+            </div>
+
+
+
+        </nav>
+    </aside>
+
+    <!-- Content -->
+    <article class="docs-content min-w-0 max-w-3xl flex-1">
+        <h1 class="text-[1.6rem] font-bold text-txt-primary tracking-[-0.03em] mb-2">Design Guidelines</h1>
+        <p class="doc-p mb-12">How apps should communicate trust, verification, and sovereignty when integrating Spaces. These guidelines help ensure users understand what they can trust and why.</p>
+
+        <div class="mb-20" id="sovereignty">
+  <h2 class="text-xl font-bold text-txt-primary tracking-tight mb-3">Badges</h2>
+  <p class="doc-p mb-6">Use <code>fabric.badge(resolved)</code> to determine how to display a handle. The badge communicates the trust level to users at a glance - like a verified checkmark on social media.</p>
+
+  <!-- Sovereign in context: Nostr chat -->
+  <h3 class="text-[15px] font-bold text-txt-primary mb-4" id="badge-sovereign">Orange <span class="font-mono text-[12px] text-txt-muted font-normal ml-1">badge() = "Orange"</span></h3>
+  <p class="doc-p mb-5">Handle is sovereign (finalized on Bitcoin) and verified against a trusted anchor. The orange checkmark is the highest trust level.</p>
+
+  <div class="flex items-center justify-center my-10">
+    <!-- iPhone 15 -->
+    <div class="relative w-[300px] h-[650px] rounded-[50px] shadow-[0_0_2px_2px_rgba(255,255,255,0.1)] border-8 border-zinc-900">
+      <div class="absolute top-2 left-1/2 -translate-x-1/2 w-[90px] h-[22px] bg-zinc-900 rounded-full z-20"></div>
+      <div class="absolute -inset-[1px] border-[3px] border-zinc-700/40 rounded-[42px] pointer-events-none"></div>
+      <!-- Screen: Nostr-like messaging app -->
+      <div class="relative w-full h-full rounded-[42px] overflow-hidden bg-black app">
+        <!-- Status bar -->
+        <div class="flex items-center justify-between px-7 pt-4 pb-1 text-white text-[13px] font-semibold">
+          <span>22:22</span>
+          <div class="flex items-center gap-1.5">
+            <svg width="14" height="10" viewBox="0 0 16 12" fill="white"><rect x="0" y="5" width="2.5" height="7" rx=".5" opacity=".35"/><rect x="4" y="3.5" width="2.5" height="8.5" rx=".5" opacity=".55"/><rect x="8" y="1.5" width="2.5" height="10.5" rx=".5" opacity=".8"/><rect x="12" y="0" width="2.5" height="12" rx=".5"/></svg>
+            <svg width="13" height="10" viewBox="0 0 15 12" fill="white"><path d="M7.5 3.6C9.6 3.6 11.4 4.4 12.8 5.7L14.2 4.3C12.4 2.6 10.1 1.5 7.5 1.5C4.9 1.5 2.6 2.6 .8 4.3L2.2 5.7C3.6 4.4 5.4 3.6 7.5 3.6ZM7.5 7.2C8.6 7.2 9.6 7.6 10.4 8.3L11.8 6.9C10.6 5.8 9.1 5.1 7.5 5.1C5.9 5.1 4.4 5.8 3.2 6.9L4.6 8.3C5.4 7.6 6.4 7.2 7.5 7.2ZM9 10.5C9 9.7 8.3 9 7.5 9C6.7 9 6 9.7 6 10.5C6 11.3 6.7 12 7.5 12C8.3 12 9 11.3 9 10.5Z"/></svg>
+            <svg width="22" height="10" viewBox="0 0 25 12" fill="white"><rect x="0" y="1" width="21" height="10" rx="2" stroke="white" stroke-width="1" fill="none"/><rect x="22" y="4" width="2" height="4" rx=".5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1"/></svg>
+          </div>
+        </div>
+        <!-- Chat header -->
+        <div class="flex items-center gap-3 px-5 py-3 border-b border-white/5">
+          <svg width="10" height="16" viewBox="0 0 10 16" fill="white" opacity=".5"><path d="M8.5 1L1.5 8L8.5 15" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+          <div class="w-9 h-9 rounded-full flex items-center justify-center" style="background:linear-gradient(135deg,#e0722e,#eb7e3a)"><span class="text-[14px] font-bold text-white">A</span></div>
+          <div>
+            <div class="flex items-center gap-1">
+              <span class="text-[15px] font-semibold text-white">alice@bitcoin</span>
+              <svg width="15" height="15" viewBox="0 0 22 22" fill="none"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.855-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.69-.13.636-.08 1.297.144 1.907-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.61-.273 1.271-.143 1.908.13.635.433 1.22.877 1.689.47.443 1.054.747 1.687.878.635.13 1.296.079 1.907-.145.271.587.702 1.087 1.242 1.442.54.355 1.17.555 1.816.574.646-.02 1.274-.218 1.815-.574.54-.355.971-.855 1.244-1.442.61.224 1.271.273 1.908.143.635-.13 1.22-.433 1.689-.877.443-.47.747-1.054.878-1.689.13-.635.079-1.296-.145-1.908.588-.273 1.088-.704 1.444-1.244.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z" fill="#e0722e"/></svg>
+            </div>
+            <span class="text-[11px] text-white/35">last seen 22m ago</span>
+          </div>
+        </div>
+        <!-- Messages -->
+        <div class="px-4 py-4 space-y-3 flex-1 overflow-hidden">
+          <!-- Your message (right, orange) -->
+          <div class="flex justify-end">
+            <div class="bg-[#e0722e] rounded-2xl rounded-br-md px-3.5 py-2 max-w-[200px]">
+              <span class="text-[13px] text-white leading-relaxed">Hey! do you know how to make pancakes?</span>
+            </div>
+          </div>
+          <!-- Alice's reply (left, gray) -->
+          <div class="flex gap-2 items-end mt-2">
+            <div class="bg-white/[0.08] rounded-2xl rounded-bl-md px-3.5 py-2 max-w-[200px]">
+              <span class="text-[13px] text-white/80 leading-relaxed">Yes but only during a full moon</span>
+            </div>
+          </div>
+          <!-- Your follow-up (right, orange) -->
+          <div class="flex justify-end mt-2">
+            <div class="bg-[#e0722e] rounded-2xl rounded-br-md px-3.5 py-2 max-w-[210px]">
+              <span class="text-[13px] text-white leading-relaxed">...what happens if you try on a normal day?</span>
+            </div>
+          </div>
+          <div class="text-[10px] text-white/20 text-right pr-1 mt-1.5">Seen 22 hours ago</div>
+        </div>
+        <!-- Input -->
+        <div class="absolute bottom-6 left-3 right-3">
+          <div class="bg-white/[0.06] rounded-full px-4 py-2.5 flex items-center">
+            <span class="text-[14px] text-white/25 flex-1">Message</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="white" stroke-opacity=".3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+      <!-- Buttons -->
+      <div class="absolute left-[-12px] top-20 w-[6px] h-8 bg-zinc-900 rounded-l-md shadow-md"></div>
+      <div class="absolute left-[-12px] top-36 w-[6px] h-12 bg-zinc-900 rounded-l-md shadow-md"></div>
+      <div class="absolute left-[-12px] top-52 w-[6px] h-12 bg-zinc-900 rounded-l-md shadow-md"></div>
+      <div class="absolute right-[-12px] top-36 w-[6px] h-16 bg-zinc-900 rounded-r-md shadow-md"></div>
+    </div>
+  </div>
+  <div class="text-center mt-4 mb-10">
+    <span class="font-mono text-[11px] text-txt-muted">A messaging app showing the orange sovereign badge next to the handle in the chat header</span>
+  </div>
+
+  <!-- Pending -->
+  <h3 class="text-[15px] font-bold text-txt-primary mb-4" id="badge-unverified">Unverified <span class="font-mono text-[12px] text-txt-muted font-normal ml-1">badge() = "Unverified"</span></h3>
+  <p class="doc-p mb-5">No trust anchor has been pinned (neither trusted nor semi-trusted). The handle was resolved against peer-observed state only. Apps should indicate that verification is not active.</p>
+
+  <h3 class="text-[15px] font-bold text-txt-primary mb-4" id="badge-none">None <span class="font-mono text-[12px] text-txt-muted font-normal ml-1">badge() = "None"</span></h3>
+  <p class="doc-p mb-5"><strong>No badge.</strong> The handle was verified against a semi-trusted anchor but is not sovereign, or it is pending or dependent. Display it like a regular username - no checkmark, no warning. The absence of the badge <em>is</em> the signal.</p>
+
+  <div class="bg-surface border border-border rounded-xl p-5 my-8">
+    <div class="text-[11px] text-txt-muted mb-3 app">Example: contact list with trusted anchor pinned</div>
+    <div class="space-y-3">
+      <!-- alice - badge() = Orange -->
+      <div class="flex items-center gap-3 bg-base rounded-xl p-3 border border-border">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#e0722e,#eb7e3a)"><span class="text-[14px] font-bold text-white app">A</span></div>
+        <div class="flex-1 app">
+          <div class="flex items-center gap-1">
+            <span class="text-[14px] font-semibold text-txt-primary">alice@bitcoin</span>
+            <svg width="15" height="15" viewBox="0 0 22 22" fill="none"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.855-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.69-.13.636-.08 1.297.144 1.907-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.61-.273 1.271-.143 1.908.13.635.433 1.22.877 1.689.47.443 1.054.747 1.687.878.635.13 1.296.079 1.907-.145.271.587.702 1.087 1.242 1.442.54.355 1.17.555 1.816.574.646-.02 1.274-.218 1.815-.574.54-.355.971-.855 1.244-1.442.61.224 1.271.273 1.908.143.635-.13 1.22-.433 1.689-.877.443-.47.747-1.054.878-1.689.13-.635.079-1.296-.145-1.908.588-.273 1.088-.704 1.444-1.244.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z" fill="#e0722e"/></svg>
+          </div>
+          <span class="text-[12px] text-txt-muted">Hey! Can you send me the...</span>
+        </div>
+      </div>
+      <!-- bob - badge() = None -->
+      <div class="flex items-center gap-3 bg-base rounded-xl p-3 border border-border">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#5e9de0,#4a8fd4)"><span class="text-[14px] font-bold text-white app">B</span></div>
+        <div class="flex-1 app">
+          <div class="flex items-center gap-1">
+            <span class="text-[14px] font-semibold text-txt-primary">bob@nostr</span>
+          </div>
+          <span class="text-[12px] text-txt-muted">Sent you a zap ⚡</span>
+        </div>
+      </div>
+      <!-- dave - badge() = Unverified -->
+      <div class="flex items-center gap-3 bg-base rounded-xl p-3 border border-border">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"><span class="text-[14px] font-bold text-white app">D</span></div>
+        <div class="flex-1 app">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[14px] font-semibold text-txt-primary">dave@bitcoin</span>
+            <span class="text-[8px] font-semibold px-1.5 py-0.5 rounded-md uppercase" style="background:rgba(212,169,78,.12);color:#d4a94e;letter-spacing:.03em">unverified</span>
+          </div>
+          <span class="text-[12px] text-txt-muted">Check out this relay</span>
+        </div>
+      </div>
+      <!-- carol - badge() = None -->
+      <div class="flex items-center gap-3 bg-base rounded-xl p-3 border border-border">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-raised border border-border"><span class="text-[14px] font-bold text-txt-muted app">C</span></div>
+        <div class="flex-1 app">
+          <div class="flex items-center gap-1">
+            <span class="text-[14px] font-semibold text-txt-primary">carol@exchange</span>
+          </div>
+          <span class="text-[12px] text-txt-muted">Your withdrawal is ready</span>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 pt-3 border-t border-border-subtle text-[11px] text-txt-muted leading-relaxed app space-y-2">
+      <div><strong class="text-txt-secondary">alice</strong> <code style="font-size:10px">badge() = "Orange"</code> Sovereign + trusted anchor.</div>
+      <div><strong class="text-txt-secondary">bob</strong> <code style="font-size:10px">badge() = "None"</code> Pending, no badge.</div>
+      <div><strong class="text-txt-secondary">dave</strong> <code style="font-size:10px">badge() = "Unverified"</code> No trust anchor pinned, resolved against observed state only.</div>
+      <div><strong class="text-txt-secondary">carol</strong> <code style="font-size:10px">badge() = "None"</code> Dependent, never gets a badge.</div>
+    </div>
+  </div>
+
+  <!-- Quick reference table -->
+  <h3 class="text-[15px] font-bold text-txt-primary mb-4" id="badge-reference">Quick reference</h3>
+  <div class="bg-surface border border-border rounded-xl overflow-hidden mb-6">
+    <table class="w-full">
+      <thead><tr class="border-b border-border-subtle">
+        <th class="text-left px-5 py-3 font-mono text-[10px] text-txt-muted uppercase tracking-[0.06em]">badge()</th>
+        <th class="text-left px-5 py-3 font-mono text-[10px] text-txt-muted uppercase tracking-[0.06em]">Meaning</th>
+        <th class="text-left px-5 py-3 font-mono text-[10px] text-txt-muted uppercase tracking-[0.06em]">Display</th>
+      </tr></thead>
+      <tbody class="text-[12px]">
+      <tr class="border-b border-border-subtle"><td class="px-5 py-3 font-mono text-accent font-semibold">Orange</td><td class="px-5 py-3 text-txt-secondary">Sovereign + verified against trusted anchor</td><td class="px-5 py-3"><svg class="inline-block align-middle" width="16" height="16" viewBox="0 0 22 22" fill="none"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.855-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.69-.13.636-.08 1.297.144 1.907-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.61-.273 1.271-.143 1.908.13.635.433 1.22.877 1.689.47.443 1.054.747 1.687.878.635.13 1.296.079 1.907-.145.271.587.702 1.087 1.242 1.442.54.355 1.17.555 1.816.574.646-.02 1.274-.218 1.815-.574.54-.355.971-.855 1.244-1.442.61.224 1.271.273 1.908.143.635-.13 1.22-.433 1.689-.877.443-.47.747-1.054.878-1.689.13-.635.079-1.296-.145-1.908.588-.273 1.088-.704 1.444-1.244.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z" fill="#e0722e"/></svg> <span class="text-txt-muted ml-1">Orange checkmark</span></td></tr>
+      <tr class="border-b border-border-subtle"><td class="px-5 py-3 font-mono text-sp-yellow font-semibold">Unverified</td><td class="px-5 py-3 text-txt-secondary">No trust anchor pinned - resolved against peer-observed state only</td><td class="px-5 py-3"><span class="text-[9px] font-semibold px-1.5 py-0.5 rounded-md uppercase" style="background:rgba(212,169,78,.12);color:#d4a94e;letter-spacing:.03em">unverified</span></td></tr>
+      <tr><td class="px-5 py-3 font-mono text-txt-muted font-semibold">None</td><td class="px-5 py-3 text-txt-secondary">Verified against semi-trusted anchor but not sovereign, or handle is pending/dependent</td><td class="px-5 py-3 text-txt-muted">No badge - display as regular username</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ ANCHOR SYNC ═══ -->
+<div class="mb-20" id="anchor-sync">
+  <h2 class="text-xl font-bold text-txt-primary tracking-tight mb-3">Trust Pools</h2>
+  <div class="mb-8 px-4 py-3 rounded-lg border border-sp-green/15 bg-sp-green/[0.04] flex gap-3">
+    <iconify-icon icon="solar:lightbulb-linear" class="text-sp-green shrink-0" style="font-size:18px;margin-top:2px"></iconify-icon>
+    <p class="text-[13px] text-txt-secondary leading-relaxed" style="margin-bottom:0">Trust pools will become unnecessary as Fabric transitions to a stateless ZK light client that verifies the Bitcoin header chain and computes a trust ID permissionlessly on any device.</p>
+  </div>
+
+  <h3 class="text-[15px] font-bold text-txt-primary mb-3" id="terminology">Introduction</h3>
+  <p class="doc-p mb-6">A <strong>trust ID</strong> is the hash of a set of Merkle roots computed at multiple block intervals. It allows any client to verify protocol state from an inclusion proof anchored in any of those roots.</p>
+  <p class="doc-p mb-4">Spaces is purely Bitcoin-native PKI. Trust is derived from Bitcoin's proof of work, not from HTTPS certificates, DNS, or any external authority. A trust ID is computed locally by reading Bitcoin blocks. No server can grant or revoke trust.</p>
+  <p class="doc-p mb-6">Not every user will run their own verifier (such as <a href="/docs/use/veritas/">Veritas</a>). Fabric provides three trust pools so apps can offer a reasonable experience out of the box while preserving the path to full verification.</p>
+
+  <p class="doc-p mb-4"><strong>Observed</strong> - automatically populated from peers. This is always present and is used for best-effort resolution. On its own, <code>badge()</code> returns <code>Unverified</code> for all handles.</p>
+  <p class="doc-p mb-4"><strong>Semi-trusted</strong> - apps may pre-fill this from a source they control (e.g. an anchor served over HTTPS from your own backend). This is a pragmatic concession: HTTPS is not trustless, but it prevents every handle from showing as <code>Unverified</code> on first launch. Semi-trusted anchors will never produce <code>Orange</code> badges.</p>
+  <p class="doc-p mb-4"><strong>Trusted</strong> - reserved for anchors the user has explicitly verified, either by scanning a QR code or from an embedded verifier that permissionlessly computes the trust ID from Bitcoin blocks. This is the only pool that can produce <code>Orange</code> badges. Apps must not write to this pool on the user's behalf unless they embed a local verifier.</p>
+  <p class="doc-p mb-6">The <a href="/docs/use/veritas/">Veritas app</a> is the easiest way for users to obtain a permissionless trust ID without running a Bitcoin full node. It syncs from a checkpoint, verifies the Bitcoin header chain, and computes the trust ID locally.</p>
+
+  <!-- Two iPhones side by side: Settings with anchor + QR scan screen -->
+  <div class="flex flex-col md:flex-row items-start justify-center gap-8 my-12">
+
+    <!-- iPhone 1: Settings / Anchor screen -->
+    <div>
+      <div class="relative w-[300px] h-[650px] rounded-[50px] shadow-[0_0_2px_2px_rgba(255,255,255,0.1)] border-[7px] border-zinc-900">
+        <div class="absolute top-2 left-1/2 -translate-x-1/2 w-[84px] h-[20px] bg-zinc-900 rounded-full z-20"></div>
+        <div class="absolute -inset-[1px] border-[3px] border-zinc-700/40 rounded-[42px] pointer-events-none"></div>
+        <div class="relative w-full h-full rounded-[42px] overflow-hidden bg-black app">
+          <!-- Status bar -->
+          <div class="flex items-center justify-between px-6 pt-3.5 pb-1 text-white text-[12px] font-semibold">
+            <span>22:22</span>
+            <div class="flex items-center gap-1">
+              <svg width="13" height="9" viewBox="0 0 16 12" fill="white"><rect x="0" y="5" width="2.5" height="7" rx=".5" opacity=".35"/><rect x="4" y="3.5" width="2.5" height="8.5" rx=".5" opacity=".55"/><rect x="8" y="1.5" width="2.5" height="10.5" rx=".5" opacity=".8"/><rect x="12" y="0" width="2.5" height="12" rx=".5"/></svg>
+              <svg width="12" height="9" viewBox="0 0 15 12" fill="white"><path d="M7.5 3.6C9.6 3.6 11.4 4.4 12.8 5.7L14.2 4.3C12.4 2.6 10.1 1.5 7.5 1.5C4.9 1.5 2.6 2.6 .8 4.3L2.2 5.7C3.6 4.4 5.4 3.6 7.5 3.6ZM7.5 7.2C8.6 7.2 9.6 7.6 10.4 8.3L11.8 6.9C10.6 5.8 9.1 5.1 7.5 5.1C5.9 5.1 4.4 5.8 3.2 6.9L4.6 8.3C5.4 7.6 6.4 7.2 7.5 7.2ZM9 10.5C9 9.7 8.3 9 7.5 9C6.7 9 6 9.7 6 10.5C6 11.3 6.7 12 7.5 12C8.3 12 9 11.3 9 10.5Z"/></svg>
+              <svg width="20" height="9" viewBox="0 0 25 12" fill="white"><rect x="0" y="1" width="21" height="10" rx="2" stroke="white" stroke-width="1" fill="none"/><rect x="22" y="4" width="2" height="4" rx=".5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1"/></svg>
+            </div>
+          </div>
+          <!-- Nav -->
+          <div class="px-5 pt-2 pb-3">
+            <div class="flex items-center gap-2 mb-4">
+              <svg width="8" height="14" viewBox="0 0 10 16" fill="none"><path d="M8.5 1L1.5 8L8.5 15" stroke="white" stroke-width="2" stroke-linecap="round" opacity=".5"/></svg>
+              <span class="text-[16px] font-bold text-white">Settings</span>
+            </div>
+          </div>
+          <!-- Anchor card - observed only -->
+          <div class="px-4">
+            <div class="rounded-2xl p-3.5 mb-3" style="background:rgba(212,169,78,.1);border:1px solid rgba(212,169,78,.18)">
+              <div class="flex items-center gap-2 mb-1.5">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="rgba(255,255,255,.5)"><path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/></svg>
+                <span class="text-[12px] font-semibold text-white">Safety ID</span>
+              </div>
+              <div class="text-[10px] leading-relaxed mb-2.5" style="color:rgba(255,255,255,.45)">No safety Trust ID set. Scan from Veritas or a local client to enable full verification.</div>
+              <div class="rounded-xl py-2.5 text-center flex items-center justify-center gap-1.5" style="background:rgba(224,114,46,.15)">
+                <iconify-icon icon="solar:qr-code-linear" style="font-size:13px;color:#e0722e"></iconify-icon>
+                <span class="text-[12px] font-semibold" style="color:#e0722e">Scan QR</span>
+              </div>
+            </div>
+            <!-- Other settings items -->
+            <div class="rounded-2xl overflow-hidden" style="background:rgba(255,255,255,.05)">
+              <div class="flex items-center justify-between px-3.5 py-3 border-b" style="border-color:rgba(255,255,255,.05)">
+                <span class="text-[13px] text-white/70">Notifications</span>
+                <div class="w-10 h-6 rounded-full bg-green-500 relative"><div class="absolute right-0.5 top-0.5 w-5 h-5 bg-white rounded-full"></div></div>
+              </div>
+              <div class="flex items-center justify-between px-3.5 py-3">
+                <span class="text-[13px] text-white/70">About</span>
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1.5 1L6.5 6L1.5 11" stroke="white" stroke-opacity=".3" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute left-[-11px] top-[72px] w-[5px] h-7 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute left-[-11px] top-[128px] w-[5px] h-11 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute left-[-11px] top-[184px] w-[5px] h-11 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute right-[-11px] top-[128px] w-[5px] h-14 bg-zinc-900 rounded-r-md shadow-md"></div>
+      </div>
+      <div class="text-center mt-3"><span class="font-mono text-[10px] text-txt-muted">Settings - no trust anchor pinned</span></div>
+    </div>
+
+    <!-- iPhone 2: QR Scan screen -->
+    <div>
+      <div class="relative w-[300px] h-[650px] rounded-[50px] shadow-[0_0_2px_2px_rgba(255,255,255,0.1)] border-[7px] border-zinc-900">
+        <div class="absolute top-2 left-1/2 -translate-x-1/2 w-[84px] h-[20px] bg-zinc-900 rounded-full z-20"></div>
+        <div class="absolute -inset-[1px] border-[3px] border-zinc-700/40 rounded-[42px] pointer-events-none"></div>
+        <div class="relative w-full h-full rounded-[42px] overflow-hidden bg-black app flex flex-col">
+          <!-- Status bar -->
+          <div class="flex items-center justify-between px-6 pt-3.5 pb-1 text-white text-[12px] font-semibold">
+            <span>22:22</span>
+            <div class="flex items-center gap-1">
+              <svg width="13" height="9" viewBox="0 0 16 12" fill="white"><rect x="0" y="5" width="2.5" height="7" rx=".5" opacity=".35"/><rect x="4" y="3.5" width="2.5" height="8.5" rx=".5" opacity=".55"/><rect x="8" y="1.5" width="2.5" height="10.5" rx=".5" opacity=".8"/><rect x="12" y="0" width="2.5" height="12" rx=".5"/></svg>
+              <svg width="12" height="9" viewBox="0 0 15 12" fill="white"><path d="M7.5 3.6C9.6 3.6 11.4 4.4 12.8 5.7L14.2 4.3C12.4 2.6 10.1 1.5 7.5 1.5C4.9 1.5 2.6 2.6 .8 4.3L2.2 5.7C3.6 4.4 5.4 3.6 7.5 3.6ZM7.5 7.2C8.6 7.2 9.6 7.6 10.4 8.3L11.8 6.9C10.6 5.8 9.1 5.1 7.5 5.1C5.9 5.1 4.4 5.8 3.2 6.9L4.6 8.3C5.4 7.6 6.4 7.2 7.5 7.2ZM9 10.5C9 9.7 8.3 9 7.5 9C6.7 9 6 9.7 6 10.5C6 11.3 6.7 12 7.5 12C8.3 12 9 11.3 9 10.5Z"/></svg>
+              <svg width="20" height="9" viewBox="0 0 25 12" fill="white"><rect x="0" y="1" width="21" height="10" rx="2" stroke="white" stroke-width="1" fill="none"/><rect x="22" y="4" width="2" height="4" rx=".5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1"/></svg>
+            </div>
+          </div>
+          <!-- Nav -->
+          <div class="px-5 pt-2 pb-2">
+            <div class="flex items-center gap-2">
+              <svg width="8" height="14" viewBox="0 0 10 16" fill="none"><path d="M8.5 1L1.5 8L8.5 15" stroke="white" stroke-width="2" stroke-linecap="round" opacity=".5"/></svg>
+              <span class="text-[12px] text-white/50">Settings</span>
+            </div>
+          </div>
+          <!-- QR content -->
+          <div class="flex-1 flex flex-col items-center justify-center px-5 pb-8">
+            <div class="text-[18px] font-bold text-white mb-1.5 text-center">Verify Anchor</div>
+            <div class="text-[11px] text-center leading-relaxed mb-5 px-2" style="color:rgba(255,255,255,.4)">Scan a Trust ID from a Veritas client running locally on your machine (do NOT scan from remote sources)</div>
+            <!-- QR -->
+            <div class="w-[150px] h-[150px] bg-white rounded-2xl p-3 mb-5 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,.06)]">
+              <div class="w-full h-full rounded-lg" style="background:repeating-conic-gradient(#000 0% 25%, #fff 0% 50%) 0 0/7px 7px"></div>
+            </div>
+
+            <div class="text-[10px] text-center" style="color:rgba(255,255,255,.25)">Valid for up to 14 days after scan</div>
+          </div>
+        </div>
+        <div class="absolute left-[-11px] top-[72px] w-[5px] h-7 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute left-[-11px] top-[128px] w-[5px] h-11 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute left-[-11px] top-[184px] w-[5px] h-11 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute right-[-11px] top-[128px] w-[5px] h-14 bg-zinc-900 rounded-r-md shadow-md"></div>
+      </div>
+      <div class="text-center mt-3"><span class="font-mono text-[10px] text-txt-muted">QR verification screen</span></div>
+    </div>
+  </div>
+
+  <!-- Do / Don't -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="gl-do bg-surface border border-border rounded-lg p-4">
+      <div class="flex items-center gap-1.5 mb-2"><iconify-icon icon="solar:check-circle-linear" class="text-sp-green text-sm"></iconify-icon><span class="font-mono text-[11px] font-semibold text-sp-green uppercase">Do</span></div>
+      <div class="text-[12px] text-txt-secondary leading-relaxed space-y-2">
+        <p>Use <code style="font-size:10px">fabric.badge()</code> to determine what to show</p>
+        <p>Pre-fill the semi-trusted pool from your own endpoint for a good default</p>
+        <p>Make QR scan accessible so users can upgrade to full trust</p>
+        <p>Show anchor hash prominently so users can compare</p>
+      </div>
+    </div>
+    <div class="gl-dont bg-surface border border-border rounded-lg p-4">
+      <div class="flex items-center gap-1.5 mb-2"><iconify-icon icon="solar:close-circle-linear" class="text-sp-red text-sm"></iconify-icon><span class="font-mono text-[11px] font-semibold text-sp-red uppercase">Don't</span></div>
+      <div class="text-[12px] text-txt-secondary leading-relaxed space-y-2">
+        <p>Write to the trusted pool programmatically unless you embed a local verifier</p>
+        <p>Show orange checkmarks from a semi-trusted anchor</p>
+        <p>Hide or obscure the trust state</p>
+        <p>Auto-accept new anchors silently into the trusted pool</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="text-[15px] font-bold text-txt-primary mb-4" id="staleness">Handling staleness</h3>
+  <p class="doc-p mb-6">Once a trusted anchor is pinned, <code>badge()</code> can return <code>Orange</code> for sovereign handles verified against it for <strong>up to 14 days</strong>. Handles committed after the pinned anchor (in a newer root) won't return <code>Orange</code>. If a semi-trusted anchor covers the newer root they may still return <code>None</code> rather than <code>Unverified</code>.</p>
+
+  <div class="flex flex-col md:flex-row items-start justify-center gap-8 my-12">
+
+    <!-- iPhone: Observed only - no trust anchor pinned -->
+    <div>
+      <div class="relative w-[300px] h-[650px] rounded-[50px] shadow-[0_0_2px_2px_rgba(255,255,255,0.1)] border-[7px] border-zinc-900">
+        <div class="absolute top-2 left-1/2 -translate-x-1/2 w-[84px] h-[20px] bg-zinc-900 rounded-full z-20"></div>
+        <div class="absolute -inset-[1px] border-[3px] border-zinc-700/40 rounded-[42px] pointer-events-none"></div>
+        <div class="relative w-full h-full rounded-[42px] overflow-hidden bg-black app">
+          <div class="flex items-center justify-between px-6 pt-3.5 pb-1 text-white text-[12px] font-semibold">
+            <span>22:22</span>
+            <div class="flex items-center gap-1">
+              <svg width="13" height="9" viewBox="0 0 16 12" fill="white"><rect x="0" y="5" width="2.5" height="7" rx=".5" opacity=".35"/><rect x="4" y="3.5" width="2.5" height="8.5" rx=".5" opacity=".55"/><rect x="8" y="1.5" width="2.5" height="10.5" rx=".5" opacity=".8"/><rect x="12" y="0" width="2.5" height="12" rx=".5"/></svg>
+              <svg width="12" height="9" viewBox="0 0 15 12" fill="white"><path d="M7.5 3.6C9.6 3.6 11.4 4.4 12.8 5.7L14.2 4.3C12.4 2.6 10.1 1.5 7.5 1.5C4.9 1.5 2.6 2.6 .8 4.3L2.2 5.7C3.6 4.4 5.4 3.6 7.5 3.6ZM7.5 7.2C8.6 7.2 9.6 7.6 10.4 8.3L11.8 6.9C10.6 5.8 9.1 5.1 7.5 5.1C5.9 5.1 4.4 5.8 3.2 6.9L4.6 8.3C5.4 7.6 6.4 7.2 7.5 7.2ZM9 10.5C9 9.7 8.3 9 7.5 9C6.7 9 6 9.7 6 10.5C6 11.3 6.7 12 7.5 12C8.3 12 9 11.3 9 10.5Z"/></svg>
+              <svg width="20" height="9" viewBox="0 0 25 12" fill="white"><rect x="0" y="1" width="21" height="10" rx="2" stroke="white" stroke-width="1" fill="none"/><rect x="22" y="4" width="2" height="4" rx=".5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1"/></svg>
+            </div>
+          </div>
+          <div class="px-5 pt-2 pb-3">
+            <span class="text-[18px] font-bold text-white">Messages</span>
+          </div>
+          <!-- No QR scan done - no checkmarks for anyone -->
+          <div class="px-4 space-y-1">
+            <!-- alice - sovereign but observed only = unverified -->
+            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#e0722e,#eb7e3a)"><span class="text-[13px] font-bold text-white">A</span></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1">
+                  <span class="text-[13px] font-semibold text-white">alice@bitcoin</span>
+                </div>
+                <span class="text-[11px] text-white/30">Hey! Can you send me the...</span>
+              </div>
+            </div>
+            <!-- bob - pending, unverified -->
+            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#5e9de0,#4a8fd4)"><span class="text-[13px] font-bold text-white">B</span></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1">
+                  <span class="text-[13px] font-semibold text-white">bob@nostr</span>
+                </div>
+                <span class="text-[11px] text-white/30">Sent you a zap ⚡</span>
+              </div>
+            </div>
+            <!-- dave - observed only = unverified -->
+            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"><span class="text-[13px] font-bold text-white">D</span></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[13px] font-semibold text-white">dave@bitcoin</span>
+                  <span class="text-[8px] font-semibold px-1.5 py-0.5 rounded-md uppercase" style="background:rgba(212,169,78,.12);color:#d4a94e;letter-spacing:.03em">unverified</span>
+                </div>
+                <span class="text-[11px] text-white/30">Check out this relay</span>
+              </div>
+            </div>
+            <!-- carol - dependent -->
+            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-zinc-800"><span class="text-[13px] font-bold text-white/40">C</span></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1">
+                  <span class="text-[13px] font-semibold text-white">carol@exchange</span>
+                </div>
+                <span class="text-[11px] text-white/30">Your withdrawal is ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute left-[-11px] top-[72px] w-[5px] h-7 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute left-[-11px] top-[128px] w-[5px] h-11 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute left-[-11px] top-[184px] w-[5px] h-11 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute right-[-11px] top-[128px] w-[5px] h-14 bg-zinc-900 rounded-r-md shadow-md"></div>
+      </div>
+      <div class="text-center mt-3"><span class="font-mono text-[10px] text-txt-muted">Before QR scan</span></div>
+    </div>
+
+    <!-- Arrow -->
+    <div class="hidden md:flex items-center self-center pt-0">
+      <div class="flex flex-col items-center gap-1.5">
+        <span class="font-mono text-[9px] text-txt-muted uppercase tracking-wider">QR scan</span>
+        <svg width="32" height="16" viewBox="0 0 32 16" fill="none"><path d="M1 8H28M28 8L22 2M28 8L22 14" stroke="#e0722e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div class="md:hidden flex justify-center">
+      <div class="flex items-center gap-1.5">
+        <svg width="16" height="32" viewBox="0 0 16 32" fill="none"><path d="M8 1V28M8 28L2 22M8 28L14 22" stroke="#e0722e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="font-mono text-[9px] text-txt-muted uppercase tracking-wider">QR scan</span>
+      </div>
+    </div>
+
+    <!-- iPhone: After pinning trusted anchor -->
+    <div>
+      <div class="relative w-[300px] h-[650px] rounded-[50px] shadow-[0_0_2px_2px_rgba(255,255,255,0.1)] border-[7px] border-zinc-900">
+        <div class="absolute top-2 left-1/2 -translate-x-1/2 w-[84px] h-[20px] bg-zinc-900 rounded-full z-20"></div>
+        <div class="absolute -inset-[1px] border-[3px] border-zinc-700/40 rounded-[42px] pointer-events-none"></div>
+        <div class="relative w-full h-full rounded-[42px] overflow-hidden bg-black app">
+          <div class="flex items-center justify-between px-6 pt-3.5 pb-1 text-white text-[12px] font-semibold">
+            <span>22:22</span>
+            <div class="flex items-center gap-1">
+              <svg width="13" height="9" viewBox="0 0 16 12" fill="white"><rect x="0" y="5" width="2.5" height="7" rx=".5" opacity=".35"/><rect x="4" y="3.5" width="2.5" height="8.5" rx=".5" opacity=".55"/><rect x="8" y="1.5" width="2.5" height="10.5" rx=".5" opacity=".8"/><rect x="12" y="0" width="2.5" height="12" rx=".5"/></svg>
+              <svg width="12" height="9" viewBox="0 0 15 12" fill="white"><path d="M7.5 3.6C9.6 3.6 11.4 4.4 12.8 5.7L14.2 4.3C12.4 2.6 10.1 1.5 7.5 1.5C4.9 1.5 2.6 2.6 .8 4.3L2.2 5.7C3.6 4.4 5.4 3.6 7.5 3.6ZM7.5 7.2C8.6 7.2 9.6 7.6 10.4 8.3L11.8 6.9C10.6 5.8 9.1 5.1 7.5 5.1C5.9 5.1 4.4 5.8 3.2 6.9L4.6 8.3C5.4 7.6 6.4 7.2 7.5 7.2ZM9 10.5C9 9.7 8.3 9 7.5 9C6.7 9 6 9.7 6 10.5C6 11.3 6.7 12 7.5 12C8.3 12 9 11.3 9 10.5Z"/></svg>
+              <svg width="20" height="9" viewBox="0 0 25 12" fill="white"><rect x="0" y="1" width="21" height="10" rx="2" stroke="white" stroke-width="1" fill="none"/><rect x="22" y="4" width="2" height="4" rx=".5"/><rect x="1.5" y="2.5" width="16" height="7" rx="1"/></svg>
+            </div>
+          </div>
+          <div class="px-5 pt-2 pb-3">
+            <span class="text-[18px] font-bold text-white">Messages</span>
+          </div>
+          <!-- Trusted anchor banner -->
+          <div class="mx-4 rounded-xl px-3 py-2 mb-3 flex items-center gap-2" style="background:rgba(63,188,139,.08);border:1px solid rgba(63,188,139,.15)">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="#3fbc8b"><path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-2 15l-5-5 1.41-1.41L8 12.17l7.59-7.59L17 6l-9 9z"/></svg>
+            <span class="text-[10px]" style="color:#3fbc8b">Trusted anchor pinned · Expires in 14 days</span>
+          </div>
+          <!-- Contact list with trusted anchor -->
+          <div class="px-4 space-y-1">
+            <!-- alice - Orange: sovereign + trusted -->
+            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#e0722e,#eb7e3a)"><span class="text-[13px] font-bold text-white">A</span></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1">
+                  <span class="text-[13px] font-semibold text-white">alice@bitcoin</span>
+                  <svg width="14" height="14" viewBox="0 0 22 22" fill="none"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.855-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.69-.13.636-.08 1.297.144 1.907-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.61-.273 1.271-.143 1.908.13.635.433 1.22.877 1.689.47.443 1.054.747 1.687.878.635.13 1.296.079 1.907-.145.271.587.702 1.087 1.242 1.442.54.355 1.17.555 1.816.574.646-.02 1.274-.218 1.815-.574.54-.355.971-.855 1.244-1.442.61.224 1.271.273 1.908.143.635-.13 1.22-.433 1.689-.877.443-.47.747-1.054.878-1.689.13-.635.079-1.296-.145-1.908.588-.273 1.088-.704 1.444-1.244.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z" fill="#e0722e"/></svg>
+                </div>
+                <span class="text-[11px] text-white/30">Hey! Can you send me the...</span>
+              </div>
+            </div>
+            <!-- bob - None: pending -->
+            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#5e9de0,#4a8fd4)"><span class="text-[13px] font-bold text-white">B</span></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1">
+                  <span class="text-[13px] font-semibold text-white">bob@nostr</span>
+                </div>
+                <span class="text-[11px] text-white/30">Sent you a zap ⚡</span>
+              </div>
+            </div>
+            <!-- dave - Orange: sovereign + trusted -->
+            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"><span class="text-[13px] font-bold text-white">D</span></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1">
+                  <span class="text-[13px] font-semibold text-white">dave@bitcoin</span>
+                  <svg width="14" height="14" viewBox="0 0 22 22" fill="none"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.855-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.69-.13.636-.08 1.297.144 1.907-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.61-.273 1.271-.143 1.908.13.635.433 1.22.877 1.689.47.443 1.054.747 1.687.878.635.13 1.296.079 1.907-.145.271.587.702 1.087 1.242 1.442.54.355 1.17.555 1.816.574.646-.02 1.274-.218 1.815-.574.54-.355.971-.855 1.244-1.442.61.224 1.271.273 1.908.143.635-.13 1.22-.433 1.689-.877.443-.47.747-1.054.878-1.689.13-.635.079-1.296-.145-1.908.588-.273 1.088-.704 1.444-1.244.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z" fill="#e0722e"/></svg>
+                </div>
+                <span class="text-[11px] text-white/30">Check out this relay</span>
+              </div>
+            </div>
+            <!-- carol - None: dependent -->
+            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-zinc-800"><span class="text-[13px] font-bold text-white/40">C</span></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1">
+                  <span class="text-[13px] font-semibold text-white">carol@exchange</span>
+                </div>
+                <span class="text-[11px] text-white/30">Your withdrawal is ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute left-[-11px] top-[72px] w-[5px] h-7 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute left-[-11px] top-[128px] w-[5px] h-11 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute left-[-11px] top-[184px] w-[5px] h-11 bg-zinc-900 rounded-l-md shadow-md"></div>
+        <div class="absolute right-[-11px] top-[128px] w-[5px] h-14 bg-zinc-900 rounded-r-md shadow-md"></div>
+      </div>
+      <div class="text-center mt-3"><span class="font-mono text-[10px] text-sp-green">After pinning trusted anchor</span></div>
+    </div>
+  </div>
+
+  <p class="doc-p mb-5"><strong>Notice that the orange checkmark only appears after the QR scan</strong> - and only for handles where <code>.sovereignty</code> is "final." Before the scan, no one gets a checkmark because the app can't prove anything from an unverified peer anchor. Dave showed "unverified" because his handle was committed in a newer root than the peer anchor; after re-syncing from a trusted source, his sovereignty is confirmed and the checkmark appears. Bob has no badge either way - he's pending, not sovereign.</p>
+</div>
+
+<!-- ═══ SUMMARY ═══ -->
+<div class="mb-12" id="summary">
+  <h2 class="text-xl font-bold text-txt-primary tracking-tight mb-4">Summary</h2>
+  <div class="space-y-3">
+    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">1</span></div><div class="text-[13px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Use <code style="font-size:12px">fabric.badge()</code> for all display logic.</strong> Don't check sovereignty or trust pools directly.</div></div>
+    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">2</span></div><div class="text-[13px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Only write to the trusted pool from a verified source.</strong> That means an explicit user action (QR scan) or an embedded verifier that computes the trust ID from Bitcoin blocks.</div></div>
+    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">3</span></div><div class="text-[13px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Pre-fill semi-trusted for a good default.</strong> Fetch an anchor from your own endpoint so users don't see <code style="font-size:12px">Unverified</code> on first launch.</div></div>
+    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">4</span></div><div class="text-[13px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Offer QR verification for full trust.</strong> Make it easy to scan from Veritas or a spaces client for the orange checkmark.</div></div>
+  </div>
+</div>
+
+      </div>
+
+    </article>
+</div>
+<script>
+(function() {
+    var sb = document.querySelector('.docs-sidebar');
+    if (!sb) return;
+    var key = 'docs-sidebar-scroll';
+    var saved = sessionStorage.getItem(key);
+    if (saved) sb.scrollTop = parseInt(saved, 10);
+    sb.addEventListener('scroll', function() {
+        sessionStorage.setItem(key, sb.scrollTop);
+    });
+})();
+// Scroll-spy for TOC
+(function() {
+    var links = document.querySelectorAll('#tocNav .toc-link');
+    var targets = [];
+    links.forEach(function(link) {
+        var id = link.getAttribute('href').slice(1);
+        var el = document.getElementById(id);
+        if (el) targets.push({ el: el, link: link });
+    });
+    var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                links.forEach(function(l) { l.classList.remove('active'); });
+                var m = targets.find(function(t) { return t.el === entry.target; });
+                if (m) m.link.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-20% 0px -60% 0px' });
+    targets.forEach(function(t) { obs.observe(t.el); });
+})();
+</script>
+{% endblock %}
