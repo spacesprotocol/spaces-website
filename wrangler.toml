@@ -1,0 +1,8 @@
+name = "spacesprotocol"
+pages_build_output_dir = "public"
+
+[build]
+command = "zola build"
+
+[vars]
+ZOLA_VERSION = "0.22.1"
