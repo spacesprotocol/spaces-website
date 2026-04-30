@@ -14,18 +14,51 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
 
+    {%- if page and page.title -%}
+        {%- set og_title = page.title -%}
+    {%- elif section and section.title and section.title != "Spaces Protocol" -%}
+        {%- set og_title = section.title ~ " - Spaces Protocol" -%}
+    {%- else -%}
+        {%- set og_title = "Spaces Protocol - Sovereign Naming on Bitcoin" -%}
+    {%- endif -%}
+    {%- if page and page.description -%}
+        {%- set og_description = page.description -%}
+    {%- elif section and section.description -%}
+        {%- set og_description = section.description -%}
+    {%- else -%}
+        {%- set og_description = "Sovereign naming anchored to Bitcoin. Resolve handles, publish records, and verify identities without trusting anyone." -%}
+    {%- endif -%}
+    {%- if page and page.permalink -%}
+        {%- set og_url = page.permalink -%}
+    {%- elif section and section.permalink -%}
+        {%- set og_url = section.permalink -%}
+    {%- else -%}
+        {%- set og_url = config.base_url -%}
+    {%- endif -%}
+    {%- if page and page.extra.og_image -%}
+        {%- set og_image = page.permalink ~ page.extra.og_image -%}
+    {%- elif section and section.extra.og_image -%}
+        {%- set og_image = section.permalink ~ section.extra.og_image -%}
+    {%- else -%}
+        {%- set og_image = config.base_url ~ "/og-image.png" -%}
+    {%- endif -%}
+    {%- set og_type = "website" -%}
+    {%- if page and page.date -%}
+        {%- set og_type = "article" -%}
+    {%- endif -%}
+
     <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Spaces Protocol — Sovereign Naming on Bitcoin">
-    <meta property="og:description" content="Sovereign naming anchored to Bitcoin. Resolve handles, publish records, and verify identities without trusting anyone.">
-    <meta property="og:image" content="{{ config.base_url }}/og-image.png">
-    <meta property="og:url" content="{{ config.base_url }}">
+    <meta property="og:type" content="{{ og_type }}">
+    <meta property="og:title" content="{{ og_title }}">
+    <meta property="og:description" content="{{ og_description }}">
+    <meta property="og:image" content="{{ og_image | safe }}">
+    <meta property="og:url" content="{{ og_url | safe }}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Spaces Protocol — Sovereign Naming on Bitcoin">
-    <meta name="twitter:description" content="Sovereign naming anchored to Bitcoin. Resolve handles, publish records, and verify identities without trusting anyone.">
-    <meta name="twitter:image" content="{{ config.base_url }}/og-image.png">
+    <meta name="twitter:title" content="{{ og_title }}">
+    <meta name="twitter:description" content="{{ og_description }}">
+    <meta name="twitter:image" content="{{ og_image | safe }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {

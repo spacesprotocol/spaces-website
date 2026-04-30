@@ -167,7 +167,7 @@
         iframes.forEach(load);
         return;
     }
-    // Trigger zone is the top half of the viewport — the iframe's top edge
+    // Trigger zone is the top half of the viewport - the iframe's top edge
     // must scroll above the viewport midpoint before it fires. Prevents the
     // first iframe from auto-playing when it's just peeking above the fold.
     const io = new IntersectionObserver((entries) => {

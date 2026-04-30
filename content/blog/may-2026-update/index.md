@@ -5,6 +5,7 @@ date = 2026-05-01
 
 [extra]
 hero = "orbee-at-claimed.gif"
+og_image = "og-image-blog-post.png"
 +++
 
 ## 100,000,000 handles, anchored in 32 bytes on Bitcoin

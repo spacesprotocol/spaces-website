@@ -1,4 +1,4 @@
-// Trust ID Popover — self-contained module
+// Trust ID Popover - self-contained module
 // Usage: import '/js/trust-popover.js'
 // Requires: qr.js loaded globally (for QR rendering), iconify-icon web component
 // Any element with [data-trust-popover] toggles the popover anchored to #navTrustBtn
