@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }}{% endblock %}
+{% block description %}{{ page.description | default(value=page.title) }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/tomorrow-night.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+    .hljs { background: transparent !important; padding: 0 !important; color: #dcdce0; }
+    .hljs-keyword, .hljs-built_in, .hljs-type, .hljs-literal, .hljs-selector-tag { color: #c084fc; }
+    .hljs-string, .hljs-addition { color: #3fbc8b; }
+    .hljs-comment, .hljs-quote, .hljs-deletion { color: #585862; }
+    .hljs-title, .hljs-title\.class_, .hljs-title\.function_ { color: #d4a94e; }
+    .hljs-number { color: #e0722e; }
+    .hljs-attr, .hljs-attribute, .hljs-property { color: #5e9de0; }
+    .hljs-symbol, .hljs-bullet { color: #e0722e; }
+    .hljs-meta, .hljs-meta .hljs-keyword { color: #8a8a94; }
+    .hljs-variable, .hljs-template-variable, .hljs-function .hljs-params { color: #dcdce0; }
+</style>
+<style>
+    .post-prose { color: #c9c9d2; font-size: 16px; line-height: 1.75; }
+    .post-prose > * + * { margin-top: 1.1em; }
+    .post-prose h1, .post-prose h2, .post-prose h3 {
+        font-family: 'DM Sans', sans-serif;
+        color: #dcdce0;
+        letter-spacing: -0.01em;
+    }
+    .post-prose h1 { font-size: 28px; font-weight: 700; margin: 2.4em 0 0.6em; line-height: 1.2; }
+    .post-prose h2 { font-size: 22px; font-weight: 700; margin: 2.2em 0 0.5em; line-height: 1.25; }
+    .post-prose h3 { font-size: 17px; font-weight: 600; margin: 1.8em 0 0.4em; }
+    .post-prose p { margin: 1.1em 0; }
+    .post-prose a { color: #e0722e; text-decoration: none; border-bottom: 1px solid rgba(224,114,46,0.35); transition: border-color .15s, color .15s; }
+    .post-prose a:hover { color: #eb7e3a; border-bottom-color: #eb7e3a; }
+    .post-prose strong { color: #dcdce0; font-weight: 600; }
+    .post-prose ul, .post-prose ol { margin: 1.1em 0; padding-left: 1.5em; }
+    .post-prose li { margin: 0.35em 0; }
+    .post-prose li::marker { color: #585862; }
+    .post-prose img,
+    .post-prose video {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 2em auto;
+        border-radius: 6px;
+        border: 1px solid #1f1f26;
+        background: #151519;
+    }
+    .post-prose video { width: 100%; }
+    .hero-art {
+        display: block;
+        margin: 0 auto 1.6em;
+        max-width: 155px;
+        width: 100%;
+        height: auto;
+    }
+    .post-prose .trust-inline-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 2.4em auto;
+        min-height: 540px;
+    }
+    .post-prose .trust-inline-wrap svg {
+        max-width: 100%;
+        height: auto;
+    }
+    .post-prose .post-iframe {
+        display: block;
+        width: 100%;
+        margin: 2em auto;
+        border: 0;
+        background: transparent;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    .post-prose code:not(pre code) {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.88em;
+        background: #1c1c22;
+        border: 1px solid #2a2a31;
+        border-radius: 4px;
+        padding: 1px 6px;
+        color: #dcdce0;
+    }
+    .post-prose pre {
+        font-family: 'JetBrains Mono', monospace;
+        background: #0a0a0d !important;
+        border: 1px solid #1f1f26;
+        border-radius: 6px;
+        padding: 18px 20px;
+        margin: 1.6em 0;
+        overflow-x: auto;
+        font-size: 13px;
+        line-height: 1.65;
+    }
+    .post-prose pre code { background: none; border: none; padding: 0; font-size: inherit; }
+    .post-prose blockquote {
+        margin: 1.6em 0;
+        padding: 12px 18px;
+        border-left: 3px solid #e0722e;
+        background: rgba(224,114,46,0.06);
+        color: #c9c9d2;
+        border-radius: 0 4px 4px 0;
+    }
+    .post-prose blockquote p { margin: 0; }
+    .post-prose hr {
+        border: none;
+        height: 1px;
+        background: #1f1f26;
+        margin: 2.6em 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="pt-24 pb-24">
+    <article class="max-w-[720px] mx-auto px-6">
+        <a href="/blog/" class="inline-flex items-center gap-1.5 font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors mb-8">
+            <iconify-icon icon="solar:arrow-left-linear" class="text-xs"></iconify-icon>
+            All posts
+        </a>
+
+        {% if page.extra.hero %}
+        <img src="{{ page.extra.hero }}" alt="" class="hero-art fade-up" />
+        {% endif %}
+
+        <header class="mb-10 fade-up">
+            <time datetime="{{ page.date }}" class="font-mono text-[11px] text-txt-muted uppercase tracking-[0.14em]">
+                {{ page.date | date(format="%B %d, %Y") }}
+            </time>
+            <h1 class="mt-3 font-sans text-[34px] leading-[1.15] font-bold text-txt-primary tracking-tight">
+                {{ page.title }}
+            </h1>
+            {% if page.description %}
+            <p class="mt-4 text-[16px] text-txt-secondary leading-relaxed">
+                {{ page.description }}
+            </p>
+            {% endif %}
+        </header>
+
+        <div class="post-prose fade-up fade-up-1">
+            {{ page.content | safe }}
+        </div>
+
+        <footer class="mt-16 pt-8 border-t border-border-subtle flex items-center justify-between">
+            <a href="/blog/" class="inline-flex items-center gap-1.5 font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xs"></iconify-icon>
+                All posts
+            </a>
+            <a href="/" class="font-mono text-[11px] text-accent hover:text-accent-strong transition-colors">spacesprotocol.org</a>
+        </footer>
+    </article>
+</main>
+
+<script>
+(function () {
+    if (window.hljs) {
+        document.querySelectorAll('.post-prose pre code').forEach(el => hljs.highlightElement(el));
+    }
+})();
+(function () {
+    const iframes = document.querySelectorAll('iframe.post-iframe[data-src]');
+    if (!iframes.length) return;
+    const load = (f) => { if (!f.src) f.src = f.dataset.src; };
+    if (!('IntersectionObserver' in window)) {
+        iframes.forEach(load);
+        return;
+    }
+    // Trigger zone is the top half of the viewport — the iframe's top edge
+    // must scroll above the viewport midpoint before it fires. Prevents the
+    // first iframe from auto-playing when it's just peeking above the fold.
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                load(entry.target);
+                io.unobserve(entry.target);
+            }
+        });
+    }, { rootMargin: '0px 0px -55% 0px' });
+    iframes.forEach(f => io.observe(f));
+})();
+</script>
+{% endblock %}

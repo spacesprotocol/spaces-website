@@ -1,2 +1,2 @@
-{% set code = load_data(url="https://spacesprotocol.github.io/certrelay/" ~ lang ~ "/" ~ name ~ ".txt", format="plain") %}
-<pre><code class="language-{{ lang }}">{{ code | safe }}</code></pre>
+{% set code = load_data(url="https://spacesprotocol.github.io/certrelay/" ~ language ~ "/" ~ name ~ ".txt", format="plain") %}
+<pre><code class="language-{{ language }}">{{ code | safe }}</code></pre>

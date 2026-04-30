@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbee chat demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=IM+Fell+English+SC&family=Fragment+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg-page:#0e0e11;
+            --text-primary:#e8e9eb;
+            --text-secondary:#8a8e94;
+            --text-muted:#5a5a62;
+            --text-faint:#3a3a3e;
+            --accent:#d946ef;
+            --border-subtle:rgba(255,255,255,0.05);
+            --bg-raised:#1d1e24;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
+        html,body{
+            background:var(--bg-page);
+            color:var(--text-primary);
+            font-family:'Hanken Grotesk',system-ui,-apple-system,sans-serif;
+            font-feature-settings:'cv02','cv03','cv04','cv11';
+        }
+        body{
+            padding:32px 16px;
+            display:flex;align-items:center;justify-content:center;
+            min-height:100vh;
+        }
+
+        .demo-frame{
+            background:#16161a;
+            border:1px solid var(--border-subtle);
+            border-radius:24px;
+            padding:20px 18px 18px;
+            max-width:620px;
+            width:100%;
+        }
+        .demo-header{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:4px 8px 12px;
+            border-bottom:1px solid var(--border-subtle);
+            margin-bottom:14px;
+        }
+        .demo-channel{
+            font-family:'IM Fell English SC',serif;
+            font-size:18px;
+            display:flex;align-items:center;gap:6px;
+            color:var(--text-primary);
+        }
+        .demo-channel .hash{color:var(--text-muted);}
+        .demo-meta{
+            display:flex;align-items:center;gap:10px;
+            font-family:'Fragment Mono',monospace;
+            font-size:9px;letter-spacing:0.18em;
+            color:var(--text-muted);
+            text-transform:uppercase;
+        }
+        .demo-meta .sep-dot{color:var(--text-faint);}
+        .demo-onair{
+            color:var(--accent);
+            display:inline-flex;align-items:center;gap:5px;
+        }
+        .demo-onair::before{
+            content:'';width:5px;height:5px;border-radius:50%;
+            background:var(--accent);
+            box-shadow:0 0 6px var(--accent);
+            animation:pulse 1.8s ease-in-out infinite;
+        }
+        @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
+        .demo-chat{
+            position:relative;
+            min-height:420px;
+            display:flex;flex-direction:column;
+            gap:18px;padding:8px 4px;
+        }
+
+        .msg{
+            display:flex;gap:10px;align-items:flex-start;
+            animation:msgIn 0.35s ease-out;
+        }
+        @keyframes msgIn{
+            from{opacity:0;transform:translateY(8px);}
+            to{opacity:1;transform:translateY(0);}
+        }
+        .msg-avatar{
+            width:28px;height:28px;flex-shrink:0;
+            border-radius:6px;overflow:hidden;
+            background:var(--bg-raised);
+        }
+        .msg-avatar canvas{image-rendering:pixelated;width:28px;height:28px;}
+        .msg-body{flex:1;min-width:0;}
+        .msg-meta{
+            font-family:'Fragment Mono',monospace;
+            font-size:10px;letter-spacing:0.02em;
+            margin-bottom:6px;
+            display:flex;align-items:center;gap:6px;
+        }
+        .msg-meta .vdot{
+            width:4px;height:4px;border-radius:50%;
+            background:currentColor;
+            box-shadow:0 0 4px currentColor;
+            flex-shrink:0;
+        }
+        .msg-meta .display{color:var(--text-muted);font-weight:400;}
+        .msg-meta .npub-prefix{opacity:0.45;}
+        .msg-meta .handle{letter-spacing:0.01em;}
+
+        .bubble{
+            background:#242428;color:var(--text-primary);
+            padding:8px 14px 8px;
+            border-radius:18px;border-bottom-left-radius:6px;
+            font-size:14px;line-height:1.4;
+            max-width:380px;
+            position:relative;
+            display:inline-block;
+        }
+        .bubble.has-reactions{padding-bottom:4px;}
+        .bubble::after{
+            content:'';position:absolute;bottom:0;left:-6px;
+            width:6px;height:6px;
+            background:var(--tail-col, #242428);
+            -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'><path d='M0,6 L6,6 L6,0 L3,0 L3,3 L0,3 Z' fill='black'/></svg>") no-repeat center / contain;
+            mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'><path d='M0,6 L6,6 L6,0 L3,0 L3,3 L0,3 Z' fill='black'/></svg>") no-repeat center / contain;
+        }
+
+        .typing{
+            background:#242428;
+            padding:11px 14px;
+            border-radius:18px;border-bottom-left-radius:6px;
+            display:inline-flex;align-items:center;gap:4px;
+            position:relative;
+        }
+        .typing .dot{
+            width:5px;height:5px;border-radius:50%;
+            background:var(--text-secondary);
+            animation:typeBounce 1.2s ease-in-out infinite;
+        }
+        .typing .dot:nth-child(2){animation-delay:0.15s;}
+        .typing .dot:nth-child(3){animation-delay:0.3s;}
+        @keyframes typeBounce{
+            0%,60%,100%{transform:translateY(0);opacity:0.4;}
+            30%{transform:translateY(-3px);opacity:1;}
+        }
+        .typing::after{
+            content:'';position:absolute;bottom:0;left:-6px;
+            width:6px;height:6px;background:#242428;
+            -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'><path d='M0,6 L6,6 L6,0 L3,0 L3,3 L0,3 Z' fill='black'/></svg>") no-repeat center / contain;
+            mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'><path d='M0,6 L6,6 L6,0 L3,0 L3,3 L0,3 Z' fill='black'/></svg>") no-repeat center / contain;
+        }
+
+        .bubble .reactions{
+            display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;
+        }
+        .bubble .reaction{
+            display:inline-flex;align-items:center;gap:5px;
+            padding:3px 8px 3px 7px;
+            background:rgba(255,255,255,0.06);
+            border-radius:12px;
+            font-family:'Fragment Mono',monospace;
+            font-size:10px;line-height:1;
+            animation:reactIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes reactIn{
+            from{opacity:0;transform:scale(0.4);}
+            to{opacity:1;transform:scale(1);}
+        }
+        .reaction-emoji{font-size:12px;}
+        .reaction-stack{display:inline-flex;align-items:center;}
+        .reactor-chip{
+            display:inline-block;
+            width:14px;height:14px;
+            border-radius:50%;
+            margin-left:-4px;
+            overflow:hidden;
+            position:relative;
+            background:var(--bg-raised);
+            box-shadow:0 0 0 1.5px #242428;
+        }
+        .reactor-chip:first-child{margin-left:0;}
+        .reactor-chip canvas{
+            position:absolute;
+            width:24px;height:24px;
+            top:-5px;left:-5px;
+            image-rendering:pixelated;
+        }
+    </style>
+</head>
+<body>
+
+<div class="demo-frame">
+    <div class="demo-header">
+        <div class="demo-channel"><span class="hash">#</span>general</div>
+        <div class="demo-meta">
+            <span>09:41Z</span>
+            <span class="sep-dot">·</span>
+            <span class="demo-onair">On air</span>
+        </div>
+    </div>
+    <div class="demo-chat" id="demoChat"></div>
+</div>
+
+<script>
+    const G = 20;
+    const PX = 5;
+
+    const PALETTES = [
+        {body:'#d946ef', dark:'#3a0a3a', dim:'#8b1a8b', eye:'#00e5ff', eyeHi:'#e8e6e1', ant:'#007a8a'},
+        {body:'#00e5ff', dark:'#004a55', dim:'#006a7a', eye:'#ff3c8e', eyeHi:'#ffc0dd', ant:'#005566'},
+        {body:'#ffb800', dark:'#5a4000', dim:'#8a6a00', eye:'#d946ef', eyeHi:'#f5d6f5', ant:'#6a5500'},
+        {body:'#ff3c8e', dark:'#550020', dim:'#8a0040', eye:'#00e5ff', eyeHi:'#e8e6e1', ant:'#660030'},
+        {body:'#b388ff', dark:'#3a2066', dim:'#6a40aa', eye:'#d946ef', eyeHi:'#f5d6f5', ant:'#4a3077'},
+        {body:'#76ff03', dark:'#2a5500', dim:'#4a8a00', eye:'#ff6e40', eyeHi:'#ffc0a0', ant:'#3a6600'},
+        {body:'#18ffff', dark:'#005555', dim:'#008888', eye:'#ffb800', eyeHi:'#ffe0a0', ant:'#006666'},
+        {body:'#ff6e40', dark:'#552200', dim:'#884400', eye:'#00e5ff', eyeHi:'#e8e6e1', ant:'#663300'}];
+
+    function bodyInvader(cx){const p=[];p.push([cx-4,4,'B'],[cx+3,4,'B']);p.push([cx-3,5,'B'],[cx+2,5,'B']);for(let i=-3;i<=2;i++)p.push([cx+i,6,'B']);for(let i=-4;i<=3;i++)p.push([cx+i,7,(i===-4||i===3)?'D':'B']);p.push([cx-5,7,'B'],[cx+4,7,'B']);for(let r=8;r<=10;r++)for(let i=-5;i<=4;i++)p.push([cx+i,r,(i===-5||i===4)?'D':'B']);for(let i=-4;i<=3;i++)p.push([cx+i,11,(i===-4||i===3)?'D':'B']);for(let i=-3;i<=2;i++)p.push([cx+i,12,'B']);return p;}
+    function bodyBug(cx){const p=[],w=[1,2,3,4,5,5,5,4,3];for(let r=0;r<w.length;r++)for(let i=-w[r];i<w[r];i++){const e=i===-w[r]||i===w[r]-1;p.push([cx+i,4+r,(r===0||r===w.length-1||e)?'D':'B']);}return p;}
+    function bodyOrb(cx){const p=[],w=[3,4,5,6,6,6,6,6,5,4,3];for(let r=0;r<w.length;r++)for(let i=-w[r];i<w[r];i++){const e=i===-w[r]||i===w[r]-1||r===0||r===w.length-1;p.push([cx+i,3+r,e?'D':'B']);}return p;}
+    function bodyShield(cx){const p=[],w=[6,7,7,7,6,5,4,3,2];for(let r=0;r<w.length;r++)for(let i=-w[r];i<w[r];i++){const e=i===-w[r]||i===w[r]-1||r===0||r===w.length-1;p.push([cx+i,3+r,e?'D':'B']);}return p;}
+    function bodyGhost(cx){const p=[],w=[3,4,5,5,5,5,5,5,5,5];for(let r=0;r<w.length;r++)for(let i=-w[r];i<w[r];i++){if(r===w.length-1&&(Math.abs(i)%3===0))continue;const e=i===-w[r]||i===w[r]-1||r===0;p.push([cx+i,3+r,e?'D':'B']);}return p;}
+    const BODIES=[bodyInvader,bodyBug,bodyOrb,bodyShield,bodyGhost];
+
+    function eyesClassic(cx,ey){return[[cx-3,ey-1,null],[cx-2,ey-1,null],[cx-3,ey,'E'],[cx-2,ey,'H'],[cx-3,ey+1,'E'],[cx-2,ey+1,'E'],[cx-3,ey+2,null],[cx-2,ey+2,null],[cx+1,ey-1,null],[cx+2,ey-1,null],[cx+1,ey,'E'],[cx+2,ey,'H'],[cx+1,ey+1,'E'],[cx+2,ey+1,'E'],[cx+1,ey+2,null],[cx+2,ey+2,null]];}
+    function eyesSlit(cx,ey){return[[cx-3,ey,null],[cx-2,ey,'E'],[cx-1,ey,'H'],[cx+1,ey,'E'],[cx+2,ey,'H'],[cx+3,ey,null]];}
+    function eyesCyclops(cx,ey){const p=[];for(let d=-2;d<=1;d++)p.push([cx+d,ey-1,null]);p.push([cx-2,ey,'E'],[cx-1,ey,'E'],[cx,ey,'H'],[cx+1,ey,'E']);p.push([cx-2,ey+1,'E'],[cx-1,ey+1,'E'],[cx,ey+1,'E'],[cx+1,ey+1,'E']);for(let d=-2;d<=1;d++)p.push([cx+d,ey+2,null]);return p;}
+    function eyesDot(cx,ey){return[[cx-2,ey,'E'],[cx-2,ey+1,'H'],[cx+1,ey,'E'],[cx+1,ey+1,'H']];}
+    function eyesWide(cx,ey){return[[cx-4,ey-1,null],[cx-3,ey-1,null],[cx-4,ey,'E'],[cx-3,ey,'H'],[cx-4,ey+1,'E'],[cx-3,ey+1,'E'],[cx+2,ey-1,null],[cx+3,ey-1,null],[cx+2,ey,'E'],[cx+3,ey,'H'],[cx+2,ey+1,'E'],[cx+3,ey+1,'E']];}
+    const EYES=[eyesClassic,eyesSlit,eyesCyclops,eyesDot,eyesWide];
+
+    const antNone=()=>[];
+    const antShort=cx=>[[cx-2,1,'A'],[cx+1,1,'A'],[cx-1,2,'A'],[cx,2,'A'],[cx-2,0,'E'],[cx+1,0,'E']];
+    const antTall=cx=>[[cx-1,3,'A'],[cx,3,'A'],[cx-2,2,'A'],[cx+1,2,'A'],[cx-2,1,'A'],[cx+1,1,'A'],[cx-2,0,'E'],[cx+1,0,'E']];
+    const antCurved=cx=>[[cx-1,3,'A'],[cx,3,'A'],[cx-2,2,'A'],[cx+1,2,'A'],[cx-3,1,'A'],[cx+2,1,'A'],[cx-3,0,'E'],[cx+2,0,'E']];
+    const antSpike=cx=>[[cx-1,3,'A'],[cx,3,'A'],[cx-1,2,'A'],[cx,2,'A'],[cx-1,1,'E'],[cx,1,'E'],[cx-1,0,'H'],[cx,0,'H']];
+    const ANT=[antNone,antShort,antTall,antCurved,antSpike];
+
+    const legNone=()=>[];
+    const legStraight=(cx,ly)=>[[cx-2,ly,'D'],[cx+1,ly,'D'],[cx-2,ly+1,'D'],[cx+1,ly+1,'D']];
+    const legSplayed=(cx,ly)=>[[cx-2,ly,'D'],[cx+1,ly,'D'],[cx-3,ly+1,'D'],[cx+2,ly+1,'D'],[cx-4,ly+2,'D'],[cx+3,ly+2,'D']];
+    const legStubby=(cx,ly)=>[[cx-3,ly,'D'],[cx-2,ly,'D'],[cx+1,ly,'D'],[cx+2,ly,'D']];
+    const legAngled=(cx,ly)=>[[cx-1,ly,'D'],[cx,ly,'D'],[cx-2,ly+1,'D'],[cx+1,ly+1,'D'],[cx-3,ly+2,'B'],[cx+2,ly+2,'B']];
+    const LEGS=[legNone,legStraight,legSplayed,legStubby,legAngled];
+
+    const mNone=()=>[];
+    const mSmirk=(cx,my)=>[[cx-1,my,'M'],[cx,my,'M']];
+    const mWide=(cx,my)=>[[cx-2,my,'M'],[cx-1,my,'M'],[cx,my,'M'],[cx+1,my,'M']];
+    const MOUTHS=[mNone,mSmirk,mWide,mNone];
+
+    function hexBytes(hex){const b=[];for(let i=0;i<Math.min(hex.length,16);i+=2)b.push(parseInt(hex.substr(i,2),16)||0);while(b.length<8)b.push(b.length*37&0xff);return b;}
+
+    function drawCreature(canvas, pubkey, pxSize){
+        pxSize = pxSize || PX;
+        const b = hexBytes(pubkey);
+        const pal = PALETTES[b[0] % PALETTES.length];
+        const cx = 10;
+        const grid = Array.from({length:G}, () => Array(G).fill(0));
+        const cmap = {B:1,D:2,M:3,E:4,H:5,A:6};
+        function stamp(px){for(const [x,y,c] of px){if(x>=0&&x<G&&y>=0&&y<G) grid[y][x] = c===null?0:(cmap[c]||0);}}
+        stamp(BODIES[b[1]%BODIES.length](cx));
+        stamp(EYES[b[2]%EYES.length](cx, 8));
+        stamp(ANT[b[3]%ANT.length](cx));
+        stamp(MOUTHS[b[5]%MOUTHS.length](cx, 11));
+        stamp(LEGS[b[4]%LEGS.length](cx, 14));
+        const colors = {1:pal.body, 2:pal.dark, 3:pal.dim, 4:pal.eye, 5:pal.eyeHi, 6:pal.ant};
+
+        const blinkGrid = grid.map(row => row.slice());
+        for(let y=7; y<=10; y++){
+            for(let x=0; x<G; x++){
+                if(blinkGrid[y][x] === 4 || blinkGrid[y][x] === 5) blinkGrid[y][x] = 1;
+            }
+        }
+
+        const ctx = canvas.getContext('2d');
+        canvas.width = G * pxSize;
+        canvas.height = G * pxSize;
+
+        const seed = b[6] + b[7] * 251 + b[0] * 13;
+        let frame = seed % 180;
+        let blinkCD = 30 + (seed % 90);
+        let blinkDur = 0;
+
+        function draw(){
+            frame++;
+            if(blinkDur > 0){
+                blinkDur--;
+            } else {
+                blinkCD--;
+                if(blinkCD <= 0){
+                    blinkDur = 10 + Math.floor(Math.random() * 4);
+                    blinkCD  = 100 + Math.floor(Math.random() * 150);
+                }
+            }
+            const g = blinkDur > 0 ? blinkGrid : grid;
+            const fy = Math.sin(frame * 0.03) * 0.5;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.globalAlpha = 0.15;
+            for(let y=0; y<G; y++) for(let x=0; x<G; x++){
+                const v = g[y][x]; if(!v) continue;
+                ctx.fillStyle = colors[v];
+                ctx.fillRect(x*pxSize - 2, y*pxSize - 2 + fy, pxSize + 4, pxSize + 4);
+            }
+
+            ctx.globalAlpha = 1;
+            for(let y=0; y<G; y++) for(let x=0; x<G; x++){
+                const v = g[y][x]; if(!v) continue;
+                ctx.fillStyle = colors[v];
+                ctx.fillRect(x*pxSize, y*pxSize + fy, pxSize, pxSize);
+            }
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    // ========== CHAT FLOW ==========
+
+    const CAST = {
+        alice:   {pubkey:'f2b844a7c21e5a33', handle:'alice@bitcoin', display:'Alice', color:'#ffa844', verified:true},
+        noah:    {pubkey:'8dd5c0ff3a7b14e2', handle:'noah@orbee', display:'Noah', color:'#8dd5ff', verified:true},
+        wanderer:{pubkey:'c9b8ff7ee22045ab', handle:'npub1s90jy…3ar4', display:'', color:'#7a7880', verified:false, npub:true},
+        you:     {pubkey:'ff6e40012345cafe', handle:'you@orbee', display:'You', color:'#ffb8b0', verified:true},
+    };
+
+    const SCRIPT = [
+        {type:'msg', who:'alice', text:"morning gang ☀️", delay:800},
+        {type:'typing', who:'noah', delay:1200},
+        {type:'msg', who:'noah', text:"yo! does orbee use nostr?", delay:1400, replaceTyping:true},
+        {type:'react', target:1, emoji:'☕', reactors:['alice','wanderer'], delay:1000},
+        {type:'msg', who:'wanderer', text:"hi all, just found the group - hope it's ok I stop in 👋", delay:1700},
+        {type:'typing', who:'you', delay:1300},
+        {type:'msg', who:'you', text:"everyone's welcome here, grab a seat", delay:1500, replaceTyping:true},
+        {type:'msg', who:'alice', text:"that's the whole point 💚", delay:1600},
+        {type:'react', target:4, emoji:'💚', reactors:['noah','wanderer','you'], delay:1000},
+    ];
+
+    const demoChat = document.getElementById('demoChat');
+    let scriptIdx = 0;
+    let messageNodes = [];
+
+    function createMessageNode(step){
+        const user = CAST[step.who];
+        const node = document.createElement('div');
+        node.className = 'msg';
+
+        const av = document.createElement('div');
+        av.className = 'msg-avatar';
+        const avCanvas = document.createElement('canvas');
+        avCanvas.width = 100; avCanvas.height = 100;
+        av.appendChild(avCanvas);
+        drawCreature(avCanvas, user.pubkey);
+        node.appendChild(av);
+
+        const body = document.createElement('div');
+        body.className = 'msg-body';
+
+        const meta = document.createElement('div');
+        meta.className = 'msg-meta';
+        meta.style.color = user.color;
+        if(user.npub){
+            const match = user.handle.match(/^(npub1)(.*)$/);
+            if(match){
+                meta.innerHTML = `<span class="npub-prefix">${match[1]}</span><span class="handle">${match[2]}</span>`;
+            } else {
+                meta.innerHTML = `<span class="handle">${user.handle}</span>`;
+            }
+        } else {
+            meta.innerHTML = `<span class="vdot"></span><span class="handle">${user.handle}</span><span class="display">${user.display}</span>`;
+        }
+        body.appendChild(meta);
+
+        if(step.type === 'typing'){
+            const typing = document.createElement('div');
+            typing.className = 'typing';
+            typing.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+            body.appendChild(typing);
+            node.dataset.typing = 'true';
+        } else {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const tailCol = user.verified ? user.color : '#242428';
+            bubble.style.setProperty('--tail-col', tailCol);
+            const textSpan = document.createElement('span');
+            textSpan.className = 'bubble-text';
+            textSpan.textContent = step.text;
+            bubble.appendChild(textSpan);
+            body.appendChild(bubble);
+        }
+
+        node.appendChild(body);
+        return node;
+    }
+
+    function addReactionToMessage(messageNode, step){
+        const bubble = messageNode.querySelector('.bubble');
+        if(!bubble) return;
+        bubble.classList.add('has-reactions');
+        let reactions = bubble.querySelector('.reactions');
+        if(!reactions){
+            reactions = document.createElement('div');
+            reactions.className = 'reactions';
+            bubble.appendChild(reactions);
+        }
+        const pill = document.createElement('div');
+        pill.className = 'reaction';
+        let chipsHtml = '';
+        for(const r of step.reactors){
+            chipsHtml += `<span class="reactor-chip"><canvas data-pk="${CAST[r].pubkey}" width="100" height="100"></canvas></span>`;
+        }
+        pill.innerHTML = `<span class="reaction-emoji">${step.emoji}</span><span class="reaction-stack">${chipsHtml}</span>`;
+        reactions.appendChild(pill);
+        pill.querySelectorAll('canvas[data-pk]').forEach(c => {
+            drawCreature(c, c.dataset.pk);
+        });
+    }
+
+    function sleep(ms){return new Promise(r => setTimeout(r, ms));}
+
+    async function runScriptStep(){
+        if(scriptIdx >= SCRIPT.length){
+            setTimeout(() => {
+                demoChat.style.opacity = '0';
+                demoChat.style.transition = 'opacity 0.6s';
+                setTimeout(() => {
+                    demoChat.innerHTML = '';
+                    messageNodes = [];
+                    scriptIdx = 0;
+                    demoChat.style.opacity = '1';
+                    runScriptStep();
+                }, 700);
+            }, 3000);
+            return;
+        }
+
+        const step = SCRIPT[scriptIdx];
+        await sleep(step.delay);
+
+        if(step.type === 'react'){
+            const target = messageNodes[step.target];
+            if(target) addReactionToMessage(target, step);
+        } else if(step.replaceTyping){
+            const lastTyping = [...demoChat.querySelectorAll('.msg[data-typing]')].pop();
+            if(lastTyping){
+                const newNode = createMessageNode(step);
+                const idx = messageNodes.indexOf(lastTyping);
+                lastTyping.replaceWith(newNode);
+                if(idx >= 0) messageNodes[idx] = newNode;
+                else messageNodes.push(newNode);
+            } else {
+                const node = createMessageNode(step);
+                demoChat.appendChild(node);
+                messageNodes.push(node);
+            }
+        } else {
+            const node = createMessageNode(step);
+            demoChat.appendChild(node);
+            messageNodes.push(node);
+        }
+
+        while(demoChat.children.length > 6){
+            const first = demoChat.firstElementChild;
+            const idx = messageNodes.indexOf(first);
+            if(idx >= 0) messageNodes.splice(idx, 1);
+            first.remove();
+        }
+
+        scriptIdx++;
+        runScriptStep();
+    }
+
+    runScriptStep();
+</script>
+
+</body>
+</html>
