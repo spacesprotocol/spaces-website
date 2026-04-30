@@ -12,7 +12,7 @@ og_image = "og-image-blog-post.png"
 
 The Spaces handle faucet is live. Anyone can claim a free handle in about 10 seconds at [spacesprotocol.org/faucet](https://spacesprotocol.org/faucet) and start building on it right away.
 
-Every one of those 100 million handles is committed to a single 32-byte tree root on Bitcoin. One tiny on-chain footprint, millions of sovereign handles, each as verifiable as Bitcoin itself.
+Every one of those 100 million handles is committed to a single 32-byte tree root on Bitcoin. One tiny on-chain footprint, millions of sovereign handles, each as verifiable as Bitcoin itself. Once issued, a handle can't be revoked or expire. It's yours forever.
 
 <iframe data-src="picker-flow.html" class="post-iframe" inert tabindex="-1" scrolling="no" style="height:720px" title="Pick a handle"></iframe>
 
