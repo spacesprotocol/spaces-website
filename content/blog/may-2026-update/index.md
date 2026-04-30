@@ -59,6 +59,8 @@ Fabric is the resolver for the certrelay network, and as of this release it ship
 
 Certrelays are the layer that makes handles easy to use without giving up the security of Bitcoin anchoring. They serve certificates with Merkle inclusion proofs that verify against a trust ID, the verifiable, computable replacement for DNS's centralized signing keys.
 
+Users publish records & certificates to an HTTP based browser-resolvable network. Apps resolve handles with zero on-chain footprint, verified against the Bitcoin-anchored state root.
+
 In practice, this is the infrastructure that lets apps like Orbee confirm handle ownership permissionless-ly.
 
 <iframe data-src="certrelay-anim.html" class="post-iframe" inert tabindex="-1" scrolling="no" style="height:540px" title="Certrelay network"></iframe>
