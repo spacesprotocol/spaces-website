@@ -14,7 +14,7 @@ The Spaces handle faucet is live. Anyone can claim a free handle in about 10 sec
 
 Every one of those 100 million handles is committed to a single 32-byte tree root on Bitcoin. One tiny on-chain footprint, millions of sovereign handles, each as verifiable as Bitcoin itself. Once issued, a handle can't be revoked or expire. It's yours forever.
 
-Note: faucet handles are intended for experimentation. Normally, when you register a sovereign handle through an operator, you hand over only your public key and they include it in the batch. The faucet pre-generates the key pairs itself and bundles them into a batch, which is what makes claiming so cheap. You can also rotate your key once you claim.
+Note: faucet handles are intended for experimentation. Normally, when you register a sovereign handle through an operator, you hand over only your public key and they include it in the batch. The faucet pre-generates the key pairs itself and bundles them into a batch, so you can claim a handle that's already issued.  The secret key is deleted from the faucet when you claim, but you can also rotate your key after.
 
 
 <iframe data-src="picker-flow.html" class="post-iframe" inert tabindex="-1" scrolling="no" style="height:720px" title="Pick a handle"></iframe>
