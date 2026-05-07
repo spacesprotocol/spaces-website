@@ -5,18 +5,79 @@
 
 {% block head %}
 <style>
+    /* ── Layout ── */
+    body { overflow-x: hidden; }
+    .docs-layout { display: flex; gap: 3rem; max-width: 1440px; margin: 0 auto; padding: 6rem 2rem 4rem; }
+    @media (max-width: 1023px) { .docs-layout { padding: 8rem 1rem 3rem; gap: 0; } }
+
+    /* ── Sidebar (desktop) ── */
+    .docs-sidebar {
+        flex: 0 0 14rem;
+        width: 14rem;
+        align-self: flex-start;
+        position: sticky;
+        top: 6rem;
+        max-height: calc(100vh - 7rem);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #2a2a31 transparent;
+    }
+    .docs-sidebar::-webkit-scrollbar { width: 3px; }
+    .docs-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .docs-sidebar::-webkit-scrollbar-thumb { background: #2a2a31; border-radius: 3px; }
+    .docs-sidebar a { border-left: 2px solid transparent; }
     .docs-sidebar a.active {
         color: #dcdce0;
         background-color: rgba(224, 114, 46, 0.08);
         border-left: 2px solid #e0722e;
     }
-    .docs-sidebar a {
-        border-left: 2px solid transparent;
+    .docs-sidebar-close { display: none; }
+    .docs-sidebar-backdrop { display: none; }
+
+    /* ── Sidebar (mobile drawer) ── */
+    @media (max-width: 1023px) {
+        .docs-sidebar {
+            display: none;
+            position: fixed;
+            top: calc(56px + 44px); /* nav + breadcrumb */
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-height: calc(100vh - 100px);
+            max-height: calc(100dvh - 100px);
+            flex: none;
+            background: #151519;
+            border-bottom: 1px solid #1f1f26;
+            z-index: 35;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding: 0.75rem 0 1.25rem;
+            box-shadow: 0 16px 32px rgba(0,0,0,0.45);
+            animation: docsTreeSlide 0.18s ease-out;
+        }
+        .docs-sidebar.is-open { display: block; }
+        @keyframes docsTreeSlide {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #docsMenuBtn[aria-expanded="true"] { border-bottom-color: transparent; }
+        #docsMenuBtn[aria-expanded="true"] #docsMenuChevron { transform: rotate(180deg); }
+        .docs-sidebar-backdrop {
+            display: block;
+            position: fixed;
+            top: calc(56px + 44px);
+            left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.18s, visibility 0.18s;
+        }
+        .docs-sidebar-backdrop.is-open { opacity: 1; visibility: visible; }
+        html.docs-menu-open,
+        html.docs-menu-open body { overflow: hidden; height: 100%; }
     }
-    .docs-sidebar { scrollbar-width: thin; scrollbar-color: #2a2a31 transparent; }
-    .docs-sidebar::-webkit-scrollbar { width: 3px; }
-    .docs-sidebar::-webkit-scrollbar-track { background: transparent; }
-    .docs-sidebar::-webkit-scrollbar-thumb { background: #2a2a31; border-radius: 3px; }
     .docs-content h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(1.6rem, 3vw, 2rem); font-weight: 700; color: #dcdce0; margin-bottom: 1rem; letter-spacing: -0.025em; line-height: 1.15; }
     .docs-content h2 { font-family: 'DM Sans', sans-serif; font-size: 1.4rem; font-weight: 700; color: #dcdce0; margin-top: 2.5rem; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
     .docs-content h3 { font-family: 'DM Sans', sans-serif; font-size: 1.1rem; font-weight: 700; color: #dcdce0; margin-top: 2rem; margin-bottom: 0.5rem; }
@@ -99,9 +160,19 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-[1440px] mx-auto px-8 pt-24 pb-16 flex gap-12">
+<!-- Mobile sticky breadcrumb -->
+<button id="docsMenuBtn" class="lg:hidden fixed top-14 left-0 right-0 z-30 border-b border-border-subtle px-4 h-11 flex items-center justify-between text-left" style="background: #151519;" aria-label="Open docs menu" aria-expanded="false">
+    <span class="font-mono text-[12px] truncate">
+        <span class="text-txt-muted">Docs</span>
+        <span class="text-txt-muted mx-1.5">·</span>
+        <span class="text-txt-primary">{{ page.title }}</span>
+    </span>
+    <svg id="docsMenuChevron" class="w-4 h-4 text-txt-muted shrink-0 ml-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</button>
+<div id="docsSidebarBackdrop" class="docs-sidebar-backdrop"></div>
+<div class="docs-layout">
     <!-- Sidebar -->
-    <aside class="docs-sidebar hidden lg:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto">
+    <aside class="docs-sidebar">
         <nav class="flex flex-col gap-8 text-sm pb-8">
             {% set docs_section = get_section(path="docs/_index.md") %}
 
@@ -218,7 +289,7 @@
     </aside>
 
     <!-- Content -->
-    <article class="docs-content min-w-0 max-w-3xl flex-1">
+    <article class="docs-content min-w-0 w-full max-w-3xl flex-1">
         {{ page.content | safe }}
     </article>
 </div>
@@ -231,6 +302,36 @@
     if (saved) sb.scrollTop = parseInt(saved, 10);
     sb.addEventListener('scroll', function() {
         sessionStorage.setItem(key, sb.scrollTop);
+    });
+})();
+(function() {
+    var btn = document.getElementById('docsMenuBtn');
+    var closeBtn = document.getElementById('docsSidebarClose');
+    var sb = document.querySelector('.docs-sidebar');
+    var bd = document.getElementById('docsSidebarBackdrop');
+    if (!btn || !sb || !bd) return;
+    function close() {
+        sb.classList.remove('is-open');
+        bd.classList.remove('is-open');
+        document.documentElement.classList.remove('docs-menu-open');
+        btn.setAttribute('aria-expanded', 'false');
+    }
+    function open() {
+        sb.classList.add('is-open');
+        bd.classList.add('is-open');
+        document.documentElement.classList.add('docs-menu-open');
+        btn.setAttribute('aria-expanded', 'true');
+    }
+    btn.addEventListener('click', function() {
+        if (sb.classList.contains('is-open')) close(); else open();
+    });
+    bd.addEventListener('click', close);
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    sb.addEventListener('click', function(e) {
+        if (e.target.closest('a')) close();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sb.classList.contains('is-open')) close();
     });
 })();
 </script>
