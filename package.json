@@ -1,0 +1,11 @@
+{
+  "name": "spaces-website",
+  "private": true,
+  "scripts": {
+    "css:dev": "tailwindcss -i ./static/css/input.css -o ./static/css/tailwind.css --watch",
+    "css:build": "tailwindcss -i ./static/css/input.css -o ./static/css/tailwind.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

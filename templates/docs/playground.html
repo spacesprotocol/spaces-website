@@ -4,21 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fabric Playground - Spaces Protocol</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: { extend: { colors: {
-                base:'#0e0e11',surface:'#151519',raised:'#1c1c22',
-                border:'#2a2a31','border-subtle':'#1f1f26',
-                accent:'#e0722e','accent-strong':'#eb7e3a','accent-dim':'rgba(224,114,46,0.12)',
-                'txt-primary':'#dcdce0','txt-secondary':'#8a8a94','txt-muted':'#585862',
-            }, fontFamily: { sans:['"DM Sans"','sans-serif'], mono:['"JetBrains Mono"','monospace'] } } }
-        }
-    </script>
+    <link rel="stylesheet" href="{{ get_url(path='css/tailwind.css') }}">
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script src="/js/qr.js"></script>
     <script src="/js/trust-popover.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Lilex:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { background: #0e0e11; margin: 0; overflow: hidden; }
         #playground-container { background: #1e1e1e; }
@@ -43,7 +33,7 @@
                 Fabric Playground
             </span>
             <span class="text-border">|</span>
-            <button id="navTrustBtn" data-trust-popover class="text-txt-muted hover:text-white transition-colors p-1" title="Trust ID">
+            <button id="navTrustBtn" data-trust-popover class="text-txt-muted hover:text-txt-primary transition-colors p-1" title="Trust ID">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 180 188" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M102 72H78C72.4772 72 68 76.4772 68 82V106C68 111.523 72.4772 116 78 116H102C107.523 116 112 111.523 112 106V82C112 76.4772 107.523 72 102 72Z" fill-opacity="0.88"/>
                     <path d="M99 0H81C76.0294 0 72 4.02944 72 9V27C72 31.9706 76.0294 36 81 36H99C103.971 36 108 31.9706 108 27V9C108 4.02944 103.971 0 99 0Z" fill-opacity="0.55"/>
@@ -60,7 +50,7 @@
             <button onclick="loadExample('publish')" class="example-chip font-mono text-[10px] text-txt-muted px-2 py-0.5 rounded border border-border cursor-pointer">Publish</button>
             <button onclick="loadExample('search')" class="example-chip font-mono text-[10px] text-txt-muted px-2 py-0.5 rounded border border-border cursor-pointer">Search addr</button>
             <span class="text-border ml-1">|</span>
-            <button onclick="runCode()" class="font-mono text-[10px] font-semibold text-black bg-accent hover:bg-accent-strong px-2.5 py-0.5 rounded transition-colors cursor-pointer flex items-center gap-1">
+            <button onclick="runCode()" class="font-mono text-[10px] font-semibold text-accent-fg bg-accent hover:bg-accent-strong px-2.5 py-0.5 rounded transition-colors cursor-pointer flex items-center gap-1">
                 <iconify-icon icon="solar:play-linear" class="text-xs"></iconify-icon> Run
             </button>
         </div>

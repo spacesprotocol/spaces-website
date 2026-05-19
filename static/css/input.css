@@ -1,0 +1,210 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    /* ── Light theme (default) ──
+       Colors are RGB triplets so Tailwind opacity modifiers (eg. bg-accent/15) work. */
+    :root {
+        --color-base: 255 255 255;
+        --color-surface: 255 255 255;
+        --color-raised: 255 255 255;
+        --color-raised-hover: 244 244 246;
+        --color-border: 212 212 216;
+        --color-border-subtle: 228 228 231;
+        --color-accent: 249 115 22;
+        --color-accent-strong: 234 88 12;
+        --color-accent-fg: 255 255 255;
+        --color-txt-primary: 24 24 27;
+        --color-txt-secondary: 63 63 70;
+        --color-txt-muted: 113 113 122;
+        --color-sp-green: 22 163 74;
+        --color-sp-blue: 37 99 235;
+        --color-nav-bg: rgba(255, 255, 255, 0.82);
+        --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.03), 0 2px 6px rgba(0, 0, 0, 0.03);
+        --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 20px rgba(0, 0, 0, 0.04);
+        --shadow-pop:  0 2px 8px rgba(0, 0, 0, 0.05), 0 16px 40px rgba(0, 0, 0, 0.06);
+        /* Syntax highlighting (Highlight.js) — light theme defaults */
+        --hljs-keyword: 124 58 237;  /* purple-600 */
+        --hljs-title:   180 83 9;    /* amber-700 */
+    }
+
+    /* ── Dark theme ── */
+    .dark {
+        --color-base: 14 14 17;
+        --color-surface: 21 21 25;
+        --color-raised: 28 28 34;
+        --color-raised-hover: 35 35 41;
+        --color-border: 42 42 49;
+        --color-border-subtle: 31 31 38;
+        --color-accent: 224 114 46;
+        --color-accent-strong: 235 126 58;
+        --color-accent-fg: 255 255 255;
+        --color-txt-primary: 220 220 224;
+        --color-txt-secondary: 138 138 148;
+        --color-txt-muted: 88 88 98;
+        --color-sp-green: 63 188 139;
+        --color-sp-blue: 94 157 224;
+        --color-nav-bg: rgba(14, 14, 17, 0.82);
+        --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3);
+        --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.4);
+        --shadow-pop:  0 8px 24px rgba(0, 0, 0, 0.45), 0 16px 48px rgba(0, 0, 0, 0.5);
+        /* Syntax highlighting (Highlight.js) — dark theme overrides */
+        --hljs-keyword: 192 132 252;  /* purple-400 */
+        --hljs-title:   212 169 78;   /* amber/yellow */
+    }
+
+    html, body { background: rgb(var(--color-base)); color: rgb(var(--color-txt-secondary)); }
+
+    /* ── Protocol grid background (visible in side gutters, faded in content column) ── */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+            linear-gradient(rgb(var(--color-border) / 0.45) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(var(--color-border) / 0.45) 1px, transparent 1px),
+            linear-gradient(rgb(var(--color-border) / 0.7) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(var(--color-border) / 0.7) 1px, transparent 1px);
+        background-size: 32px 32px, 32px 32px, 160px 160px, 160px 160px;
+        background-position: -1px -1px;
+        mask-image: linear-gradient(to right, #000, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.3) 70%, #000);
+        -webkit-mask-image: linear-gradient(to right, #000, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.3) 70%, #000);
+    }
+    body.no-page-grid::before { display: none; }
+    body > * { position: relative; z-index: 1; }
+}
+
+@layer components {
+    /* ── Zed-inspired button system ──
+       Shadow trick: 2px dark inset at the bottom edge creates a subtle "lift" without
+       being a heavy drop shadow. Primary adds a faint outer glow. Both vanish on hover. */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 36px;
+        padding: 0 12px;
+        border-radius: 4px;
+        font-family: 'IBM Plex Serif', serif;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        line-height: 1;
+        white-space: nowrap;
+        user-select: none;
+        text-decoration: none;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+    }
+    /* When the button contains a trailing kbd, tighten the right side so the kbd "fills" the gap. */
+    .btn:has(> .btn-kbd:last-child) { padding-right: 6px; }
+    .btn:active { transform: translateY(1px) scale(0.99); }
+
+    /* Compact variant for nav/inline actions */
+    .btn-sm {
+        height: 28px;
+        padding: 0 10px;
+        font-size: 12px;
+        gap: 5px;
+    }
+    .btn-sm:has(> .btn-kbd:last-child) { padding-right: 5px; }
+
+    .btn-primary {
+        background: rgb(var(--color-accent));
+        color: rgb(var(--color-accent-fg));
+        border: 1px solid transparent;
+        box-shadow:
+            color-mix(in srgb, rgb(var(--color-accent)), #000 38%) 0 -2px 0 0 inset,
+            color-mix(in srgb, rgb(var(--color-accent)), #fff 88%) 0 1px 3px 0;
+    }
+    .btn-primary:hover { background: rgb(var(--color-accent-strong)); box-shadow: none; }
+    .btn-primary:active { box-shadow: none; }
+    .dark .btn-primary {
+        box-shadow:
+            color-mix(in srgb, rgb(var(--color-accent)), #000 22%) 0 -2px 0 0 inset,
+            rgb(var(--color-accent) / 0.22) 0 1px 8px 0;
+    }
+    .dark .btn-primary:hover,
+    .dark .btn-primary:active { box-shadow: none; }
+
+    .btn-secondary {
+        background: rgb(var(--color-surface));
+        color: rgb(var(--color-txt-primary));
+        border: 1px solid rgb(var(--color-border) / 0.7);
+        box-shadow: rgb(var(--color-txt-muted) / 0.12) 0 -2px 0 0 inset;
+    }
+    .btn-secondary:hover { background: rgb(var(--color-raised-hover)); box-shadow: none; }
+    .btn-secondary:active { box-shadow: none; }
+
+    /* Orbee brand purple — same shadow trick, different hue */
+    .btn-orbee {
+        background: #8b5cf6;
+        color: #ffffff;
+        border: 1px solid transparent;
+        box-shadow:
+            color-mix(in srgb, #8b5cf6, #000 38%) 0 -2px 0 0 inset,
+            color-mix(in srgb, #8b5cf6, #fff 88%) 0 1px 3px 0;
+    }
+    .btn-orbee:hover { background: #7c4ce7; box-shadow: none; }
+    .btn-orbee:active { box-shadow: none; }
+    .dark .btn-orbee {
+        box-shadow:
+            color-mix(in srgb, #8b5cf6, #000 45%) 0 -2px 0 0 inset,
+            rgb(139 92 246 / 0.18) 0 1px 6px 0;
+    }
+    .dark .btn-orbee:hover,
+    .dark .btn-orbee:active { box-shadow: none; }
+
+    /* Slim kbd pill — Zed style: short, square corners, subtle */
+    .btn-kbd {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 20px;
+        padding: 0 6px;
+        margin-left: 2px;
+        font-family: 'Lilex', monospace;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        color: rgb(var(--color-txt-secondary));
+        background: rgb(var(--color-raised) / 0.5);
+        border: 1px solid rgb(var(--color-border) / 0.6);
+        border-radius: 3px;
+        pointer-events: none;
+    }
+    /* On accent background — translucent white pill */
+    .btn-kbd.on-accent {
+        color: #ffffff;
+        background: rgb(255 255 255 / 0.12);
+        border-color: rgb(255 255 255 / 0.22);
+    }
+    /* Smaller variant for compact nav buttons */
+    .btn-kbd.btn-kbd-sm {
+        height: 18px;
+        padding: 0 5px;
+        font-size: 10px;
+        border-radius: 3px;
+    }
+
+}
+
+/* ── Trust ID popover — theme-aware SVG fills/strokes ──
+   Outside @layer so Tailwind doesn't tree-shake them (classes are injected by JS,
+   so the content scanner never sees them in templates).
+   Unified compact card in both themes. Dark mode inverts QR module color only. */
+.tp-popover { filter: drop-shadow(0 20px 40px rgba(0,0,0,0.12)); }
+.dark .tp-popover { filter: drop-shadow(0 20px 60px rgba(0,0,0,0.6)); }
+
+.tp-card    { fill: rgb(var(--color-surface)); stroke: rgb(var(--color-border)); }
+.tp-label   { fill: rgb(var(--color-txt-muted)); }
+.tp-muted   { fill: rgb(var(--color-txt-muted)); }
+.tp-copy    { fill: rgb(var(--color-txt-secondary)); cursor: pointer; }
+.tp-copy:hover { fill: rgb(var(--color-txt-primary)); }
+
+/* Dark mode: QR bg transparent (card surface shows through), modules become light */
+.dark .tp-qr-wrap rect { fill: transparent; }
+.dark .tp-qr-wrap path { fill: rgb(var(--color-txt-primary)); }

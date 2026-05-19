@@ -17,8 +17,6 @@ Every one of those 100 million handles is committed to a single 32-byte tree roo
 Note: faucet handles are intended for experimentation. Normally, when you register a sovereign handle through an operator, you hand over only your public key and they include it in the batch. The faucet pre-generates the key pairs itself and bundles them into a batch, so you can claim a handle that's already issued.  The secret key is deleted from the faucet when you claim, but you can also rotate your key after.
 
 
-<iframe data-src="picker-flow.html" class="post-iframe" inert tabindex="-1" scrolling="no" style="height:720px" title="Pick a handle"></iframe>
-
 [spacesprotocol.org/faucet](https://spacesprotocol.org/faucet)
 
 ---
@@ -38,8 +36,6 @@ If you've used `name@domain.com` for Nostr verification, NIP-SPACES gives you `n
 Orbee is what the social layer looks like when handles are sovereign. It's a NIP-29 client running entirely on Nostr relays, so every message is a signed event you can verify yourself. Fabric resolves and verifies handles directly in your browser, so there's no platform in the middle, and no lock-in.
 
 You get groups, reactions, markdown, code blocks, image sharing, and replies. Open data, your keys, your handle.
-
-<iframe data-src="chat-preview.html" class="post-iframe" inert tabindex="-1" scrolling="no" style="height:640px" title="Orbee chat preview"></iframe>
 
 [orbee.chat](https://orbee.chat)
 
@@ -62,8 +58,6 @@ Certrelays are the layer that makes handles easy to use without giving up the se
 Users publish records & certificates to an HTTP based browser-resolvable network. Apps resolve handles with zero on-chain footprint, verified against the Bitcoin-anchored state root.
 
 In practice, this is the infrastructure that lets apps like Orbee confirm handle ownership permissionless-ly.
-
-<iframe data-src="certrelay-anim.html" class="post-iframe" inert tabindex="-1" scrolling="no" style="height:540px" title="Certrelay network"></iframe>
 
 [github.com/spacesprotocol/certrelay](https://github.com/spacesprotocol/certrelay)
 

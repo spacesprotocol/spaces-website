@@ -17,10 +17,10 @@
     .docs-sidebar::-webkit-scrollbar { width: 3px; }
     .docs-sidebar::-webkit-scrollbar-track { background: transparent; }
     .docs-sidebar::-webkit-scrollbar-thumb { background: #2a2a31; border-radius: 3px; }
-    .docs-content h1 { font-family: 'DM Sans', sans-serif; font-size: clamp(1.6rem, 3vw, 2rem); font-weight: 700; color: #dcdce0; margin-bottom: 1rem; letter-spacing: -0.025em; line-height: 1.15; }
-    .docs-content h2 { font-family: 'DM Sans', sans-serif; font-size: 1.4rem; font-weight: 700; color: #dcdce0; margin-top: 2.5rem; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
-    .docs-content h3 { font-family: 'DM Sans', sans-serif; font-size: 1.1rem; font-weight: 700; color: #dcdce0; margin-top: 2rem; margin-bottom: 0.5rem; }
-    .docs-content h4 { font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; color: #8a8a94; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    .docs-content h1 { font-family: 'IBM Plex Serif', serif; font-size: clamp(1.6rem, 3vw, 2rem); font-weight: 500; color: #dcdce0; margin-bottom: 1rem; letter-spacing: -0.025em; line-height: 1.15; }
+    .docs-content h2 { font-family: 'IBM Plex Serif', serif; font-size: 1.4rem; font-weight: 500; color: #dcdce0; margin-top: 2.5rem; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
+    .docs-content h3 { font-family: 'IBM Plex Serif', serif; font-size: 1.1rem; font-weight: 500; color: #dcdce0; margin-top: 2rem; margin-bottom: 0.5rem; }
+    .docs-content h4 { font-family: 'IBM Plex Sans', sans-serif; font-size: 1rem; font-weight: 600; color: #8a8a94; margin-top: 1.5rem; margin-bottom: 0.5rem; }
     .docs-content p { margin-bottom: 1rem; line-height: 1.65; font-size: 15px; color: #8a8a94; }
     .docs-content ul, .docs-content ol { margin-bottom: 1rem; padding-left: 1.5rem; }
     .docs-content ul { list-style-type: disc; }
@@ -33,7 +33,7 @@
         padding: 0.15rem 0.4rem;
         border-radius: 4px;
         font-size: 0.85em;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: 'Lilex', monospace;
         color: #e0722e;
         border: 1px solid rgba(224, 114, 46, 0.12);
     }
@@ -48,7 +48,7 @@
         line-height: 1.7;
     }
     .docs-content pre code {
-        font-family: 'JetBrains Mono', monospace;
+        font-family: 'Lilex', monospace;
         background: none;
         padding: 0;
         border: none;
@@ -66,7 +66,7 @@
         padding: 0.625rem 1rem;
         border-bottom: 1px solid #2a2a31;
         color: #dcdce0;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: 'Lilex', monospace;
         font-weight: 600;
         font-size: 0.7rem;
         text-transform: uppercase;
@@ -97,7 +97,7 @@
     .docs-content strong { color: #dcdce0; }
     .doc-p{color:#8a8a94;font-size:15px;line-height:1.75}
     .doc-p strong{color:#dcdce0;font-weight:600}
-    .doc-p code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#1c1c22;border:1px solid #2a2a31;padding:1px 6px;border-radius:4px;color:#dcdce0}
+    .doc-p code{font-family:'Lilex',monospace;font-size:12.5px;background:#1c1c22;border:1px solid #2a2a31;padding:1px 6px;border-radius:4px;color:#dcdce0}
     .gl-do{border-left:3px solid #3fbc8b}
     .gl-dont{border-left:3px solid #e05e5e}
     .app{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif}
@@ -226,7 +226,7 @@
 
     <!-- Content -->
     <article class="docs-content min-w-0 max-w-3xl flex-1">
-        <h1 class="text-[1.6rem] font-bold text-txt-primary tracking-[-0.03em] mb-2">Design Guidelines</h1>
+        <h1 class="text-[1.6rem] font-bold text-txt-primary tracking-[-0.015em] mb-2">Design Guidelines</h1>
         <p class="doc-p mb-12">How apps should communicate trust, verification, and sovereignty when integrating Spaces. These guidelines help ensure users understand what they can trust and why.</p>
 
         <div class="mb-20" id="sovereignty">
@@ -245,7 +245,7 @@
       <!-- Screen: Nostr-like messaging app -->
       <div class="relative w-full h-full rounded-[42px] overflow-hidden bg-black app">
         <!-- Status bar -->
-        <div class="flex items-center justify-between px-7 pt-4 pb-1 text-white text-[13px] font-semibold">
+        <div class="flex items-center justify-between px-7 pt-4 pb-1 text-white text-[14px] font-semibold">
           <span>22:22</span>
           <div class="flex items-center gap-1.5">
             <svg width="14" height="10" viewBox="0 0 16 12" fill="white"><rect x="0" y="5" width="2.5" height="7" rx=".5" opacity=".35"/><rect x="4" y="3.5" width="2.5" height="8.5" rx=".5" opacity=".55"/><rect x="8" y="1.5" width="2.5" height="10.5" rx=".5" opacity=".8"/><rect x="12" y="0" width="2.5" height="12" rx=".5"/></svg>
@@ -269,20 +269,20 @@
         <div class="px-4 py-4 space-y-3 flex-1 overflow-hidden">
           <!-- Your message (right, orange) -->
           <div class="flex justify-end">
-            <div class="bg-[#e0722e] rounded-2xl rounded-br-md px-3.5 py-2 max-w-[200px]">
-              <span class="text-[13px] text-white leading-relaxed">Hey! do you know how to make pancakes?</span>
+            <div class="bg-[#e0722e] rounded-lg rounded-br-md px-3.5 py-2 max-w-[200px]">
+              <span class="text-[14px] text-white leading-relaxed">Hey! do you know how to make pancakes?</span>
             </div>
           </div>
           <!-- Alice's reply (left, gray) -->
           <div class="flex gap-2 items-end mt-2">
-            <div class="bg-white/[0.08] rounded-2xl rounded-bl-md px-3.5 py-2 max-w-[200px]">
-              <span class="text-[13px] text-white/80 leading-relaxed">Yes but only during a full moon</span>
+            <div class="bg-white/[0.08] rounded-lg rounded-bl-md px-3.5 py-2 max-w-[200px]">
+              <span class="text-[14px] text-white/80 leading-relaxed">Yes but only during a full moon</span>
             </div>
           </div>
           <!-- Your follow-up (right, orange) -->
           <div class="flex justify-end mt-2">
-            <div class="bg-[#e0722e] rounded-2xl rounded-br-md px-3.5 py-2 max-w-[210px]">
-              <span class="text-[13px] text-white leading-relaxed">...what happens if you try on a normal day?</span>
+            <div class="bg-[#e0722e] rounded-lg rounded-br-md px-3.5 py-2 max-w-[210px]">
+              <span class="text-[14px] text-white leading-relaxed">...what happens if you try on a normal day?</span>
             </div>
           </div>
           <div class="text-[10px] text-white/20 text-right pr-1 mt-1.5">Seen 22 hours ago</div>
@@ -313,11 +313,11 @@
   <h3 class="text-[15px] font-bold text-txt-primary mb-4" id="badge-none">None <span class="font-mono text-[12px] text-txt-muted font-normal ml-1">badge() = "None"</span></h3>
   <p class="doc-p mb-5"><strong>No badge.</strong> The handle was verified against a semi-trusted anchor but is not sovereign, or it is pending or dependent. Display it like a regular username - no checkmark, no warning. The absence of the badge <em>is</em> the signal.</p>
 
-  <div class="bg-surface border border-border rounded-xl p-5 my-8">
+  <div class="bg-surface border border-border rounded-lg p-5 my-8">
     <div class="text-[11px] text-txt-muted mb-3 app">Example: contact list with trusted anchor pinned</div>
     <div class="space-y-3">
       <!-- alice - badge() = Orange -->
-      <div class="flex items-center gap-3 bg-base rounded-xl p-3 border border-border">
+      <div class="flex items-center gap-3 bg-base rounded-lg p-3 border border-border">
         <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#e0722e,#eb7e3a)"><span class="text-[14px] font-bold text-white app">A</span></div>
         <div class="flex-1 app">
           <div class="flex items-center gap-1">
@@ -328,7 +328,7 @@
         </div>
       </div>
       <!-- bob - badge() = None -->
-      <div class="flex items-center gap-3 bg-base rounded-xl p-3 border border-border">
+      <div class="flex items-center gap-3 bg-base rounded-lg p-3 border border-border">
         <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#5e9de0,#4a8fd4)"><span class="text-[14px] font-bold text-white app">B</span></div>
         <div class="flex-1 app">
           <div class="flex items-center gap-1">
@@ -338,7 +338,7 @@
         </div>
       </div>
       <!-- dave - badge() = Unverified -->
-      <div class="flex items-center gap-3 bg-base rounded-xl p-3 border border-border">
+      <div class="flex items-center gap-3 bg-base rounded-lg p-3 border border-border">
         <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"><span class="text-[14px] font-bold text-white app">D</span></div>
         <div class="flex-1 app">
           <div class="flex items-center gap-1.5">
@@ -349,7 +349,7 @@
         </div>
       </div>
       <!-- carol - badge() = None -->
-      <div class="flex items-center gap-3 bg-base rounded-xl p-3 border border-border">
+      <div class="flex items-center gap-3 bg-base rounded-lg p-3 border border-border">
         <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-raised border border-border"><span class="text-[14px] font-bold text-txt-muted app">C</span></div>
         <div class="flex-1 app">
           <div class="flex items-center gap-1">
@@ -369,7 +369,7 @@
 
   <!-- Quick reference table -->
   <h3 class="text-[15px] font-bold text-txt-primary mb-4" id="badge-reference">Quick reference</h3>
-  <div class="bg-surface border border-border rounded-xl overflow-hidden mb-6">
+  <div class="bg-surface border border-border rounded-lg overflow-hidden mb-6">
     <table class="w-full">
       <thead><tr class="border-b border-border-subtle">
         <th class="text-left px-5 py-3 font-mono text-[10px] text-txt-muted uppercase tracking-[0.06em]">badge()</th>
@@ -390,7 +390,7 @@
   <h2 class="text-xl font-bold text-txt-primary tracking-tight mb-3">Trust Pools</h2>
   <div class="mb-8 px-4 py-3 rounded-lg border border-sp-green/15 bg-sp-green/[0.04] flex gap-3">
     <iconify-icon icon="solar:lightbulb-linear" class="text-sp-green shrink-0" style="font-size:18px;margin-top:2px"></iconify-icon>
-    <p class="text-[13px] text-txt-secondary leading-relaxed" style="margin-bottom:0">Trust pools will become unnecessary as Fabric transitions to a stateless ZK light client that verifies the Bitcoin header chain and computes a trust ID permissionlessly on any device.</p>
+    <p class="text-[14px] text-txt-secondary leading-relaxed" style="margin-bottom:0">Trust pools will become unnecessary as Fabric transitions to a stateless ZK light client that verifies the Bitcoin header chain and computes a trust ID permissionlessly on any device.</p>
   </div>
 
   <h3 class="text-[15px] font-bold text-txt-primary mb-3" id="terminology">Introduction</h3>
@@ -430,25 +430,25 @@
           </div>
           <!-- Anchor card - observed only -->
           <div class="px-4">
-            <div class="rounded-2xl p-3.5 mb-3" style="background:rgba(212,169,78,.1);border:1px solid rgba(212,169,78,.18)">
+            <div class="rounded-lg p-3.5 mb-3" style="background:rgba(212,169,78,.1);border:1px solid rgba(212,169,78,.18)">
               <div class="flex items-center gap-2 mb-1.5">
                 <svg width="16" height="16" viewBox="0 0 20 20" fill="rgba(255,255,255,.5)"><path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/></svg>
                 <span class="text-[12px] font-semibold text-white">Safety ID</span>
               </div>
               <div class="text-[10px] leading-relaxed mb-2.5" style="color:rgba(255,255,255,.45)">No safety Trust ID set. Scan from Veritas or a local client to enable full verification.</div>
-              <div class="rounded-xl py-2.5 text-center flex items-center justify-center gap-1.5" style="background:rgba(224,114,46,.15)">
-                <iconify-icon icon="solar:qr-code-linear" style="font-size:13px;color:#e0722e"></iconify-icon>
+              <div class="rounded-lg py-2.5 text-center flex items-center justify-center gap-1.5" style="background:rgba(224,114,46,.15)">
+                <iconify-icon icon="solar:qr-code-linear" style="font-size:14px;color:#e0722e"></iconify-icon>
                 <span class="text-[12px] font-semibold" style="color:#e0722e">Scan QR</span>
               </div>
             </div>
             <!-- Other settings items -->
-            <div class="rounded-2xl overflow-hidden" style="background:rgba(255,255,255,.05)">
+            <div class="rounded-lg overflow-hidden" style="background:rgba(255,255,255,.05)">
               <div class="flex items-center justify-between px-3.5 py-3 border-b" style="border-color:rgba(255,255,255,.05)">
-                <span class="text-[13px] text-white/70">Notifications</span>
+                <span class="text-[14px] text-white/70">Notifications</span>
                 <div class="w-10 h-6 rounded-full bg-green-500 relative"><div class="absolute right-0.5 top-0.5 w-5 h-5 bg-white rounded-full"></div></div>
               </div>
               <div class="flex items-center justify-between px-3.5 py-3">
-                <span class="text-[13px] text-white/70">About</span>
+                <span class="text-[14px] text-white/70">About</span>
                 <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1.5 1L6.5 6L1.5 11" stroke="white" stroke-opacity=".3" stroke-width="1.5" stroke-linecap="round"/></svg>
               </div>
             </div>
@@ -489,7 +489,7 @@
             <div class="text-[18px] font-bold text-white mb-1.5 text-center">Verify Anchor</div>
             <div class="text-[11px] text-center leading-relaxed mb-5 px-2" style="color:rgba(255,255,255,.4)">Scan a Trust ID from a Veritas client running locally on your machine (do NOT scan from remote sources)</div>
             <!-- QR -->
-            <div class="w-[150px] h-[150px] bg-white rounded-2xl p-3 mb-5 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,.06)]">
+            <div class="w-[150px] h-[150px] bg-white rounded-lg p-3 mb-5 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,.06)]">
               <div class="w-full h-full rounded-lg" style="background:repeating-conic-gradient(#000 0% 25%, #fff 0% 50%) 0 0/7px 7px"></div>
             </div>
 
@@ -552,42 +552,42 @@
           <!-- No QR scan done - no checkmarks for anyone -->
           <div class="px-4 space-y-1">
             <!-- alice - sovereign but observed only = unverified -->
-            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
-              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#e0722e,#eb7e3a)"><span class="text-[13px] font-bold text-white">A</span></div>
+            <div class="flex items-center gap-2.5 rounded-lg px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#e0722e,#eb7e3a)"><span class="text-[14px] font-bold text-white">A</span></div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1">
-                  <span class="text-[13px] font-semibold text-white">alice@bitcoin</span>
+                  <span class="text-[14px] font-semibold text-white">alice@bitcoin</span>
                 </div>
                 <span class="text-[11px] text-white/30">Hey! Can you send me the...</span>
               </div>
             </div>
             <!-- bob - pending, unverified -->
-            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
-              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#5e9de0,#4a8fd4)"><span class="text-[13px] font-bold text-white">B</span></div>
+            <div class="flex items-center gap-2.5 rounded-lg px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#5e9de0,#4a8fd4)"><span class="text-[14px] font-bold text-white">B</span></div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1">
-                  <span class="text-[13px] font-semibold text-white">bob@nostr</span>
+                  <span class="text-[14px] font-semibold text-white">bob@nostr</span>
                 </div>
                 <span class="text-[11px] text-white/30">Sent you a zap ⚡</span>
               </div>
             </div>
             <!-- dave - observed only = unverified -->
-            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
-              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"><span class="text-[13px] font-bold text-white">D</span></div>
+            <div class="flex items-center gap-2.5 rounded-lg px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"><span class="text-[14px] font-bold text-white">D</span></div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1.5">
-                  <span class="text-[13px] font-semibold text-white">dave@bitcoin</span>
+                  <span class="text-[14px] font-semibold text-white">dave@bitcoin</span>
                   <span class="text-[8px] font-semibold px-1.5 py-0.5 rounded-md uppercase" style="background:rgba(212,169,78,.12);color:#d4a94e;letter-spacing:.03em">unverified</span>
                 </div>
                 <span class="text-[11px] text-white/30">Check out this relay</span>
               </div>
             </div>
             <!-- carol - dependent -->
-            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
-              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-zinc-800"><span class="text-[13px] font-bold text-white/40">C</span></div>
+            <div class="flex items-center gap-2.5 rounded-lg px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-zinc-800"><span class="text-[14px] font-bold text-white/40">C</span></div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1">
-                  <span class="text-[13px] font-semibold text-white">carol@exchange</span>
+                  <span class="text-[14px] font-semibold text-white">carol@exchange</span>
                 </div>
                 <span class="text-[11px] text-white/30">Your withdrawal is ready</span>
               </div>
@@ -634,50 +634,50 @@
             <span class="text-[18px] font-bold text-white">Messages</span>
           </div>
           <!-- Trusted anchor banner -->
-          <div class="mx-4 rounded-xl px-3 py-2 mb-3 flex items-center gap-2" style="background:rgba(63,188,139,.08);border:1px solid rgba(63,188,139,.15)">
+          <div class="mx-4 rounded-lg px-3 py-2 mb-3 flex items-center gap-2" style="background:rgba(63,188,139,.08);border:1px solid rgba(63,188,139,.15)">
             <svg width="14" height="14" viewBox="0 0 20 20" fill="#3fbc8b"><path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-2 15l-5-5 1.41-1.41L8 12.17l7.59-7.59L17 6l-9 9z"/></svg>
             <span class="text-[10px]" style="color:#3fbc8b">Trusted anchor pinned · Expires in 14 days</span>
           </div>
           <!-- Contact list with trusted anchor -->
           <div class="px-4 space-y-1">
             <!-- alice - Orange: sovereign + trusted -->
-            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
-              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#e0722e,#eb7e3a)"><span class="text-[13px] font-bold text-white">A</span></div>
+            <div class="flex items-center gap-2.5 rounded-lg px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#e0722e,#eb7e3a)"><span class="text-[14px] font-bold text-white">A</span></div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1">
-                  <span class="text-[13px] font-semibold text-white">alice@bitcoin</span>
+                  <span class="text-[14px] font-semibold text-white">alice@bitcoin</span>
                   <svg width="14" height="14" viewBox="0 0 22 22" fill="none"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.855-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.69-.13.636-.08 1.297.144 1.907-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.61-.273 1.271-.143 1.908.13.635.433 1.22.877 1.689.47.443 1.054.747 1.687.878.635.13 1.296.079 1.907-.145.271.587.702 1.087 1.242 1.442.54.355 1.17.555 1.816.574.646-.02 1.274-.218 1.815-.574.54-.355.971-.855 1.244-1.442.61.224 1.271.273 1.908.143.635-.13 1.22-.433 1.689-.877.443-.47.747-1.054.878-1.689.13-.635.079-1.296-.145-1.908.588-.273 1.088-.704 1.444-1.244.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z" fill="#e0722e"/></svg>
                 </div>
                 <span class="text-[11px] text-white/30">Hey! Can you send me the...</span>
               </div>
             </div>
             <!-- bob - None: pending -->
-            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
-              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#5e9de0,#4a8fd4)"><span class="text-[13px] font-bold text-white">B</span></div>
+            <div class="flex items-center gap-2.5 rounded-lg px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#5e9de0,#4a8fd4)"><span class="text-[14px] font-bold text-white">B</span></div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1">
-                  <span class="text-[13px] font-semibold text-white">bob@nostr</span>
+                  <span class="text-[14px] font-semibold text-white">bob@nostr</span>
                 </div>
                 <span class="text-[11px] text-white/30">Sent you a zap ⚡</span>
               </div>
             </div>
             <!-- dave - Orange: sovereign + trusted -->
-            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
-              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"><span class="text-[13px] font-bold text-white">D</span></div>
+            <div class="flex items-center gap-2.5 rounded-lg px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"><span class="text-[14px] font-bold text-white">D</span></div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1">
-                  <span class="text-[13px] font-semibold text-white">dave@bitcoin</span>
+                  <span class="text-[14px] font-semibold text-white">dave@bitcoin</span>
                   <svg width="14" height="14" viewBox="0 0 22 22" fill="none"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.855-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.69-.13.636-.08 1.297.144 1.907-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.61-.273 1.271-.143 1.908.13.635.433 1.22.877 1.689.47.443 1.054.747 1.687.878.635.13 1.296.079 1.907-.145.271.587.702 1.087 1.242 1.442.54.355 1.17.555 1.816.574.646-.02 1.274-.218 1.815-.574.54-.355.971-.855 1.244-1.442.61.224 1.271.273 1.908.143.635-.13 1.22-.433 1.689-.877.443-.47.747-1.054.878-1.689.13-.635.079-1.296-.145-1.908.588-.273 1.088-.704 1.444-1.244.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z" fill="#e0722e"/></svg>
                 </div>
                 <span class="text-[11px] text-white/30">Check out this relay</span>
               </div>
             </div>
             <!-- carol - None: dependent -->
-            <div class="flex items-center gap-2.5 rounded-xl px-3 py-2.5" style="background:rgba(255,255,255,.04)">
-              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-zinc-800"><span class="text-[13px] font-bold text-white/40">C</span></div>
+            <div class="flex items-center gap-2.5 rounded-lg px-3 py-2.5" style="background:rgba(255,255,255,.04)">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-zinc-800"><span class="text-[14px] font-bold text-white/40">C</span></div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1">
-                  <span class="text-[13px] font-semibold text-white">carol@exchange</span>
+                  <span class="text-[14px] font-semibold text-white">carol@exchange</span>
                 </div>
                 <span class="text-[11px] text-white/30">Your withdrawal is ready</span>
               </div>
@@ -700,10 +700,10 @@
 <div class="mb-12" id="summary">
   <h2 class="text-xl font-bold text-txt-primary tracking-tight mb-4">Summary</h2>
   <div class="space-y-3">
-    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">1</span></div><div class="text-[13px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Use <code style="font-size:12px">fabric.badge()</code> for all display logic.</strong> Don't check sovereignty or trust pools directly.</div></div>
-    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">2</span></div><div class="text-[13px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Only write to the trusted pool from a verified source.</strong> That means an explicit user action (QR scan) or an embedded verifier that computes the trust ID from Bitcoin blocks.</div></div>
-    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">3</span></div><div class="text-[13px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Pre-fill semi-trusted for a good default.</strong> Fetch an anchor from your own endpoint so users don't see <code style="font-size:12px">Unverified</code> on first launch.</div></div>
-    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">4</span></div><div class="text-[13px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Offer QR verification for full trust.</strong> Make it easy to scan from Veritas or a spaces client for the orange checkmark.</div></div>
+    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">1</span></div><div class="text-[14px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Use <code style="font-size:12px">fabric.badge()</code> for all display logic.</strong> Don't check sovereignty or trust pools directly.</div></div>
+    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">2</span></div><div class="text-[14px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Only write to the trusted pool from a verified source.</strong> That means an explicit user action (QR scan) or an embedded verifier that computes the trust ID from Bitcoin blocks.</div></div>
+    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">3</span></div><div class="text-[14px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Pre-fill semi-trusted for a good default.</strong> Fetch an anchor from your own endpoint so users don't see <code style="font-size:12px">Unverified</code> on first launch.</div></div>
+    <div class="flex items-start gap-3"><div class="w-5 h-5 rounded-md bg-accent-dim border border-accent/15 flex items-center justify-center mt-0.5 shrink-0"><span class="font-mono text-[10px] font-bold text-accent">4</span></div><div class="text-[14px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">Offer QR verification for full trust.</strong> Make it easy to scan from Veritas or a spaces client for the orange checkmark.</div></div>
   </div>
 </div>
 

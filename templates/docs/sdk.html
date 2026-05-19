@@ -7,44 +7,45 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/tomorrow-night.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <style>
-.hljs{background:transparent!important;padding:0!important;color:#dcdce0}
-        .hljs-keyword,.hljs-built_in,.hljs-type,.hljs-literal,.hljs-selector-tag{color:#c084fc}
-        .hljs-string,.hljs-addition{color:#3fbc8b}
-        .hljs-comment,.hljs-quote,.hljs-deletion{color:#585862}
-        .hljs-title,.hljs-title\.class_,.hljs-title\.function_{color:#d4a94e}
-        .hljs-number{color:#e0722e}
-        .hljs-attr,.hljs-attribute,.hljs-property{color:#5e9de0}
-        .hljs-symbol,.hljs-bullet{color:#e0722e}
-        .hljs-meta,.hljs-meta .hljs-keyword{color:#8a8a94}
-        .hljs-variable,.hljs-template-variable,.hljs-function .hljs-params{color:#dcdce0}
-        body{background:#0e0e11;-webkit-font-smoothing:antialiased}
-        ::selection{background:rgba(224,114,46,.25)}
-        .dot-grid{background-image:radial-gradient(circle,#2a2a31 .6px,transparent .6px);background-size:28px 28px}
-        .lang-tab{padding:9px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:#585862;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none}
-        .lang-tab:hover{color:#8a8a94}.lang-tab.active{color:#dcdce0;border-bottom-color:#e0722e;background:rgba(255,255,255,.03)}
-        .code-block{font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.7;tab-size:2;white-space:pre}
+        .hljs{background:transparent!important;padding:0!important;color:rgb(var(--color-txt-primary))}
+        .hljs-keyword,.hljs-built_in,.hljs-type,.hljs-literal,.hljs-selector-tag{color:rgb(var(--hljs-keyword))}
+        .hljs-string,.hljs-addition{color:rgb(var(--color-sp-green))}
+        .hljs-comment,.hljs-quote,.hljs-deletion{color:rgb(var(--color-txt-muted))}
+        .hljs-title,.hljs-title\.class_,.hljs-title\.function_{color:rgb(var(--hljs-title))}
+        .hljs-number{color:rgb(var(--color-accent-strong))}
+        .hljs-attr,.hljs-attribute,.hljs-property{color:rgb(var(--color-sp-blue))}
+        .hljs-symbol,.hljs-bullet{color:rgb(var(--color-accent-strong))}
+        .hljs-meta,.hljs-meta .hljs-keyword{color:rgb(var(--color-txt-secondary))}
+        .hljs-variable,.hljs-template-variable,.hljs-function .hljs-params{color:rgb(var(--color-txt-primary))}
+        ::selection{background:rgb(var(--color-accent) / 0.25)}
+        .dot-grid{background-image:radial-gradient(circle,rgb(var(--color-border)) .6px,transparent .6px);background-size:28px 28px}
+        .lang-tab{padding:9px 16px;font-family:'Lilex',monospace;font-size:14px;font-weight:500;color:rgb(var(--color-txt-muted));border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none}
+        .lang-tab:hover{color:rgb(var(--color-txt-secondary))}
+        .lang-tab.active{color:rgb(var(--color-txt-primary));border-bottom-color:rgb(var(--color-accent));background:rgb(var(--color-raised))}
+        .code-block{font-family:'Lilex',monospace;font-size:14px;line-height:1.7;tab-size:2;white-space:pre}
         .copy-btn{opacity:0;transition:opacity .2s}.code-wrap:hover .copy-btn{opacity:1}@media(max-width:768px){.copy-btn{opacity:1}}
-        .doc-p{color:#8a8a94;font-size:15px;line-height:1.75}
-        .doc-p strong{color:#dcdce0;font-weight:600}
-        .doc-p code{font-family:'JetBrains Mono',monospace;font-size:13px;background:#1c1c22;border:1px solid #2a2a31;padding:1px 6px;border-radius:4px;color:#dcdce0}
-        .doc-p a{color:#e0722e}.doc-p a:hover{color:#eb7e3a}
-        .toc-link{display:block;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#585862;border-left:2px solid transparent;transition:all .2s;text-decoration:none}
-        .toc-link:hover{color:#8a8a94;border-left-color:#2a2a31}
+        .doc-p{color:rgb(var(--color-txt-secondary));font-size:15px;line-height:1.75}
+        .doc-p strong{color:rgb(var(--color-txt-primary));font-weight:600}
+        .doc-p code{font-family:'Lilex',monospace;font-size:14px;background:rgb(var(--color-raised));border:1px solid rgb(var(--color-border));padding:1px 6px;border-radius:4px;color:rgb(var(--color-txt-primary))}
+        .doc-p a{color:rgb(var(--color-accent))}.doc-p a:hover{color:rgb(var(--color-accent-strong))}
+        .toc-link{display:block;padding:5px 12px;font-family:'Lilex',monospace;font-size:12px;color:rgb(var(--color-txt-muted));border-left:2px solid transparent;transition:all .2s;text-decoration:none}
+        .toc-link:hover{color:rgb(var(--color-txt-secondary));border-left-color:rgb(var(--color-border))}
         .toc-link.sub{padding-left:24px;font-size:11px}
-        .docs-sidebar a.active{color:#dcdce0;background-color:rgba(224,114,46,0.08);border-left:2px solid #e0722e}
-        #tocNav .toc-link.active{color:#8a8a94;background:none;border-left-color:transparent}
+        .docs-sidebar a.active{color:rgb(var(--color-txt-primary));background-color:rgb(var(--color-accent) / 0.08);border-left:2px solid rgb(var(--color-accent))}
+        #tocNav .toc-link.active{color:rgb(var(--color-txt-secondary));background:none;border-left-color:transparent}
         .docs-sidebar a{border-left:2px solid transparent}
-        .docs-sidebar{scrollbar-width:thin;scrollbar-color:#2a2a31 transparent}
-        .docs-sidebar::-webkit-scrollbar{width:3px}
-        .docs-sidebar::-webkit-scrollbar-track{background:transparent}
-        .docs-sidebar::-webkit-scrollbar-thumb{background:#2a2a31;border-radius:3px}
+        .docs-sidebar{scrollbar-width:thin;scrollbar-gutter:stable;scrollbar-color:rgb(var(--color-border)) rgb(var(--color-border) / 0.18)}
+        .docs-sidebar::-webkit-scrollbar{width:6px}
+        .docs-sidebar::-webkit-scrollbar-track{background:rgb(var(--color-border) / 0.18);border-radius:3px}
+        .docs-sidebar::-webkit-scrollbar-thumb{background:rgb(var(--color-border));border-radius:3px}
+        .docs-sidebar::-webkit-scrollbar-thumb:hover{background:rgb(var(--color-txt-muted))}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="max-w-[1440px] mx-auto px-8 pt-14 pb-16 flex">
     <!-- Docs sidebar -->
-    <aside class="docs-sidebar hidden lg:block w-56 shrink-0 sticky top-14 self-start max-h-[calc(100vh-3.5rem)] overflow-y-auto pt-4 pr-4 border-r border-border-subtle">
+    <aside class="docs-sidebar hidden lg:block w-56 shrink-0 sticky top-14 self-start max-h-[calc(100vh-3.5rem)] overflow-y-scroll pt-4 pr-4 border-r border-border-subtle">
         <nav class="flex flex-col gap-8 text-sm pb-8">
             {% set docs_section = get_section(path="docs/_index.md") %}
             <div>
@@ -133,7 +134,7 @@
 
     <!-- Header -->
     <div class="pl-10 pr-10 pt-5 pb-12">
-        <h1 class="text-[1.6rem] font-bold text-txt-primary tracking-[-0.03em] mb-2">Fabric</h1>
+        <h1 class="text-[1.6rem] font-bold text-txt-primary tracking-[-0.015em] mb-2">Fabric</h1>
         <p class="doc-p mb-4 max-w-[600px]">Fabric enables stateless handle resolution & verification through the HTTP-based certrelay network in any environment, including the browser. Resolution is permissionless against a specified <button data-trust-popover class="text-accent hover:text-accent-strong transition-colors cursor-pointer">trust anchor</button>.</p>
         <a href="/docs/developers/playground/" class="inline-flex items-center gap-1.5 font-mono text-[11px] font-medium text-accent hover:text-accent-strong transition-colors mb-6">
             <iconify-icon icon="solar:code-linear" class="text-sm"></iconify-icon>
@@ -143,8 +144,8 @@
         <!-- Interactive demo -->
         <div class="max-w-[500px]">
             <div class="flex items-center bg-surface border border-border rounded-lg p-1 focus-within:border-accent/40 transition-colors">
-                <input type="text" id="sdkQuery" placeholder="alice@bitcoin" class="w-full bg-transparent border-none text-txt-primary text-[13px] px-3 py-1.5 focus:ring-0 focus:outline-none placeholder:text-txt-muted font-mono" autocomplete="off" spellcheck="false" />
-                <button id="sdkQueryBtn" onclick="sdkDoQuery()" class="bg-accent hover:bg-accent-strong text-black font-mono text-[11px] font-semibold px-3.5 py-1.5 rounded-md transition-colors whitespace-nowrap">Resolve</button>
+                <input type="text" id="sdkQuery" placeholder="alice@bitcoin" class="w-full bg-transparent border-none text-txt-primary text-[14px] px-3 py-1.5 focus:ring-0 focus:outline-none placeholder:text-txt-muted font-mono" autocomplete="off" spellcheck="false" />
+                <button id="sdkQueryBtn" onclick="sdkDoQuery()" class="btn btn-sm btn-primary">Resolve</button>
             </div>
             <div class="mt-3 bg-base border border-border rounded-lg overflow-hidden hidden" id="sdkResultWrap">
                 <div class="flex items-center gap-2 px-4 py-2 border-b border-border-subtle">
@@ -173,11 +174,11 @@
                 <!-- ═══ STEP 1: INSTALL ═══ -->
                 <div class="mb-16" id="install">
                     <div class="flex items-center gap-2.5 mb-3">
-                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">1</span></div>
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-accent-fg">1</span></div>
                         <h3 class="text-[16px] font-bold text-txt-primary">Install Fabric</h3>
                     </div>
                     <p class="doc-p mb-5">The Fabric client handles relay connections, verification, and broadcasting. Each package bundles <code>libveritas</code> for proof verification.</p>
-                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden" id="install-code">
+                    <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden" id="install-code">
                         <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                             <div class="flex items-center gap-3">
                                 <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
@@ -214,11 +215,11 @@
                 <!-- ═══ STEP 2: RESOLVE ═══ -->
                 <div class="mb-16" id="resolve">
                     <div class="flex items-center gap-2.5 mb-3">
-                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">2</span></div>
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-accent-fg">2</span></div>
                         <h3 class="text-[16px] font-bold text-txt-primary">Resolve a handle</h3>
                     </div>
                     <p class="doc-p mb-5">Resolve a handle to get its records.</p>
-                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                    <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                         <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                             <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                             <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
@@ -244,11 +245,11 @@
                 <!-- ═══ STEP 3: READ RECORDS ═══ -->
                 <div class="mb-16" id="read-records">
                     <div class="flex items-center gap-2.5 mb-3">
-                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">3</span></div>
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-accent-fg">3</span></div>
                         <h3 class="text-[16px] font-bold text-txt-primary">Read records</h3>
                     </div>
                     <p class="doc-p mb-5">Unpack and read records from a resolved handle.</p>
-                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                    <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                         <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                             <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                             <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
@@ -280,7 +281,7 @@
                     <p class="doc-p mb-4">Fabric tracks three trust pools: <strong>trusted</strong>, <strong>semi-trusted</strong>, and <strong>observed</strong>. The <strong>observed</strong> id is the latest state seen from peers - it's used for best-effort resolution but isn't trusted on its own. Without any pinned trust, <code>badge()</code> returns <code>Unverified</code>.</p>
                     <p class="doc-p mb-4">The <strong>trusted</strong> id is pinned by scanning a QR code directly from a local trust source e.g. Veritas menubar app. Handles verified against a locally verified trust id report as "Orange" (if their certificate is final). The <strong>semi-trusted</strong> id comes from a less authoritative source e.g. user scans trust id from an explorer over HTTPS - it won't produce <code>Orange</code> state, but results won't show as <code>Unverified</code> either.</p>
                     <p class="doc-p mb-5">See the <a href="/docs/developers/guidelines/">Design Guidelines</a> for how to display badges in your UI.</p>
-                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                    <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                         <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                             <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                             <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
@@ -314,11 +315,11 @@
 
                 <div class="mb-16" id="pack">
                     <div class="flex items-center gap-2.5 mb-3">
-                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">1</span></div>
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-accent-fg">1</span></div>
                         <h3 class="text-[16px] font-bold text-txt-primary">Pack records</h3>
                     </div>
                     <p class="doc-p mb-5">Create a record set with the data you want to publish for your handle.</p>
-                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                    <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                         <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                             <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                             <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
@@ -344,11 +345,11 @@
                 <!-- ═══ STEP 2: PUBLISH ═══ -->
                 <div class="mb-16" id="broadcast">
                     <div class="flex items-center gap-2.5 mb-3">
-                        <div class="w-6 h-6 rounded-full bg-sp-green flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">2</span></div>
+                        <div class="w-6 h-6 rounded-full bg-sp-green flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-accent-fg">2</span></div>
                         <h3 class="text-[16px] font-bold text-txt-primary">Publish</h3>
                     </div>
                     <p class="doc-p mb-5">Sign and publish your records to the network.</p>
-                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                    <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                         <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                             <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                             <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
@@ -383,15 +384,15 @@
                 <!-- ═══ STEP 1: SEARCH ADDRESSES ═══ -->
                 <div class="mb-16" id="search-addr">
                     <div class="flex items-center gap-2.5 mb-3">
-                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">1</span></div>
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-accent-fg">1</span></div>
                         <h3 class="text-[16px] font-bold text-txt-primary">Search addresses</h3>
                     </div>
                     <p class="doc-p mb-5">Relays index the mapping of all ADDR records, for example to find names associated with an npub:</p>
                     <div class="mb-5 px-4 py-3 rounded-lg border border-accent/15 bg-accent/[0.04] flex gap-3">
                         <iconify-icon icon="solar:info-circle-linear" class="text-accent shrink-0" style="font-size:20px;margin-top:2px"></iconify-icon>
-                        <p class="text-[13px] text-txt-secondary leading-relaxed">An ADDR record is a one-way statement. For example, if Alice adds her Nostr npub (like <code class="font-mono text-[12px] bg-white/[0.04] border border-border-subtle px-1 rounded">npub1abc...xyz</code>) to her handle, she's saying "this is my Nostr identity." But it's on the application layer to verify that she actually controls the npub. Search-addrs simply indexes the mappings found in record sets and returns zones containing the matching ADDR record.</p>
+                        <p class="text-[14px] text-txt-secondary leading-relaxed">An ADDR record is a one-way statement. For example, if Alice adds her Nostr npub (like <code class="font-mono text-[12px] bg-white/[0.04] border border-border-subtle px-1 rounded">npub1abc...xyz</code>) to her handle, she's saying "this is my Nostr identity." But it's on the application layer to verify that she actually controls the npub. Search-addrs simply indexes the mappings found in record sets and returns zones containing the matching ADDR record.</p>
                     </div>
-                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                    <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                         <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                             <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                             <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
@@ -417,11 +418,11 @@
                 <!-- ═══ STEP 2: RESOLVE BY ID ═══ -->
                 <div class="mb-16" id="resolve-by-id">
                     <div class="flex items-center gap-2.5 mb-3">
-                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-black">2</span></div>
+                        <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center shrink-0"><span class="font-mono text-[11px] font-bold text-accent-fg">2</span></div>
                         <h3 class="text-[16px] font-bold text-txt-primary">Resolve by id</h3>
                     </div>
                     <p class="doc-p mb-5">Handles have a numeric identifier, if you have the id, you could resolve back the handle name:</p>
-                    <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                    <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                         <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                             <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                             <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
@@ -452,7 +453,7 @@
                     <div class="mb-10" id="resolve-all">
                         <h3 class="text-[15px] font-bold text-txt-primary mb-3">Resolve multiple handles</h3>
                         <p class="doc-p mb-4">Batch resolution returns a <code>ResolvedBatch</code> with shared roots. Use <code>badge_for()</code> to get the badge for each zone in the batch.</p>
-                        <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                             <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                                 <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                                 <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
@@ -479,7 +480,7 @@
                     <div class="mb-10" id="builder">
                         <h3 class="text-[15px] font-bold text-txt-primary mb-3">MessageBuilder (advanced)</h3>
                         <p class="doc-p mb-4">For batching multiple handles into a single message, or when you need access to the raw message bytes before broadcasting.</p>
-                        <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                             <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                                 <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                                 <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
@@ -506,7 +507,7 @@
                     <div class="mb-10" id="config">
                         <h3 class="text-[15px] font-bold text-txt-primary mb-3">Configuration</h3>
                         <p class="doc-p mb-4">Custom relay seeds, dev mode, and trust pinning.</p>
-                        <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                             <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                                 <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                                 <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
@@ -553,7 +554,7 @@ f.trust("abcdef..")</pre>
                     <div class="mb-10" id="verification">
                         <h3 class="text-[15px] font-bold text-txt-primary mb-3">Offline verification</h3>
                         <p class="doc-p mb-4">Access the internal <code>Veritas</code> instance for custom proof verification.</p>
-                        <div class="code-wrap relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="code-wrap relative bg-surface border border-border rounded-lg overflow-hidden">
                             <div class="flex items-center justify-between border-b border-border-subtle px-4 py-2">
                                 <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em] lang-label">Rust</span>
                                 <button onclick="copyCode(this)" class="copy-btn font-mono text-[10px] text-txt-muted hover:text-txt-secondary flex items-center gap-1"><iconify-icon icon="solar:copy-linear" class="text-xs"></iconify-icon> Copy</button>
