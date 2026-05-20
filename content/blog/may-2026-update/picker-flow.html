@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Spaces: pick a handle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500&family=Fragment+Mono&family=IM+Fell+English+SC&display=swap">
+    <style>
+        :root {
+            --bg-deep: #0e0e11;
+            --chrome-bg: #0e0e11;
+            --chrome-border: rgba(255, 255, 255, 0.13);
+            --chrome-shadow: 0 4px 30px rgba(0, 0, 0, 0.35);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-primary: #e8e9eb;
+            --text-secondary: #8a8e94;
+            --text-muted: #5a5a62;
+            --accent: #d946ef;
+            --warn: #e8a843;
+            --font-display: 'IM Fell English SC', 'Times New Roman', Georgia, serif;
+            --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+            --font-mono: 'Fragment Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+            --text-meta: 11px;
+            --tracking-wide: 0.08em;
+        }
+
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100%; background: var(--bg-deep); }
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+
+        .stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px 16px;
+        }
+
+        .signin-card {
+            width: 100%;
+            max-width: 560px;
+            min-height: 680px;
+            background: var(--chrome-bg);
+            border: 1px solid var(--chrome-border);
+            border-radius: 18px;
+            box-shadow: none;
+            padding: 40px 28px 32px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signin-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin: 0 auto 22px;
+            transition: padding 280ms cubic-bezier(0.22, 1, 0.36, 1), margin 280ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .is-celebrating .signin-header {
+            padding-top: 24px;
+            margin-bottom: 24px;
+        }
+        .signin-mascot {
+            height: 96px;
+            width: 120px;
+            overflow: hidden;
+            transition: height 280ms cubic-bezier(0.22, 1, 0.36, 1), overflow 0s 280ms;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .is-celebrating .signin-mascot {
+            height: 120px;
+            overflow: visible;
+        }
+        .signin-mascot canvas {
+            image-rendering: pixelated;
+            flex-shrink: 0;
+        }
+
+        .signin-body {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phase {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            opacity: 1;
+            transition: opacity 320ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .phase[hidden] {
+            display: none !important;
+        }
+        .phase.fading {
+            opacity: 0;
+        }
+
+        /* ── Pick phase ───────────────────────────────────────────── */
+        .claim-picker-intro {
+            text-align: center;
+            padding: 0 0 18px;
+        }
+        .claim-picker-headline {
+            margin: 0 0 10px;
+            font-family: var(--font-display);
+            font-size: clamp(28px, 4vw, 36px);
+            font-weight: 400;
+            line-height: 1.15;
+            letter-spacing: 0.01em;
+            color: var(--text-primary);
+        }
+        .claim-picker-subhead {
+            margin: 0 auto;
+            max-width: 380px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 1.55;
+            color: var(--text-secondary);
+        }
+        .claim-picker-subhead code {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .claim-wheel-frame {
+            position: relative;
+            flex: none;
+            width: 100%;
+            max-width: 420px;
+            height: 336px;
+            margin: 0 auto;
+            overflow: hidden;
+            isolation: isolate;
+        }
+        .claim-wheel {
+            height: 100%;
+            overflow: hidden;
+            perspective: 1100px;
+        }
+        .claim-wheel-spacer {
+            height: calc(50% - 24px);
+        }
+        .claim-wheel-item {
+            position: relative;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 19px;
+            letter-spacing: 0.01em;
+            color: var(--text-muted);
+            transform-origin: center center;
+            backface-visibility: hidden;
+            will-change: transform, opacity;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .claim-wheel-item.is-near { color: var(--text-secondary); }
+        .claim-wheel-item.is-center {
+            color: var(--accent);
+        }
+        .claim-wheel-item.is-center .claim-wheel-item-name {
+            font-size: 24px;
+            font-weight: 500;
+        }
+        .claim-wheel-item-name {
+            position: relative;
+            display: inline-block;
+        }
+
+        .claim-wheel-band {
+            position: absolute;
+            left: 0; right: 0;
+            top: 50%;
+            height: 48px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .claim-wheel-band::before,
+        .claim-wheel-band::after {
+            content: '';
+            position: absolute;
+            left: 12%;
+            right: 12%;
+            height: 1px;
+            background: linear-gradient(
+                    to right,
+                    transparent,
+                    color-mix(in srgb, var(--accent) 22%, transparent),
+                    transparent
+            );
+        }
+        .claim-wheel-band::before { top: 0; }
+        .claim-wheel-band::after  { bottom: 0; }
+
+        .claim-wheel-fade-t,
+        .claim-wheel-fade-b { display: none; }
+
+        .claim-view {
+            display: flex;
+            flex-direction: column;
+            padding-top: 18px;
+        }
+
+        .signin-btn {
+            width: 100%;
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 500;
+            background: color-mix(in srgb, var(--accent) 4%, transparent);
+            color: var(--accent);
+            border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.1s;
+        }
+        .signin-btn:hover {
+            background: color-mix(in srgb, var(--accent) 8%, transparent);
+            border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+            box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 15%, transparent);
+        }
+        .signin-btn.is-pressed {
+            transform: scale(0.97);
+            background: color-mix(in srgb, var(--accent) 12%, transparent);
+        }
+        .claim-grab {
+            max-width: 420px;
+            width: calc(100% - 32px);
+            margin: 14px auto 0;
+        }
+        .claim-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: var(--text-meta);
+            color: var(--text-muted);
+            letter-spacing: var(--tracking-wide);
+            text-transform: uppercase;
+            max-width: 420px;
+            width: calc(100% - 32px);
+            margin: 14px auto 0;
+        }
+
+        /* ── Celebrate phase ──────────────────────────────────────── */
+        .claim-celebrate {
+            max-width: 460px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            justify-content: space-between;
+        }
+        .claim-card {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+            margin: 0 auto;
+            padding: 28px 28px 24px;
+            text-align: center;
+        }
+        .claim-card-tl, .claim-card-tr, .claim-card-bl, .claim-card-br {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: var(--accent);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .claim-card-tl { top: -1px; left: -1px; border-top: 1px solid; border-left: 1px solid; }
+        .claim-card-tr { top: -1px; right: -1px; border-top: 1px solid; border-right: 1px solid; }
+        .claim-card-bl { bottom: -1px; left: -1px; border-bottom: 1px solid; border-left: 1px solid; }
+        .claim-card-br { bottom: -1px; right: -1px; border-bottom: 1px solid; border-right: 1px solid; }
+
+        .claim-card-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        .claim-handle-hero {
+            font-family: var(--font-mono);
+            font-size: clamp(14px, 1.7vw, 18px);
+            line-height: 1.2;
+            margin-bottom: 22px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .claim-handle-hero-name {
+            color: var(--accent);
+            text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 28%, transparent);
+        }
+        .claim-handle-hero-suffix {
+            color: var(--text-muted);
+            font-size: 0.7em;
+            vertical-align: 0.18em;
+            margin-left: 2px;
+        }
+
+        .claim-binding {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .claim-link-viz {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 4px 0 6px;
+            height: 22px;
+        }
+        .claim-bolt-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+        }
+        .claim-bolt {
+            width: 14px;
+            height: 14px;
+            transition: opacity 240ms ease, filter 240ms ease, color 240ms ease;
+        }
+        .claim-bolt-up { transform: rotate(180deg); }
+
+        .claim-bolt-wrap[data-state="idle"] .claim-bolt {
+            color: var(--warn);
+            animation: claim-bolt-idle 2.4s ease-in-out infinite;
+        }
+        @keyframes claim-bolt-idle {
+            0%, 100% { opacity: 0.3; filter: drop-shadow(0 0 2px rgba(232, 168, 67, 0.2)); }
+            50%      { opacity: 0.7; filter: drop-shadow(0 0 6px rgba(232, 168, 67, 0.45)); }
+        }
+        .claim-bolt-wrap[data-state="publishing"] .claim-bolt {
+            opacity: 0.7;
+            color: var(--accent);
+            animation: claim-bolt-pulse 1.2s ease-in-out infinite;
+        }
+        @keyframes claim-bolt-pulse {
+            0%, 100% { opacity: 0.55; filter: drop-shadow(0 0 2px color-mix(in srgb, var(--accent) 25%, transparent)); }
+            50%      { opacity: 1;    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 55%, transparent)); }
+        }
+        .claim-bolt-wrap[data-state="success"] .claim-bolt {
+            opacity: 1;
+            color: var(--accent);
+            filter: drop-shadow(0 0 8px var(--accent));
+            animation: claim-bolt-flash 600ms ease-out;
+        }
+        @keyframes claim-bolt-flash {
+            0%   { opacity: 0.3; filter: none; }
+            40%  { opacity: 1; filter: drop-shadow(0 0 12px var(--accent)); }
+            100% { opacity: 1; filter: drop-shadow(0 0 8px var(--accent)); }
+        }
+        .claim-link-viz-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            min-width: 60px;
+            text-align: center;
+        }
+        .claim-npub {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            letter-spacing: 0.04em;
+            color: var(--text-secondary);
+            word-break: break-all;
+            max-width: 360px;
+        }
+
+        .claim-publish-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            margin: 40px auto 0;
+            width: 100%;
+            max-width: 380px;
+        }
+        .claim-publish-copy {
+            margin: 0;
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 300;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        .claim-celebrate-btn { width: 100%; }
+    </style>
+</head>
+<body>
+<div class="stage">
+    <div class="signin-card" id="card">
+        <div class="signin-header">
+            <div class="signin-mascot">
+                <canvas id="mascot" width="200" height="200" style="width:120px;height:120px"></canvas>
+            </div>
+        </div>
+
+        <div class="signin-body">
+            <div class="phase phase-pick" id="phase-pick">
+                <div class="claim-picker-intro">
+                    <h2 class="claim-picker-headline">Pick a handle.</h2>
+                    <p class="claim-picker-subhead">
+                        Grab a sovereign <code>.genesis@key</code> from the handle faucet.
+                    </p>
+                </div>
+                <div class="claim-wheel-frame">
+                    <div class="claim-wheel-band"></div>
+                    <div class="claim-wheel-fade-t"></div>
+                    <div class="claim-wheel-fade-b"></div>
+                    <div class="claim-wheel" id="wheel">
+                        <div class="claim-wheel-spacer"></div>
+                        <div id="wheel-items"></div>
+                        <div class="claim-wheel-spacer"></div>
+                    </div>
+                </div>
+                <div class="claim-view">
+                    <button class="signin-btn claim-grab" id="grab-btn">Grab</button>
+                    <div class="claim-footer"><span>Maybe later</span></div>
+                </div>
+            </div>
+
+            <div class="phase phase-celebrate" id="phase-celebrate" hidden>
+                <div class="claim-celebrate">
+                    <div class="claim-card">
+                        <div class="claim-card-tl"></div>
+                        <div class="claim-card-tr"></div>
+                        <div class="claim-card-bl"></div>
+                        <div class="claim-card-br"></div>
+                        <div class="claim-card-label">Your handle</div>
+                        <div class="claim-handle-hero">
+                            <span class="claim-handle-hero-name" id="hero-name">grace-magic-voyage</span><span class="claim-handle-hero-suffix">.genesis@key</span>
+                        </div>
+                        <div class="claim-binding">
+                            <div class="claim-link-viz">
+                                <div class="claim-bolt-wrap" id="bolt-down" data-state="idle">
+                                    <svg class="claim-bolt claim-bolt-down" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                        <path d="M6 0 L6 8 L2 8 L7 14 L12 8 L8 8 L8 0 Z" fill="currentColor" />
+                                    </svg>
+                                </div>
+                                <span class="claim-link-viz-label">pairing</span>
+                                <div class="claim-bolt-wrap" id="bolt-up" data-state="idle">
+                                    <svg class="claim-bolt claim-bolt-up" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                        <path d="M6 0 L6 8 L2 8 L7 14 L12 8 L8 8 L8 0 Z" fill="currentColor" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="claim-npub">npub1yx7p3l9k2hr4w8tgq6vc5x0a4k3wy</div>
+                        </div>
+                    </div>
+                    <div class="claim-publish-section">
+                        <p class="claim-publish-copy">
+                            Publish identity pairings to make the mapping verifiable.
+                        </p>
+                        <button class="signin-btn claim-celebrate-btn" id="publish-btn">Publish</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (() => {
+        // ── Orbee mascot canvas (ported from src/lib/orbeeExpressions.ts) ───
+        const GRID = 20;
+        const EXPR_PX = 5;
+        const EXPR_SCALE = 2;
+        const PALETTE = {
+            1: '#d946ef', 3: '#ffffff', 4: '#e8e6e1', 7: '#ffb800',
+            8: '#ff3c8e', 9: '#ff8833',
+        };
+
+        const empty = () => Array.from({ length: GRID }, () => Array(GRID).fill(0));
+
+        function stampAt(s, color) {
+            s[5][8]=color; s[5][9]=color; s[5][10]=color; s[5][11]=color;
+            s[6][7]=color; s[6][12]=color;
+            s[7][6]=color; s[7][9]=color; s[7][10]=color; s[7][13]=color;
+            s[8][6]=color; s[8][11]=color; s[8][13]=color;
+            s[9][6]=color; s[9][8]=color; s[9][9]=color; s[9][10]=color; s[9][11]=color; s[9][13]=color;
+            s[10][6]=color; s[10][8]=color; s[10][11]=color; s[10][13]=color;
+            s[11][6]=color; s[11][9]=color; s[11][10]=color; s[11][11]=color; s[11][12]=color;
+            s[12][7]=color;
+            s[13][8]=color; s[13][9]=color; s[13][10]=color; s[13][11]=color; s[13][12]=color; s[13][13]=color;
+        }
+
+        function makeAtIdle(f) {
+            const s = empty();
+            stampAt(s, 1);
+            if (Math.floor(f / 30) % 2 === 0) {
+                for (let r = 6; r <= 12; r++) s[r][16] = 1;
+            }
+            return s;
+        }
+
+        function makeAtCelebrate(f) {
+            const s = empty();
+            stampAt(s, 1);
+            const cx = 9.5, cy = 9;
+            const rot1 = f * 0.04;
+            for (let i = 0; i < 8; i++) {
+                const angle = rot1 + (i / 8) * Math.PI * 2;
+                const phase = ((f * 0.018) + i * 0.04) % 1;
+                const radius = 3 + phase * 7;
+                const x = Math.round(cx + Math.cos(angle) * radius);
+                const y = Math.round(cy + Math.sin(angle) * radius);
+                if (x >= 0 && x < GRID && y >= 0 && y < GRID && !s[y][x]) {
+                    s[y][x] = [7, 8, 3, 1][i % 4];
+                }
+            }
+            const rot2 = -f * 0.03;
+            for (let i = 0; i < 6; i++) {
+                const angle = rot2 + (i / 6) * Math.PI * 2;
+                const phase = ((f * 0.014) + i * 0.12 + 0.4) % 1;
+                const radius = 2.5 + phase * 6.5;
+                const x = Math.round(cx + Math.cos(angle) * radius);
+                const y = Math.round(cy + Math.sin(angle) * radius);
+                if (x >= 0 && x < GRID && y >= 0 && y < GRID && !s[y][x]) {
+                    s[y][x] = [7, 1, 3][i % 3];
+                }
+            }
+            return s;
+        }
+
+        const SPARKLE = [[2,4],[17,3],[1,10],[18,9],[3,16],[16,16],[5,1],[14,1]];
+
+        function startMascot(canvas, getMode) {
+            const ctx = canvas.getContext('2d');
+            ctx.scale(EXPR_SCALE, EXPR_SCALE);
+            const W = GRID * EXPR_PX;
+            let frame = 0;
+
+            function draw() {
+                frame++;
+                const mode = getMode(); // "idle" or "celebrate"
+                const sprite = mode === 'celebrate' ? makeAtCelebrate(frame) : makeAtIdle(frame);
+                const fy = mode === 'celebrate'
+                    ? Math.abs(Math.sin(frame * 0.08)) * -5
+                    : Math.sin(frame * 0.032) * 2.5;
+                const pulse = frame * 0.025;
+
+                ctx.clearRect(0, 0, W, W);
+
+                // soft glow halo
+                ctx.globalAlpha = 0.07;
+                for (let y = 0; y < GRID; y++) {
+                    for (let x = 0; x < GRID; x++) {
+                        const v = sprite[y][x];
+                        if (!v) continue;
+                        const c = PALETTE[v];
+                        if (!c) continue;
+                        ctx.fillStyle = c;
+                        ctx.fillRect(x * EXPR_PX - 1.5, y * EXPR_PX + fy - 1.5, EXPR_PX + 3, EXPR_PX + 3);
+                    }
+                }
+
+                // crisp pixels with chromatic fringe
+                for (let y = 0; y < GRID; y++) {
+                    for (let x = 0; x < GRID; x++) {
+                        const v = sprite[y][x];
+                        if (!v) continue;
+                        const c = PALETTE[v];
+                        if (!c) continue;
+                        const gx = x * EXPR_PX;
+                        const gy = y * EXPR_PX + fy;
+                        ctx.globalAlpha = 0.82 + Math.sin(pulse + x * 0.25 + y * 0.2) * 0.18;
+                        ctx.fillStyle = c;
+                        ctx.fillRect(gx, gy, EXPR_PX, EXPR_PX);
+                        if (v === 3 || v === 7 || v === 8 || v === 9) {
+                            ctx.globalAlpha = 0.13;
+                            ctx.fillStyle = '#ff3c8e';
+                            ctx.fillRect(gx - 1.5, gy, 1.5, EXPR_PX);
+                            ctx.fillStyle = '#4444ff';
+                            ctx.fillRect(gx + EXPR_PX, gy, 1.5, EXPR_PX);
+                        }
+                    }
+                }
+
+                // bounce sparkles around the celebrate sprite
+                if (mode === 'celebrate') {
+                    SPARKLE.forEach(([tx, ty], i) => {
+                        const tw = Math.sin(frame * 0.12 + i * 1.5);
+                        if (tw > 0.2) {
+                            ctx.globalAlpha = tw * 0.6;
+                            ctx.fillStyle = i % 3 === 0 ? '#ffb800' : i % 3 === 1 ? '#ff3c8e' : '#00e5ff';
+                            ctx.fillRect(
+                                tx * EXPR_PX + Math.sin(frame * 0.03 + i) * 2,
+                                ty * EXPR_PX + fy,
+                                EXPR_PX * 0.6,
+                                EXPR_PX * 0.6,
+                            );
+                        }
+                    });
+                }
+
+                ctx.globalAlpha = 1;
+                requestAnimationFrame(draw);
+            }
+            requestAnimationFrame(draw);
+        }
+
+        // ── Wheel ─────────────────────────────────────────────────────
+        const NAMES = [
+            'future-bright-harbor',
+            'dream-spark-river',
+            'hope-silver-orbit',
+            'brave-sunrise-meadow',
+            'grace-magic-voyage',
+            'noble-energy-canyon',
+            'lucky-golden-forest',
+            'wisdom-light-echo',
+            'spirit-calm-horizon',
+            'glory-happy-island',
+        ];
+        const TARGET_NAME = 'grace-magic-voyage';
+        const TARGET_IDX = NAMES.indexOf(TARGET_NAME);
+        const ITEM_H = 48;
+
+        const wheelEl = document.getElementById('wheel');
+        const itemsEl = document.getElementById('wheel-items');
+        const grabBtn = document.getElementById('grab-btn');
+        const heroName = document.getElementById('hero-name');
+        const phasePick = document.getElementById('phase-pick');
+        const phaseCelebrate = document.getElementById('phase-celebrate');
+        const card = document.getElementById('card');
+        const boltDown = document.getElementById('bolt-down');
+        const boltUp = document.getElementById('bolt-up');
+
+        for (const name of NAMES) {
+            const div = document.createElement('div');
+            div.className = 'claim-wheel-item';
+            div.innerHTML = `<span class="claim-wheel-item-name">${name}</span>`;
+            itemsEl.appendChild(div);
+        }
+        const itemNodes = Array.from(itemsEl.querySelectorAll('.claim-wheel-item'));
+
+        // Internal scroll position in px (instead of using element scrollTop, we
+        // translate the items list, since the wheel is overflow:hidden for the demo).
+        let wheelOffset = 0;
+
+        function applyWheel(offset) {
+            wheelOffset = offset;
+            itemsEl.style.transform = `translateY(${-offset}px)`;
+            // Center is at wheel half-height. wheelEl is 336px tall, items appear
+            // after a top spacer of (50% - 24px). So item i's center, as a px
+            // offset from wheel top, equals: (50% - 24) + i * 48 + 24 = 50% + i*48.
+            const centerPx = wheelEl.clientHeight / 2;
+            let closestIdx = 0;
+            let closestAD = Infinity;
+            itemNodes.forEach((it, i) => {
+                // Item top within the wheel = topSpacer + i*48 - offset
+                const topSpacer = wheelEl.clientHeight / 2 - ITEM_H / 2;
+                const itemCenter = topSpacer + i * ITEM_H + ITEM_H / 2 - offset;
+                const d = (itemCenter - centerPx) / ITEM_H;
+                const ad = Math.abs(d);
+                const rotX = Math.max(-26, Math.min(26, -d * 5));
+                const scale = Math.max(0.72, 1 - ad * 0.045);
+                const opacity = Math.max(0.08, 1 - ad * 0.2);
+                it.style.transform = `rotateX(${rotX.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+                it.style.opacity = opacity.toFixed(3);
+                it.classList.toggle('is-center', ad < 0.5);
+                it.classList.toggle('is-near', ad >= 0.5 && ad < 1.5);
+                if (ad < closestAD) { closestAD = ad; closestIdx = i; }
+            });
+            return closestIdx;
+        }
+
+        // ── Animation state ──────────────────────────────────────────
+        let mascotMode = 'idle';
+        startMascot(document.getElementById('mascot'), () => mascotMode);
+
+        function easeInOut(t) {
+            return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+        }
+        function easeOut(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        function tween(from, to, ms, ease, onUpdate) {
+            return new Promise((resolve) => {
+                const start = performance.now();
+                function step(now) {
+                    const t = Math.min(1, (now - start) / ms);
+                    const e = ease(t);
+                    onUpdate(from + (to - from) * e);
+                    if (t < 1) requestAnimationFrame(step); else resolve();
+                }
+                requestAnimationFrame(step);
+            });
+        }
+
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        function setBoltState(el, state) {
+            // Re-trigger the success flash by removing/setting attribute.
+            el.removeAttribute('data-state');
+            void el.offsetWidth;
+            el.setAttribute('data-state', state);
+        }
+
+        async function runPickPhase() {
+            // Reset state
+            grabBtn.textContent = 'Grab';
+            grabBtn.classList.remove('is-pressed');
+            phasePick.hidden = false;
+            phaseCelebrate.hidden = true;
+            card.classList.remove('is-celebrating');
+            mascotMode = 'idle';
+
+            // First show the wheel near the start, scroll past several items,
+            // then settle on TARGET_NAME.
+            const startIdx = 1;
+            const overshootIdx = TARGET_IDX + 2;
+            const startOffset = startIdx * ITEM_H;
+            const overshootOffset = overshootIdx * ITEM_H;
+            const targetOffset = TARGET_IDX * ITEM_H;
+
+            applyWheel(startOffset);
+            await sleep(400);
+
+            // Long ease through the list
+            await tween(startOffset, overshootOffset, 1700, easeOut, applyWheel);
+            // Settle back to target
+            await tween(overshootOffset, targetOffset, 600, easeInOut, applyWheel);
+
+            // Update grab button label to selected name
+            grabBtn.textContent = `Grab ${TARGET_NAME}`;
+            await sleep(700);
+
+            // Simulate click
+            grabBtn.classList.add('is-pressed');
+            await sleep(140);
+            grabBtn.classList.remove('is-pressed');
+            grabBtn.textContent = 'Broadcasting…';
+            await sleep(550);
+        }
+
+        async function runCelebratePhase() {
+            // Crossfade: fade pick out, swap, fade celebrate in.
+            phasePick.classList.add('fading');
+            await sleep(280);
+            phasePick.hidden = true;
+
+            heroName.textContent = TARGET_NAME;
+            phaseCelebrate.hidden = false;
+            phaseCelebrate.classList.add('fading');
+            card.classList.add('is-celebrating');
+            mascotMode = 'celebrate';
+
+            // Reset bolts to idle
+            setBoltState(boltDown, 'idle');
+            setBoltState(boltUp, 'idle');
+
+            // Force reflow then fade in
+            void phaseCelebrate.offsetWidth;
+            phaseCelebrate.classList.remove('fading');
+
+            await sleep(1400);
+
+            // Down bolt: publishing → success
+            setBoltState(boltDown, 'publishing');
+            await sleep(1100);
+            setBoltState(boltDown, 'success');
+            await sleep(400);
+
+            // Up bolt: publishing → success
+            setBoltState(boltUp, 'publishing');
+            await sleep(1100);
+            setBoltState(boltUp, 'success');
+
+            await sleep(1600);
+        }
+
+        async function loop() {
+            while (true) {
+                // Reset pick fade state
+                phasePick.classList.remove('fading');
+                await runPickPhase();
+                await runCelebratePhase();
+            }
+        }
+
+        // Kick off after fonts have a chance to settle
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(loop);
+        } else {
+            loop();
+        }
+    })();
+</script>
+</body>
+</html>

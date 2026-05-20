@@ -72,7 +72,7 @@
                     <iconify-icon icon="solar:pen-new-square-linear" class="text-accent text-xs"></iconify-icon>
                     <span class="font-mono text-[11px] text-txt-secondary font-medium tracking-[0.1em] uppercase">SIP-7 Records</span>
                 </div>
-                <h1 class="fade-up fd2 text-[2rem] md:text-[2.8rem] font-extrabold text-white tracking-[-0.04em] mb-4 leading-[1.1]">
+                <h1 class="fade-up fd2 text-[2rem] md:text-[2.8rem] font-serif text-txt-primary tracking-[-0.02em] mb-4 leading-[1.1]">
                     Record Editor
                 </h1>
                 <p class="fade-up fd3 text-[15px] text-txt-secondary max-w-lg mx-auto leading-relaxed mb-12">
@@ -106,12 +106,12 @@
                 <div class="flex items-center gap-2 mb-2">
                     <span class="font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-txt-muted">Handle</span>
                 </div>
-                <div class="relative flex items-center bg-surface border border-border rounded-xl p-1.5 shadow-[0_4px_30px_rgba(0,0,0,.3)] focus-within:border-accent/40 transition-colors">
+                <div class="relative flex items-center bg-surface border border-border rounded-lg p-1.5 shadow-card focus-within:border-accent/40 transition-colors">
                     <div class="pl-3 text-txt-muted">
                         <iconify-icon icon="solar:magnifer-linear" width="15"></iconify-icon>
                     </div>
                     <input type="text" id="handleInput" placeholder="alice@bitcoin" class="w-full bg-transparent border-none text-txt-primary text-[14px] px-3 py-2 focus:ring-0 focus:outline-none placeholder:text-txt-muted font-mono font-semibold" autocomplete="off" spellcheck="false" />
-                    <button onclick="resolveHandle()" id="resolveBtn" class="bg-accent hover:bg-accent-strong text-black font-mono text-[11px] font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5">
+                    <button onclick="resolveHandle()" id="resolveBtn" class="btn btn-sm btn-primary">
                         <iconify-icon icon="solar:download-minimalistic-linear" class="text-sm"></iconify-icon>
                         Load
                     </button>
@@ -123,7 +123,7 @@
 
             <!-- Editor card -->
             <div class="fade-up fd5 mb-6">
-                <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_8px_60px_rgba(0,0,0,.5)]">
+                <div class="bg-surface border border-border rounded-lg overflow-hidden shadow-pop">
 
                     <!-- Top bar -->
                     <div class="flex items-center justify-between border-b border-border-subtle px-5 py-2.5">
@@ -169,7 +169,7 @@
 
             <!-- JSON Output (primary output) -->
             <div class="fade-up fd5 mb-6">
-                <div class="bg-surface border border-border rounded-xl overflow-hidden">
+                <div class="bg-surface border border-border rounded-lg overflow-hidden">
                     <div class="flex items-center justify-between border-b border-border-subtle px-5 py-2.5">
                         <div class="flex items-center gap-2">
                             <span class="w-[5px] h-[5px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b]" style="animation:pulse-dot 2s ease infinite"></span>
@@ -191,7 +191,7 @@
 
             <!-- Sign & Broadcast (optional, collapsible) -->
             <div class="fade-up fd6 mb-6">
-                <button onclick="toggleSignSection()" id="signToggle" class="w-full flex items-center justify-between bg-surface border border-border rounded-xl px-5 py-3.5 transition-all hover:border-txt-muted/20 group">
+                <button onclick="toggleSignSection()" id="signToggle" class="w-full flex items-center justify-between bg-surface border border-border rounded-lg px-5 py-3.5 transition-all hover:border-txt-muted/20 group">
                     <div class="flex items-center gap-2.5">
                         <div class="w-7 h-7 rounded-md bg-sp-green-dim border border-sp-green/15 flex items-center justify-center shrink-0">
                             <iconify-icon icon="solar:global-linear" class="text-sp-green text-xs"></iconify-icon>
@@ -205,7 +205,7 @@
                 </button>
 
                 <div id="signSection" class="hidden mt-[-1px]">
-                    <div class="bg-surface border border-border border-t-0 rounded-b-xl overflow-hidden shadow-[0_8px_60px_rgba(0,0,0,.5)]">
+                    <div class="bg-surface border border-border border-t-0 rounded-b-lg overflow-hidden shadow-pop">
                         <div class="p-5 space-y-4">
 
                             <!-- Spacecert upload -->
@@ -239,7 +239,7 @@
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center gap-2">
-                                                <span id="certHandle" class="font-mono text-[13px] font-bold text-accent truncate">—</span>
+                                                <span id="certHandle" class="font-mono text-[14px] font-bold text-accent truncate">—</span>
                                                 <span class="font-mono text-[8px] text-sp-green bg-sp-green-dim px-1.5 py-0.5 rounded border border-sp-green/20 uppercase font-semibold shrink-0">Loaded</span>
                                             </div>
                                             <div class="flex items-center gap-2 font-mono text-[9px] text-txt-muted mt-0.5">
@@ -271,7 +271,7 @@
                             </div>
 
                             <!-- Broadcast button -->
-                            <button onclick="signAndBroadcast()" id="broadcastBtn" class="action-btn w-full font-mono text-[13px] font-semibold text-black bg-accent hover:bg-accent-strong px-6 py-3 rounded-lg transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(224,114,46,.25)] flex items-center justify-center gap-2">
+                            <button onclick="signAndBroadcast()" id="broadcastBtn" class="action-btn btn btn-primary w-full">
                                 <iconify-icon icon="solar:global-linear" class="text-sm"></iconify-icon>
                                 Sign &amp; Broadcast
                             </button>
@@ -470,7 +470,7 @@
                   <span class="w-[5px] h-[5px] rounded-full bg-txt-muted"></span>
                   <span class="text-txt-muted">No existing records for</span>
                   <span class="text-accent font-semibold">${escHtml(handle)}</span>
-                  <span class="text-txt-muted">— start fresh below</span>
+                  <span class="text-txt-muted">- start fresh below</span>
               </div>`;
             }
         } catch (e) {
@@ -907,13 +907,13 @@
         if (isHidden) {
             section.classList.remove('hidden');
             chevron.style.transform = 'rotate(180deg)';
-            toggle.classList.remove('rounded-xl');
-            toggle.classList.add('rounded-t-xl', 'rounded-b-none', 'border-b-0');
+            toggle.classList.remove('rounded-lg');
+            toggle.classList.add('rounded-t-lg', 'rounded-b-none', 'border-b-0');
         } else {
             section.classList.add('hidden');
             chevron.style.transform = '';
-            toggle.classList.add('rounded-xl');
-            toggle.classList.remove('rounded-t-xl', 'rounded-b-none', 'border-b-0');
+            toggle.classList.add('rounded-lg');
+            toggle.classList.remove('rounded-t-lg', 'rounded-b-none', 'border-b-0');
         }
     }
 
@@ -935,7 +935,7 @@
         const container = $('toastContainer');
         const toast = document.createElement('div');
         const colors = { success:'border-sp-green/30 bg-sp-green/10 text-sp-green', error:'border-red-500/30 bg-red-500/10 text-red-400', info:'border-accent/30 bg-accent-dim text-accent' };
-        toast.className = `toast pointer-events-auto px-4 py-2.5 rounded-lg border font-mono text-[12px] font-medium shadow-[0_8px_30px_rgba(0,0,0,.5)] ${colors[type]||colors.info}`;
+        toast.className = `toast pointer-events-auto px-4 py-2.5 rounded-lg border font-mono text-[12px] font-medium shadow-pop ${colors[type]||colors.info}`;
         toast.textContent = msg;
         container.appendChild(toast);
         setTimeout(() => { toast.classList.add('out'); setTimeout(() => toast.remove(), 300) }, 3000);

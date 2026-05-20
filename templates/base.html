@@ -3,8 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (stored === 'dark' || (!stored && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (e) { document.documentElement.classList.add('dark'); }
+        })();
+    </script>
     <title>{% block title %}Spaces Protocol{% endblock %} - Sovereign Naming on Bitcoin</title>
-    <meta name="description" content="{% block description %}Sovereign naming anchored to Bitcoin. Resolve handles, publish records, and verify identities without trusting anyone.{% endblock %}">
+    <meta name="description" content="{% block description %}A decentralized Bitcoin naming system for sovereign, censorship-resistant identities — own your handle across Nostr, wallets, and the web.{% endblock %}">
 
     <!-- Favicons -->
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -14,56 +25,120 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
 
+    {%- if page and page.title -%}
+        {%- set og_title = page.title -%}
+    {%- elif section and section.title and section.title != "Spaces Protocol" -%}
+        {%- set og_title = section.title ~ " - Spaces Protocol" -%}
+    {%- else -%}
+        {%- set og_title = "Spaces Protocol - Sovereign Naming on Bitcoin" -%}
+    {%- endif -%}
+    {%- if page and page.description -%}
+        {%- set og_description = page.description -%}
+    {%- elif section and section.description -%}
+        {%- set og_description = section.description -%}
+    {%- else -%}
+        {%- set og_description = "Sovereign naming anchored to Bitcoin. Resolve handles, publish records, and verify identities without trusting anyone." -%}
+    {%- endif -%}
+    {%- if page and page.permalink -%}
+        {%- set og_url = page.permalink -%}
+    {%- elif section and section.permalink -%}
+        {%- set og_url = section.permalink -%}
+    {%- else -%}
+        {%- set og_url = config.base_url -%}
+    {%- endif -%}
+    {%- if page and page.extra.og_image -%}
+        {%- set og_image = page.permalink ~ page.extra.og_image -%}
+    {%- elif section and section.extra.og_image -%}
+        {%- set og_image = section.permalink ~ section.extra.og_image -%}
+    {%- else -%}
+        {%- set og_image = config.base_url ~ "/og-image.png" -%}
+    {%- endif -%}
+    {%- set og_type = "website" -%}
+    {%- if page and page.date -%}
+        {%- set og_type = "article" -%}
+    {%- endif -%}
+
+    <!-- Canonical + indexing -->
+    <link rel="canonical" href="{{ og_url | safe }}">
+    <meta name="robots" content="index, follow">
+
+    <!-- Mobile browser chrome color -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0e0e11" media="(prefers-color-scheme: dark)">
+
     <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Spaces Protocol — Sovereign Naming on Bitcoin">
-    <meta property="og:description" content="Sovereign naming anchored to Bitcoin. Resolve handles, publish records, and verify identities without trusting anyone.">
-    <meta property="og:image" content="{{ config.base_url }}/og-image.png">
-    <meta property="og:url" content="{{ config.base_url }}">
+    <meta property="og:type" content="{{ og_type }}">
+    <meta property="og:site_name" content="Spaces Protocol">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="{{ og_title }}">
+    <meta property="og:description" content="{{ og_description }}">
+    <meta property="og:image" content="{{ og_image | safe }}">
+    <meta property="og:url" content="{{ og_url | safe }}">
+    {%- if page and page.date %}
+    <meta property="article:published_time" content="{{ page.date | date(format='%Y-%m-%dT%H:%M:%S%:z') }}">
+    {%- if page.updated %}
+    <meta property="article:modified_time" content="{{ page.updated | date(format='%Y-%m-%dT%H:%M:%S%:z') }}">
+    {%- endif %}
+    {%- if page.authors %}
+    {%- for author in page.authors %}
+    <meta property="article:author" content="{{ author }}">
+    {%- endfor %}
+    {%- endif %}
+    {%- endif %}
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Spaces Protocol — Sovereign Naming on Bitcoin">
-    <meta name="twitter:description" content="Sovereign naming anchored to Bitcoin. Resolve handles, publish records, and verify identities without trusting anyone.">
-    <meta name="twitter:image" content="{{ config.base_url }}/og-image.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        base: '#0e0e11',
-                        surface: '#151519',
-                        raised: '#1c1c22',
-                        'raised-hover': '#232329',
-                        border: '#2a2a31',
-                        'border-subtle': '#1f1f26',
-                        accent: '#e0722e',
-                        'accent-strong': '#eb7e3a',
-                        'accent-dim': 'rgba(224, 114, 46, 0.12)',
-                        'txt-primary': '#dcdce0',
-                        'txt-secondary': '#8a8a94',
-                        'txt-muted': '#585862',
-                        'sp-green': '#3fbc8b',
-                        'sp-green-dim': 'rgba(63, 188, 139, 0.10)',
-                        'sp-blue': '#5e9de0',
-                        'sp-blue-dim': 'rgba(94, 157, 224, 0.10)',
-                    },
-                    fontFamily: {
-                        sans: ['"DM Sans"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                }
-            }
-        }
+    <meta name="twitter:title" content="{{ og_title }}">
+    <meta name="twitter:description" content="{{ og_description }}">
+    <meta name="twitter:image" content="{{ og_image | safe }}">
+
+    <!-- Structured data: Organization (every page) + Article (blog posts only) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Spaces Protocol",
+        "url": "{{ config.base_url }}",
+        "logo": "{{ config.base_url }}/favicon-32x32.png",
+        "description": "Sovereign naming anchored to Bitcoin — censorship-resistant identities for Nostr, wallets, and the web.",
+        "sameAs": [
+            "https://github.com/spacesprotocol",
+            "https://t.me/spacesprotocol"
+        ]
+    }
     </script>
+    {%- if page and page.date %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": {{ og_title | json_encode | safe }},
+        "description": {{ og_description | json_encode | safe }},
+        "image": "{{ og_image | safe }}",
+        "datePublished": "{{ page.date | date(format='%Y-%m-%dT%H:%M:%S%:z') }}",
+        {%- if page.updated %}
+        "dateModified": "{{ page.updated | date(format='%Y-%m-%dT%H:%M:%S%:z') }}",
+        {%- endif %}
+        "publisher": {
+            "@type": "Organization",
+            "name": "Spaces Protocol",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ config.base_url }}/favicon-32x32.png"
+            }
+        },
+        "mainEntityOfPage": "{{ og_url | safe }}"
+    }
+    </script>
+    {%- endif %}
+    <link rel="stylesheet" href="{{ get_url(path='css/tailwind.css') }}">
     <script>window.FABRIC_VERSION = '0.2.0';</script>
     <script src="{{ get_url(path='js/qr.js') }}"></script>
     <script src="{{ get_url(path='js/trust-popover.js') }}" defer></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Lilex:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         html { overflow-y: scroll; }
         body {
@@ -88,7 +163,7 @@
     </style>
     {% block head %}{% endblock %}
 </head>
-<body class="bg-base text-txt-secondary font-sans flex flex-col min-h-screen">
+<body class="bg-base text-txt-secondary font-sans flex flex-col min-h-screen {% block body_class %}{% endblock %}">
 
 
 
@@ -96,22 +171,33 @@
 
 
 <!-- Navigation -->
-<nav class="fixed top-0 w-full z-50 border-b border-border-subtle" style="background: rgba(14,14,17,0.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);">
+<nav class="fixed top-0 w-full z-50 border-b border-border-subtle" style="background: var(--color-nav-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);">
     <div class="{% block nav_width %}max-w-[1222px]{% endblock %} mx-auto px-8 h-14 flex items-center justify-between">
         <a href="{{ config.base_url }}" class="flex items-center gap-2.5 group">
-            <svg class="w-7 h-7 text-white" viewBox="0 0 917 920" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <svg class="w-7 h-7 text-txt-primary" viewBox="0 0 917 920" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path d="M577.604 263.836L581.487 237.423C581.714 235.887 582.596 235.119 584.132 235.119L672.671 234.863C672.977 234.865 673.28 234.933 673.557 235.063C673.834 235.192 674.079 235.379 674.274 235.612C674.47 235.844 674.611 236.115 674.688 236.406C674.765 236.697 674.775 237 674.719 237.295C657.68 326.986 639.745 418.241 620.913 511.061C616.02 535.041 614.769 551.924 617.158 561.709C623.786 589.074 644.239 603.098 678.517 603.781C758.564 605.36 808.274 537.174 820.349 463.783C832.979 387.192 818.002 304.755 774.224 239.856C685.258 107.794 516.715 67.3014 369.122 104.552C292.147 124.009 227.39 165.241 174.85 228.249C113.918 301.342 86.8658 397.988 91.4314 492.884C96.0966 590.056 131.512 669.989 197.678 732.684C269.362 800.656 362.893 832.104 462.696 828.135C528.15 825.518 591.329 810.627 652.232 783.461C653.626 782.835 654.579 783.233 655.091 784.655L685.386 865.514C685.927 866.993 685.486 868.045 684.064 868.671C598.725 907.272 510.827 924.07 420.368 919.063C297.822 912.265 196.483 865.983 116.35 780.218C47.7951 706.855 9.52081 617.791 1.52745 513.024C-8.20112 385.229 28.5797 259.953 110.803 162.838C168.549 94.5955 240.389 47.6024 326.325 21.8587C444.604 -13.5994 575.3 -6.68693 687.947 48.2283C785.915 95.9751 866.645 184.94 898.263 290.93C921.987 370.58 922.57 447.91 900.012 522.923C883.755 577.027 848.297 628.828 801.19 659.806C747.811 694.88 679.285 706.699 617.372 686.303C560.323 667.529 524.097 613.253 523.713 553.943C523.599 537.729 527.397 510.122 535.106 471.122C540.084 445.805 544.919 418.796 549.613 390.094C551.263 380.081 548.248 369.868 540.567 359.457C518.678 329.759 490.388 324.298 455.613 325.493C402.746 327.37 361.143 376.397 343.905 420.901C327.748 462.574 320.935 501.972 323.466 539.094C327.435 597.466 382.563 611.973 430.481 597.722C430.884 597.6 431.308 597.563 431.727 597.612C432.146 597.661 432.55 597.796 432.914 598.009C433.278 598.221 433.595 598.505 433.844 598.845C434.093 599.185 434.27 599.572 434.364 599.983L453.437 681.908C453.92 683.956 453.152 685.279 451.133 685.876C406.045 699.559 363.163 698.165 322.485 681.695C260.785 656.776 229.253 589.145 230.576 524.416C232.922 409.423 288.392 274.546 409.061 240.538C453.522 227.993 497.03 229.786 539.586 245.915C552.173 250.651 563.352 258.289 574.831 265.158C576.395 266.097 577.32 265.656 577.604 263.836Z"/>
             </svg>
-            <span class="font-mono font-semibold text-[22px] text-white tracking-tight">spaces protocol</span>
+            <span class="font-mono font-semibold text-[22px] text-txt-primary tracking-tight hidden md:inline">spaces protocol</span>
             {% block nav_badge %}{% endblock %}
         </a>
 
+        <!-- Mobile menu toggle -->
+        <button id="navMenuBtn" class="md:hidden text-txt-secondary hover:text-txt-primary transition-colors p-1.5 -mr-1.5" aria-label="Open menu" aria-expanded="false">
+            <svg id="navMenuIconOpen" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="13" x2="20" y2="13"></line><line x1="4" y1="19" x2="20" y2="19"></line></svg>
+            <svg id="navMenuIconClose" class="hidden w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="6" y1="18" x2="18" y2="6"></line></svg>
+        </button>
+
         <div class="hidden md:flex items-center gap-7">
             <a href="/docs" class="font-mono text-xs text-txt-muted hover:text-txt-secondary transition-colors tracking-[0.01em]">Docs</a>
+            <a href="/blog" class="font-mono text-xs text-txt-muted hover:text-txt-secondary transition-colors tracking-[0.01em]">Blog</a>
             <a href="https://explorer.spacesprotocol.org" class="font-mono text-xs text-txt-muted hover:text-txt-secondary transition-colors tracking-[0.01em]">Explorer</a>
             <a href="/paper" class="font-mono text-xs text-txt-muted hover:text-txt-secondary transition-colors tracking-[0.01em]">Paper</a>
             <a href="https://github.com/spacesprotocol" class="font-mono text-xs text-txt-muted hover:text-txt-secondary transition-colors tracking-[0.01em]">GitHub</a>
-            <button id="navTrustBtn" data-trust-popover class="text-txt-muted hover:text-white transition-colors p-1" title="Trust ID">
+            <button id="themeToggle" class="text-txt-muted hover:text-txt-primary transition-colors p-1" title="Toggle theme" aria-label="Toggle theme">
+                <svg id="themeIconSun" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+                <svg id="themeIconMoon" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+            <button id="navTrustBtn" data-trust-popover class="text-txt-muted hover:text-txt-primary transition-colors p-1" title="Trust ID">
                 <svg class="w-4 h-4" viewBox="0 0 180 188" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M102 72H78C72.4772 72 68 76.4772 68 82V106C68 111.523 72.4772 116 78 116H102C107.523 116 112 111.523 112 106V82C112 76.4772 107.523 72 102 72Z" fill-opacity="0.88"/>
                     <path d="M99 0H81C76.0294 0 72 4.02944 72 9V27C72 31.9706 76.0294 36 81 36H99C103.971 36 108 31.9706 108 27V9C108 4.02944 103.971 0 99 0Z" fill-opacity="0.55"/>
@@ -120,13 +206,134 @@
                     <path d="M172 76H156C151.582 76 148 79.5817 148 84V100C148 104.418 151.582 108 156 108H172C176.418 108 180 104.418 180 100V84C180 79.5817 176.418 76 172 76Z" fill-opacity="0.38"/>
                 </svg>
             </button>
-            <a href="https://t.me/spacesprotocol" class="text-txt-muted hover:text-white transition-colors p-1" title="Telegram">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            <a href="https://t.me/spacesprotocol" class="text-txt-muted hover:text-txt-primary transition-colors p-1" title="Telegram">
+                <iconify-icon icon="ph:telegram-logo" class="text-[16px]"></iconify-icon>
             </a>
-            <a href="/docs/" class="font-mono text-[11px] font-semibold text-black bg-accent hover:bg-accent-strong px-3.5 py-1.5 rounded-[5px] transition-colors">Get Started</a>
+            <a href="/faucet" data-kbd="g" class="btn btn-sm btn-primary">
+                <iconify-icon icon="ph:arrow-right-bold" class="text-[12px]"></iconify-icon>
+                Get Started
+                <kbd class="btn-kbd btn-kbd-sm on-accent">G</kbd>
+            </a>
+        </div>
+    </div>
+
+    <!-- Mobile menu panel -->
+    <div id="navMenuPanel" class="hidden md:hidden border-t border-border-subtle bg-surface shadow-card">
+        <div class="px-5 py-3 flex flex-col divide-y divide-border-subtle">
+            <a href="/docs" class="font-mono text-[14px] text-txt-secondary hover:text-txt-primary transition-colors py-3">Docs</a>
+            <a href="/blog" class="font-mono text-[14px] text-txt-secondary hover:text-txt-primary transition-colors py-3">Blog</a>
+            <a href="https://explorer.spacesprotocol.org" class="font-mono text-[14px] text-txt-secondary hover:text-txt-primary transition-colors py-3">Explorer</a>
+            <a href="/paper" class="font-mono text-[14px] text-txt-secondary hover:text-txt-primary transition-colors py-3">Paper</a>
+            <a href="https://github.com/spacesprotocol" class="font-mono text-[14px] text-txt-secondary hover:text-txt-primary transition-colors py-3">GitHub</a>
+            <a href="https://t.me/spacesprotocol" class="font-mono text-[14px] text-txt-secondary hover:text-txt-primary transition-colors py-3">Telegram</a>
+            <button data-trust-popover class="text-left font-mono text-[14px] text-txt-secondary hover:text-txt-primary transition-colors py-3">Trust ID</button>
+            <button id="themeToggleMobile" class="text-left font-mono text-[14px] text-txt-secondary hover:text-txt-primary transition-colors py-3">
+                <span data-theme-label-dark class="hidden">Switch to light theme</span>
+                <span data-theme-label-light>Switch to dark theme</span>
+            </button>
+        </div>
+        <div class="px-5 pt-2 pb-4">
+            <a href="/docs/" class="btn btn-primary w-full">Get Started</a>
         </div>
     </div>
 </nav>
+
+<script>
+(function () {
+    const btn = document.getElementById('navMenuBtn');
+    const panel = document.getElementById('navMenuPanel');
+    const iconOpen = document.getElementById('navMenuIconOpen');
+    const iconClose = document.getElementById('navMenuIconClose');
+    if (!btn || !panel) return;
+    btn.addEventListener('click', () => {
+        const isOpen = !panel.classList.contains('hidden');
+        panel.classList.toggle('hidden', isOpen);
+        iconOpen.classList.toggle('hidden', !isOpen);
+        iconClose.classList.toggle('hidden', isOpen);
+        btn.setAttribute('aria-expanded', String(!isOpen));
+    });
+    // Don't close panel when theme toggle is clicked
+    panel.addEventListener('click', (e) => {
+        if (e.target.closest('#themeToggleMobile')) return;
+        if (e.target.closest('a')) {
+            panel.classList.add('hidden');
+            iconOpen.classList.remove('hidden');
+            iconClose.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+    });
+})();
+
+(function () {
+    const sun = document.getElementById('themeIconSun');
+    const moon = document.getElementById('themeIconMoon');
+    const labelsDark = document.querySelectorAll('[data-theme-label-dark]');
+    const labelsLight = document.querySelectorAll('[data-theme-label-light]');
+    function sync() {
+        const isDark = document.documentElement.classList.contains('dark');
+        if (sun)  sun.classList.toggle('hidden', !isDark);
+        if (moon) moon.classList.toggle('hidden', isDark);
+        labelsDark.forEach(el => el.classList.toggle('hidden', !isDark));
+        labelsLight.forEach(el => el.classList.toggle('hidden', isDark));
+    }
+    function toggle() {
+        const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+        document.documentElement.classList.toggle('dark', next === 'dark');
+        try { localStorage.setItem('theme', next); } catch (e) {}
+        sync();
+    }
+    sync();
+    document.getElementById('themeToggle')?.addEventListener('click', toggle);
+    document.getElementById('themeToggleMobile')?.addEventListener('click', toggle);
+})();
+
+function initKbdShortcuts() {
+    // Nav shortcuts: any single letter (a-z) with no modifier and no input focus navigates.
+    const map = new Map();
+    document.querySelectorAll('[data-kbd]').forEach(el => {
+        const k = el.getAttribute('data-kbd').toLowerCase();
+        if (k && !map.has(k)) map.set(k, el);
+    });
+    if (!map.size) return;
+    const isEditable = (el) => {
+        if (!el) return false;
+        const t = el.tagName;
+        if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') return true;
+        return el.isContentEditable;
+    };
+    let hintTimer = null;
+    document.addEventListener('keydown', (e) => {
+        // Modifier-free single-letter only
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (isEditable(document.activeElement)) return;
+        const key = e.key.toLowerCase();
+        // Show hint overlay when user presses '?'
+        if (e.key === '?') {
+            document.body.classList.toggle('show-kbd');
+            return;
+        }
+        const target = map.get(key);
+        if (!target) return;
+        e.preventDefault();
+        // briefly flash the hint
+        document.body.classList.add('show-kbd');
+        clearTimeout(hintTimer);
+        hintTimer = setTimeout(() => document.body.classList.remove('show-kbd'), 400);
+        if (target.target === '_blank' || target.href?.startsWith('http')) {
+            window.open(target.href, target.target || '_self');
+        } else if (target.href) {
+            window.location.href = target.href;
+        } else {
+            target.click();
+        }
+    });
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initKbdShortcuts);
+} else {
+    initKbdShortcuts();
+}
+</script>
 
 <main class="flex-1">
     {% block content %}{% endblock %}
@@ -139,6 +346,7 @@
         <div class="flex items-center gap-5">
             <a href="https://github.com/spacesprotocol" class="font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors">GitHub</a>
             <a href="/docs" class="font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors">Docs</a>
+            <a href="/blog" class="font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors">Blog</a>
             <a href="https://t.me/spacesprotocol" class="font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors">Telegram</a>
             <a href="https://explorer.spacesprotocol.org" class="font-mono text-[11px] text-txt-muted hover:text-txt-secondary transition-colors">Explorer</a>
         </div>

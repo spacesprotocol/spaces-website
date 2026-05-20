@@ -4,16 +4,16 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/tomorrow-night.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <style>
-    .hljs{background:transparent!important;padding:0!important;color:#dcdce0}
-    .hljs-keyword,.hljs-built_in,.hljs-type,.hljs-literal,.hljs-selector-tag{color:#c084fc}
-    .hljs-string,.hljs-addition{color:#3fbc8b}
-    .hljs-comment,.hljs-quote,.hljs-deletion{color:#585862}
-    .hljs-title,.hljs-title\.class_,.hljs-title\.function_{color:#d4a94e}
-    .hljs-number{color:#e0722e}
-    .hljs-attr,.hljs-attribute,.hljs-property{color:#5e9de0}
-    .hljs-symbol,.hljs-bullet{color:#e0722e}
-    .hljs-meta,.hljs-meta .hljs-keyword{color:#8a8a94}
-    .hljs-variable,.hljs-template-variable,.hljs-function .hljs-params{color:#dcdce0}
+    .hljs{background:transparent!important;padding:0!important;color:rgb(var(--color-txt-primary))}
+    .hljs-keyword,.hljs-built_in,.hljs-type,.hljs-literal,.hljs-selector-tag{color:rgb(var(--hljs-keyword))}
+    .hljs-string,.hljs-addition{color:rgb(var(--color-sp-green))}
+    .hljs-comment,.hljs-quote,.hljs-deletion{color:rgb(var(--color-txt-muted))}
+    .hljs-title,.hljs-title\.class_,.hljs-title\.function_{color:rgb(var(--hljs-title))}
+    .hljs-number{color:rgb(var(--color-accent-strong))}
+    .hljs-attr,.hljs-attribute,.hljs-property{color:rgb(var(--color-sp-blue))}
+    .hljs-symbol,.hljs-bullet{color:rgb(var(--color-accent-strong))}
+    .hljs-meta,.hljs-meta .hljs-keyword{color:rgb(var(--color-txt-secondary))}
+    .hljs-variable,.hljs-template-variable,.hljs-function .hljs-params{color:rgb(var(--color-txt-primary))}
     @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
     .cursor-blink { animation: blink 1s step-end infinite; }
@@ -34,9 +34,9 @@
     .code-keyword { color:#c084fc } .code-func { color:#5e9de0 } .code-string { color:#3fbc8b }
     .code-comment { color:#585862 } .code-type { color:#d4a94e } .code-prop { color:#5e9de0 }
 
-    .tab-active { background:rgba(255,255,255,.05); color:#dcdce0; border-bottom:2px solid #e0722e; }
-    .tab-inactive { color:#585862; border-bottom:2px solid transparent; }
-    .tab-inactive:hover { color:#8a8a94; }
+    .tab-active { background:rgb(var(--color-raised)); color:rgb(var(--color-txt-primary)); border-bottom:2px solid rgb(var(--color-accent)); }
+    .tab-inactive { color:rgb(var(--color-txt-muted)); border-bottom:2px solid transparent; }
+    .tab-inactive:hover { color:rgb(var(--color-txt-secondary)); }
 
     /* ── Scroll reveal ── */
     .reveal { opacity:0; transform:translateY(24px); transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1); }
@@ -65,7 +65,7 @@
     .step-num {
         width:40px; height:40px; border-radius:50%;
         display:flex; align-items:center; justify-content:center;
-        font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700;
+        font-family:'Lilex',monospace; font-size:14px; font-weight:700;
         position:relative; z-index:2; transition:all .4s ease;
     }
     .step-num.active { box-shadow:0 0 24px rgba(224,114,46,.25); }
@@ -94,20 +94,20 @@
 
     .htk {
         position:absolute; top:140px; height:36px; padding:0 10px;
-        display:flex; align-items:center; background:#1c1c22;
-        border:1px solid #2a2a31; border-radius:5px;
-        font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:500;
-        white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,.35);
+        display:flex; align-items:center; background:rgb(var(--color-raised));
+        border:1px solid rgb(var(--color-border)); border-radius:5px;
+        font-family:'Lilex',monospace; font-size:10px; font-weight:500;
+        white-space:nowrap; box-shadow:var(--shadow-soft);
         animation:tkMove linear forwards; will-change:transform; z-index:2;
     }
-    .htk .nm { color:#e0722e } .htk .at { color:#585862; margin:0 1px } .htk .dm { color:#3fbc8b }
+    .htk .nm { color:rgb(var(--color-accent)) } .htk .at { color:rgb(var(--color-txt-muted)); margin:0 1px } .htk .dm { color:rgb(var(--color-sp-green)) }
     .hchip {
-        font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:500;
-        padding:1px 4px; background:rgba(224,114,46,.12); border:1px solid rgba(224,114,46,.16);
-        border-radius:3px; color:#e0722e; opacity:0; animation:chipIn .2s forwards;
+        font-family:'Lilex',monospace; font-size:8px; font-weight:500;
+        padding:1px 4px; background:rgb(var(--color-accent) / 0.12); border:1px solid rgb(var(--color-accent) / 0.16);
+        border-radius:3px; color:rgb(var(--color-accent)); opacity:0; animation:chipIn .2s forwards;
     }
-    .alog-e { font-family:'JetBrains Mono',monospace; font-size:8px; display:flex; gap:5px; opacity:0; animation:logIn .2s forwards; }
-    .alog-e .t { color:#585862; flex-shrink:0 } .alog-e .m { color:#8a8a94 }
+    .alog-e { font-family:'Lilex',monospace; font-size:8px; display:flex; gap:5px; opacity:0; animation:logIn .2s forwards; }
+    .alog-e .t { color:rgb(var(--color-txt-muted)); flex-shrink:0 } .alog-e .m { color:rgb(var(--color-txt-secondary)) }
     .spark { position:absolute; width:3px; height:3px; border-radius:50%; pointer-events:none; z-index:10; animation:sparkOut .6s ease-out forwards; }
 
     /* ── Relay ── */
@@ -127,39 +127,60 @@
         <div class="hero-glow"></div>
         <div class="absolute inset-0 dot-grid opacity-[0.07] pointer-events-none"></div>
 
+        <!-- Pointer arrow to the trust-anchor icon in the navbar (desktop only) -->
+        <svg id="trustAnchorHint" class="hidden md:block absolute pointer-events-none z-[5]" width="100" height="55" viewBox="0 0 145 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="left:-9999px;top:0">
+            <path d="M90.8223 45.6183C87.0223 43.2783 73.7623 39.3783 68.0823 32.8983C62.4023 26.4183 58.5623 11.3383 56.7423 6.75825M89.8023 47.7583C86.2623 45.5383 75.6223 41.5183 70.0023 34.3783C64.4023 27.2583 58.2023 9.65825 56.1423 4.95825M56.1423 4.95825C56.3223 9.25825 56.0623 13.6983 56.6223 19.6783C56.4623 14.1183 56.2823 8.81825 56.1423 4.95825C58.9823 8.21825 62.0823 11.3183 65.9823 15.9383C62.4623 11.6783 58.9423 7.71825 56.1423 4.95825Z" stroke="#F97316" stroke-width="4" stroke-linecap="round"/>
+            <g transform="translate(0, -16)">
+            <path d="M1.792 80.1648L3.392 80.1968C3.75467 80.1968 3.95733 80.1861 4 80.1648V73.6048C4.02133 73.2421 4.20267 72.9328 4.544 72.6768C4.88533 72.4208 5.20533 72.2928 5.504 72.2928C5.80267 72.2928 6.03733 72.3888 6.208 72.5808C6.4 72.7728 6.48533 73.0714 6.464 73.4768C6.44267 73.8821 6.432 76.1008 6.432 80.1328L10.176 80.0048C10.816 80.0048 11.136 80.3781 11.136 81.1248C11.136 81.6794 10.9653 82.0954 10.624 82.3728C10.304 82.6501 9.952 82.7994 9.568 82.8208C9.20533 82.8421 8.84267 82.8528 8.48 82.8528L6.528 82.8208C6.528 83.6954 6.61333 85.4234 6.784 88.0048C6.976 90.5861 7.12533 92.2608 7.232 93.0288C7.33867 93.7754 7.36 94.2661 7.296 94.5008C7.232 94.7141 7.11467 94.8634 6.944 94.9488C6.66667 95.0768 6.29333 95.1408 5.824 95.1408C5.35467 95.1408 5.07733 94.8848 4.992 94.3728C4.56533 91.5781 4.27733 87.7381 4.128 82.8528C3.936 82.8741 3.2 82.8848 1.92 82.8848C0.64 82.8848 0 82.5114 0 81.7648C0 80.6981 0.597333 80.1648 1.792 80.1648Z" fill="#F97316"/>
+            <path d="M16.12 90.4368L16.152 93.7328C16.152 94.1168 15.9707 94.4688 15.608 94.7888C15.2667 95.1088 14.9253 95.2688 14.584 95.2688C14.0933 95.2688 13.784 94.8848 13.656 94.1168C13.6347 93.9461 13.5493 92.3888 13.4 89.4448C13.2507 86.4794 12.9627 84.1541 12.536 82.4688C12.344 81.6581 12.248 81.1781 12.248 81.0288C12.248 80.3248 12.6747 79.9728 13.528 79.9728C13.8907 79.9728 14.1787 80.1114 14.392 80.3888C14.6053 80.6661 14.7333 80.9541 14.776 81.2528C14.84 81.5301 14.8933 81.9141 14.936 82.4048C14.9787 82.8954 15.0107 83.2048 15.032 83.3328C15.48 82.2661 16.152 81.4661 17.048 80.9328C17.944 80.3994 18.9253 80.1328 19.992 80.1328C21.7413 80.1328 22.616 80.5808 22.616 81.4768C22.616 81.9248 22.456 82.2874 22.136 82.5648C21.8373 82.8208 21.4853 82.9488 21.08 82.9488C19.2667 82.9488 17.9867 83.5248 17.24 84.6768C16.4933 85.8288 16.12 87.7488 16.12 90.4368Z" fill="#F97316"/>
+            <path d="M24.2405 81.4128C24.3258 81.0501 24.5072 80.7514 24.7845 80.5168C25.0618 80.2608 25.3392 80.1328 25.6165 80.1328C25.9152 80.1328 26.1392 80.1861 26.2885 80.2928C26.4592 80.3994 26.5552 80.4954 26.5765 80.5808C26.6192 80.6661 26.6618 80.8154 26.7045 81.0288C26.5765 82.6928 26.5125 84.1968 26.5125 85.5408C26.5125 86.8634 26.6725 88.3888 26.9925 90.1168C27.3125 91.8234 27.6645 92.6768 28.0485 92.6768C28.6245 92.6768 29.3498 92.3568 30.2245 91.7168C31.1205 91.0768 31.7605 90.4048 32.1445 89.7008C31.8885 86.6288 31.7605 83.9941 31.7605 81.7968C31.7605 81.3488 31.8992 80.9648 32.1765 80.6448C32.4752 80.3248 32.8272 80.1648 33.2325 80.1648C33.8938 80.1648 34.2245 80.6128 34.2245 81.5088C34.2245 83.0234 34.3312 85.2741 34.5445 88.2608C34.7792 91.2474 35.0138 93.1461 35.2485 93.9568C35.2912 94.1274 35.3125 94.3301 35.3125 94.5648C35.3125 94.7781 35.1632 94.9808 34.8645 95.1728C34.5872 95.3861 34.2138 95.4928 33.7445 95.4928C33.2965 95.4928 32.9978 95.2368 32.8485 94.7248C32.8058 94.2981 32.6992 93.6581 32.5285 92.8048C31.0352 94.3621 29.5312 95.1408 28.0165 95.1408C27.3125 95.1408 26.6832 94.8741 26.1285 94.3408C25.5738 93.8074 25.1365 93.0821 24.8165 92.1648C24.2618 90.3941 23.9845 88.7301 23.9845 87.1728C23.9845 85.6154 24.0698 83.6954 24.2405 81.4128Z" fill="#F97316"/>
+            <path d="M37.661 84.2288C37.661 82.9701 38.109 81.9674 39.005 81.2208C39.901 80.4741 40.9357 80.1008 42.109 80.1008C43.3037 80.1008 44.445 80.3141 45.533 80.7408C46.621 81.1674 47.165 81.7328 47.165 82.4368C47.165 82.7994 47.0263 83.0874 46.749 83.3008C46.4717 83.5141 46.2263 83.6208 46.013 83.6208C45.821 83.6208 45.661 83.6208 45.533 83.6208C45.4263 83.5994 44.9997 83.3968 44.253 83.0128C43.5277 82.6288 42.8557 82.4368 42.237 82.4368C41.6183 82.4368 41.085 82.5968 40.637 82.9168C40.2103 83.2154 39.997 83.6634 39.997 84.2608C39.997 84.8581 40.2423 85.3274 40.733 85.6688C41.245 86.0101 42.1303 86.3088 43.389 86.5648C44.6477 86.7994 45.6077 87.1408 46.269 87.5888C46.9517 88.0368 47.293 88.8688 47.293 90.0848C47.293 91.8554 46.8237 93.1141 45.885 93.8608C44.9677 94.5861 43.8477 94.9488 42.525 94.9488C41.2023 94.9488 40.0717 94.7674 39.133 94.4048C38.2157 94.0421 37.757 93.4981 37.757 92.7728C37.757 91.9408 38.173 91.5248 39.005 91.5248C39.2183 91.5248 39.6877 91.6741 40.413 91.9728C41.1383 92.2714 41.853 92.4208 42.557 92.4208C43.2823 92.4208 43.8263 92.1968 44.189 91.7488C44.573 91.2794 44.765 90.7461 44.765 90.1488C44.765 89.5514 44.5197 89.1248 44.029 88.8688C43.5383 88.5914 42.7917 88.3674 41.789 88.1968C40.7863 88.0261 40.0503 87.8448 39.581 87.6528C38.301 87.1408 37.661 85.9994 37.661 84.2288Z" fill="#F97316"/>
+            <path d="M50.2295 80.1648L51.8295 80.1968C52.1922 80.1968 52.3948 80.1861 52.4375 80.1648V73.6048C52.4588 73.2421 52.6402 72.9328 52.9815 72.6768C53.3228 72.4208 53.6428 72.2928 53.9415 72.2928C54.2402 72.2928 54.4748 72.3888 54.6455 72.5808C54.8375 72.7728 54.9228 73.0714 54.9015 73.4768C54.8802 73.8821 54.8695 76.1008 54.8695 80.1328L58.6135 80.0048C59.2535 80.0048 59.5735 80.3781 59.5735 81.1248C59.5735 81.6794 59.4028 82.0954 59.0615 82.3728C58.7415 82.6501 58.3895 82.7994 58.0055 82.8208C57.6428 82.8421 57.2802 82.8528 56.9175 82.8528L54.9655 82.8208C54.9655 83.6954 55.0508 85.4234 55.2215 88.0048C55.4135 90.5861 55.5628 92.2608 55.6695 93.0288C55.7762 93.7754 55.7975 94.2661 55.7335 94.5008C55.6695 94.7141 55.5522 94.8634 55.3815 94.9488C55.1042 95.0768 54.7308 95.1408 54.2615 95.1408C53.7922 95.1408 53.5148 94.8848 53.4295 94.3728C53.0028 91.5781 52.7148 87.7381 52.5655 82.8528C52.3735 82.8741 51.6375 82.8848 50.3575 82.8848C49.0775 82.8848 48.4375 82.5114 48.4375 81.7648C48.4375 80.6981 49.0348 80.1648 50.2295 80.1648Z" fill="#F97316"/>
+            <path d="M76.7325 80.1648C77.6712 80.1648 78.1405 80.9648 78.1405 82.5648C78.1405 82.7354 78.1405 82.9168 78.1405 83.1088L78.0765 85.3488C78.0552 86.0528 78.0445 86.7461 78.0445 87.4288L78.5245 94.6608C78.5245 95.1941 77.9805 95.4608 76.8925 95.4608C76.8285 95.4608 76.6685 95.4608 76.4125 95.4608C76.1778 95.4608 76.0072 95.3648 75.9005 95.1728C75.8152 94.9808 75.8045 94.7461 75.8685 94.4688C75.9538 94.1914 75.9325 93.8821 75.8045 93.5408C74.8232 94.5861 73.5218 95.1088 71.9005 95.1088C68.8925 95.1088 67.3885 92.7834 67.3885 88.1328C67.3885 85.5514 67.8685 83.5994 68.8285 82.2768C69.8098 80.9541 71.2072 80.2928 73.0205 80.2928C73.8738 80.2928 74.7272 80.4421 75.5805 80.7408C75.8578 80.3568 76.2418 80.1648 76.7325 80.1648ZM73.4045 83.0768C72.1885 83.0768 71.2818 83.4288 70.6845 84.1328C70.0872 84.8368 69.7885 86.1274 69.7885 88.0048C69.7885 91.1621 70.6418 92.7408 72.3485 92.7408C72.7965 92.7408 73.2872 92.5381 73.8205 92.1328C74.3752 91.7274 74.7592 91.2688 74.9725 90.7568C75.3778 89.6048 75.5805 88.3461 75.5805 86.9808C75.5805 85.6154 75.4098 84.6234 75.0685 84.0048C74.7485 83.3861 74.1938 83.0768 73.4045 83.0768Z" fill="#F97316"/>
+            <path d="M81.5518 94.1168L81.1998 81.1248C81.1998 80.7194 81.3384 80.3888 81.6158 80.1328C81.8931 79.8768 82.1704 79.7488 82.4477 79.7488C83.1304 79.7488 83.5251 80.0368 83.6318 80.6128C83.7171 81.1888 83.7598 81.7861 83.7598 82.4048C84.9118 80.8901 86.3518 80.1328 88.0798 80.1328C90.7251 80.1328 92.0478 83.1514 92.0478 89.1888C92.0478 89.7434 92.0478 90.5861 92.0478 91.7168C92.0478 92.8261 91.9838 93.6368 91.8558 94.1488C91.7064 94.7888 91.2478 95.1088 90.4798 95.1088C89.9678 95.1088 89.7118 94.7674 89.7118 94.0848L89.7438 92.2928C89.7438 89.8181 89.6584 88.1328 89.4877 87.2368C89.3384 86.3194 89.1891 85.5941 89.0397 85.0608C88.6771 83.9088 88.0904 83.3328 87.2797 83.3328C86.2131 83.3328 85.4664 83.7168 85.0397 84.4848C84.5704 85.3168 84.2931 86.2981 84.2077 87.4288C84.0584 89.4128 83.9837 91.5141 83.9837 93.7328C83.9837 94.1594 83.8238 94.5008 83.5038 94.7568C83.1838 95.0128 82.7998 95.1408 82.3518 95.1408C81.8184 95.1408 81.5518 94.7994 81.5518 94.1168Z" fill="#F97316"/>
+            <path d="M94.3565 87.6208C94.3565 86.1914 94.7298 84.8901 95.4765 83.7168C96.2445 82.5434 97.2152 81.6688 98.3885 81.0928C99.5618 80.4954 100.703 80.1968 101.812 80.1968C102.922 80.1968 103.807 80.3354 104.468 80.6128C105.151 80.8688 105.493 81.2208 105.493 81.6688C105.493 82.0954 105.364 82.5328 105.108 82.9808C104.874 83.4074 104.554 83.6208 104.148 83.6208C103.999 83.6208 103.583 83.5034 102.9 83.2688C102.239 83.0128 101.812 82.8848 101.62 82.8848C100.383 82.8848 99.3272 83.3434 98.4525 84.2608C97.5778 85.1568 97.1405 86.3514 97.1405 87.8448C97.1405 89.3381 97.3752 90.4581 97.8445 91.2048C98.3352 91.9301 99.1672 92.2928 100.34 92.2928C100.81 92.2928 101.61 92.0261 102.741 91.4928C103.893 90.9381 104.607 90.6608 104.884 90.6608C105.162 90.6608 105.386 90.7461 105.557 90.9168C105.727 91.0874 105.812 91.3008 105.812 91.5568C105.812 92.0688 105.482 92.6128 104.821 93.1888C104.181 93.7434 103.381 94.2128 102.421 94.5968C101.461 94.9594 100.596 95.1408 99.8285 95.1408C98.1218 95.1408 96.7778 94.4688 95.7965 93.1248C94.8365 91.7808 94.3565 89.9461 94.3565 87.6208Z" fill="#F97316"/>
+            <path d="M110.635 84.7408L110.891 92.2928C110.891 93.2314 110.848 93.7754 110.763 93.9248C110.72 94.3088 110.592 94.6074 110.379 94.8208C110.187 95.0341 109.803 95.1408 109.227 95.1408C108.949 95.1408 108.725 94.9701 108.555 94.6288C108.384 94.2661 108.288 93.8608 108.267 93.4128C108.117 89.6581 107.915 86.1381 107.659 82.8528C107.424 79.5461 107.307 76.4741 107.307 73.6368C107.307 73.1888 107.456 72.8368 107.755 72.5808C108.053 72.3248 108.405 72.1968 108.811 72.1968C109.408 72.1968 109.76 72.7088 109.867 73.7328C109.995 74.7568 110.069 76.0368 110.091 77.5728C110.133 79.1088 110.176 80.2288 110.219 80.9328C111.285 80.3781 112.352 80.1008 113.419 80.1008C115.893 80.1008 117.461 81.1888 118.123 83.3648C118.507 84.6021 118.699 86.1914 118.699 88.1328C118.699 88.7728 118.635 89.7861 118.507 91.1728C118.4 92.5381 118.336 93.4234 118.315 93.8288C118.293 94.2341 118.112 94.5541 117.771 94.7888C117.451 95.0021 117.099 95.1088 116.715 95.1088C116.117 95.1088 115.819 94.7888 115.819 94.1488L116.043 88.5808C116.043 88.1114 116.021 87.3328 115.979 86.2448C115.936 85.1568 115.712 84.2928 115.307 83.6528C114.923 83.0128 114.24 82.6928 113.259 82.6928C111.509 82.6928 110.635 83.3754 110.635 84.7408Z" fill="#F97316"/>
+            <path d="M126.312 80.1968C127.848 80.1968 129.107 80.9328 130.088 82.4048C131.091 83.8768 131.592 85.6474 131.592 87.7168C131.592 89.7648 131.08 91.5141 130.056 92.9648C129.054 94.4154 127.71 95.1408 126.024 95.1408C124.36 95.1408 123.016 94.4048 121.992 92.9328C120.968 91.4394 120.456 89.7861 120.456 87.9728C120.456 85.6474 120.926 83.7914 121.864 82.4048C122.867 80.9328 124.35 80.1968 126.312 80.1968ZM125.928 82.8208C125.032 82.8208 124.296 83.2901 123.72 84.2288C123.144 85.1674 122.856 86.1594 122.856 87.2048C122.856 88.8261 123.176 90.0634 123.816 90.9168C124.456 91.7701 125.182 92.1968 125.992 92.1968C127.443 92.1968 128.371 91.5674 128.776 90.3088C128.947 89.7114 129.032 88.9648 129.032 88.0688C129.032 84.5701 127.998 82.8208 125.928 82.8208Z" fill="#F97316"/>
+            <path d="M137.682 90.4368L137.714 93.7328C137.714 94.1168 137.533 94.4688 137.171 94.7888C136.829 95.1088 136.488 95.2688 136.146 95.2688C135.656 95.2688 135.347 94.8848 135.219 94.1168C135.197 93.9461 135.112 92.3888 134.962 89.4448C134.813 86.4794 134.525 84.1541 134.098 82.4688C133.906 81.6581 133.811 81.1781 133.811 81.0288C133.811 80.3248 134.237 79.9728 135.09 79.9728C135.453 79.9728 135.741 80.1114 135.954 80.3888C136.168 80.6661 136.296 80.9541 136.339 81.2528C136.403 81.5301 136.456 81.9141 136.499 82.4048C136.541 82.8954 136.573 83.2048 136.594 83.3328C137.042 82.2661 137.715 81.4661 138.611 80.9328C139.507 80.3994 140.488 80.1328 141.555 80.1328C143.304 80.1328 144.178 80.5808 144.178 81.4768C144.178 81.9248 144.019 82.2874 143.699 82.5648C143.4 82.8208 143.048 82.9488 142.643 82.9488C140.829 82.9488 139.549 83.5248 138.803 84.6768C138.056 85.8288 137.682 87.7488 137.682 90.4368Z" fill="#F97316"/>
+            </g>
+        </svg>
+
         <div class="relative z-10 max-w-[1222px] mx-auto px-8 w-full">
 
             <!-- Tight centered header -->
             <div class="max-w-3xl mx-auto text-center mb-12">
-                <div class="fade-up fd1 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface/50 mb-6">
+                <a href="/blog/may-2026-update/" class="fade-up fd1 group inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface/50 hover:border-accent/40 hover:bg-accent-dim transition-colors mb-6">
                     <span class="w-1.5 h-1.5 rounded-full bg-sp-green shadow-[0_0_6px_#3fbc8b]" style="animation:pulse-dot 2.5s ease infinite"></span>
-                    <span class="font-mono text-[11px] text-txt-secondary font-medium tracking-[0.1em] uppercase">Live on Bitcoin mainnet alpha</span>
-                </div>
+                    <span class="font-mono text-[11px] text-txt-secondary font-medium tracking-[0.1em] uppercase group-hover:text-txt-primary transition-colors">May 2026 Update</span>
+                    <iconify-icon icon="solar:arrow-right-linear" class="text-txt-muted text-xs group-hover:text-accent group-hover:translate-x-0.5 transition-all"></iconify-icon>
+                </a>
 
-                <h1 class="fade-up fd2 text-[2.8rem] md:text-[3.8rem] font-extrabold text-white tracking-[-0.04em] mb-5 leading-[1.08]">
-                    Your name.<br>
+                <h1 class="fade-up fd2 font-serif  text-balance text-[2.1rem] md:text-[3.22rem] text-txt-primary  mb-5 leading-[1.08]">
+                    <span>Your name.</span>
                     <span class="text-accent">Your keys.</span>
-                    <span class="text-txt-muted font-medium text-[2rem] md:text-[2.6rem] block mt-1 tracking-[-0.02em]">No registrars. No rent.</span>
                 </h1>
 
-                <p class="fade-up fd3 text-[16px] text-txt-secondary font-normal max-w-[500px] mx-auto mb-8 leading-relaxed">
-                    Sovereign handles native to Bitcoin. <br />
-                    Off-chain by default, on-chain when you need it.
+                <p class="fade-up fd3 text-[16px] text-txt-secondary font-normal max-w-[560px] mx-auto mb-8 leading-relaxed">
+                    Spaces is a naming protocol native to Bitcoin. <br /> Names live off-chain — Bitcoin anchors trust <a href="#how-it-works" class="text-accent hover:text-accent-strong">learn more</a>
                 </p>
 
-                <div class="fade-up fd4 flex items-center justify-center gap-3.5 mb-14">
-                    <a href="/faucet" class="font-mono text-[13px] font-semibold text-black bg-accent hover:bg-accent-strong px-6 py-3 rounded-md transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(224,114,46,0.25)] inline-flex items-center gap-2">
+                <div class="fade-up fd4 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3.5 mb-14 max-w-[320px] sm:max-w-none mx-auto">
+                    <a href="/faucet" data-kbd="g" class="btn btn-primary w-full sm:w-fit">
+                        <iconify-icon icon="ph:magic-wand" class="text-[16px]"></iconify-icon>
                         Get a free handle
+                        <kbd class="btn-kbd on-accent">G</kbd>
                     </a>
-                    <a href="/docs/use/veritas/" class="font-mono text-[13px] font-medium text-txt-secondary bg-transparent border border-border hover:border-txt-muted hover:text-txt-primary px-6 py-3 rounded-md transition-all">
+                    <a href="/docs/use/veritas/" data-kbd="i" class="btn btn-secondary w-full sm:w-fit">
+                        <iconify-icon icon="ph:shield-check" class="text-[16px]"></iconify-icon>
                         Install trust anchor
+                        <kbd class="btn-kbd">I</kbd>
                     </a>
                 </div>
             </div>
 
             <!-- Live demo - unified card -->
             <div class="fade-up fd5 max-w-[820px] mx-auto">
-                <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
+                <div class="bg-surface border border-border rounded-lg overflow-hidden shadow-pop">
                     <!-- Top bar -->
                     <div class="flex items-center justify-between border-b border-border-subtle px-5 py-2.5">
                         <div class="flex items-center gap-3">
@@ -175,9 +196,9 @@
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sp-green opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-sp-green shadow-[0_0_5px_#3fbc8b]"></span>
                         </span>
-                            <span class="font-mono text-[10px] text-txt-muted">connected to relay network</span>
+                            <a id="heroBlockHeight" href="https://mempool.space" target="_blank" rel="noopener noreferrer" class="font-mono text-[10px] text-txt-muted hover:text-txt-secondary transition-colors">Trust anchor at #</a>
                         </div>
-                    </div>
+                </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-[1fr,1.3fr] divide-y md:divide-y-0 md:divide-x divide-border-subtle">
                         <!-- Left: Handle identity -->
@@ -224,8 +245,8 @@
                                 <div class="pl-3 text-txt-muted">
                                     <iconify-icon icon="solar:magnifer-linear" width="14"></iconify-icon>
                                 </div>
-                                <input id="heroQuery" type="text" placeholder="alice@bitcoin" class="w-full bg-transparent border-none text-txt-primary text-sm px-2.5 py-1.5 focus:ring-0 focus:outline-none placeholder:text-txt-muted font-mono" />
-                                <button id="heroQueryBtn" class="bg-accent hover:bg-accent-strong text-black font-mono text-[11px] font-semibold px-3.5 py-1.5 rounded-md transition-colors whitespace-nowrap">
+                                <input id="heroQuery" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="grace@key" class="w-full bg-transparent border-none text-txt-primary text-sm px-2.5 py-1.5 focus:ring-0 focus:outline-none placeholder:text-txt-muted font-mono" />
+                                <button id="heroQueryBtn" class="btn btn-sm btn-primary">
                                     Query
                                 </button>
                             </div>
@@ -287,7 +308,7 @@
                         <iconify-icon icon="solar:code-square-linear" class="text-accent text-xs"></iconify-icon>
                         <span class="font-mono text-[10px] text-txt-secondary font-semibold tracking-[0.1em] uppercase">For Developers</span>
                     </div>
-                    <h2 class="text-[clamp(1.6rem,3.2vw,2.4rem)] font-bold text-txt-primary tracking-[-0.03em] mb-4 leading-tight">
+                    <h2 class="text-[clamp(1.6rem,3.2vw,2.4rem)] font-serif  text-txt-primary tracking-[-0.015em] mb-4 leading-tight">
                         Resolve in a few lines of code
                     </h2>
                     <p class="text-[15px] text-txt-secondary max-w-xl mx-auto leading-relaxed">
@@ -296,7 +317,7 @@
                 </div>
 
                 <div class="max-w-[720px] mx-auto">
-                    <div class="bg-surface border border-border rounded-[10px] overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.4)] relative">
+                    <div class="bg-surface border border-border rounded-[10px] overflow-hidden shadow-card relative">
                         <div class="flex items-center justify-between border-b border-border-subtle px-2 overflow-x-auto no-scrollbar">
                             <div class="flex items-center">
                                 <button onclick="switchCodeTab('rust')" id="tab-rust" class="tab-active px-4 py-3 font-mono text-xs transition-colors focus:outline-none whitespace-nowrap">Rust</button>
@@ -313,17 +334,17 @@
                         </div>
                         <div class="p-5 overflow-x-auto bg-base min-h-[5.5rem]">
                             {% set ri_rust = load_data(url="https://spacesprotocol.github.io/certrelay/rust/resolve-intro.txt", format="plain") %}
-                            <pre id="code-rust" class="block font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-rust">{{ ri_rust | safe }}</code></pre>
+                            <pre id="code-rust" class="block font-mono text-[14px] leading-relaxed whitespace-pre"><code class="language-rust">{{ ri_rust | safe }}</code></pre>
                             {% set ri_js = load_data(url="https://spacesprotocol.github.io/certrelay/js/resolve-intro.txt", format="plain") %}
-                            <pre id="code-js" class="hidden font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-javascript">{{ ri_js | safe }}</code></pre>
+                            <pre id="code-js" class="hidden font-mono text-[14px] leading-relaxed whitespace-pre"><code class="language-javascript">{{ ri_js | safe }}</code></pre>
                             {% set ri_go = load_data(url="https://spacesprotocol.github.io/certrelay/go/resolve-intro.txt", format="plain") %}
-                            <pre id="code-go" class="hidden font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-go">{{ ri_go | safe }}</code></pre>
+                            <pre id="code-go" class="hidden font-mono text-[14px] leading-relaxed whitespace-pre"><code class="language-go">{{ ri_go | safe }}</code></pre>
                             {% set ri_swift = load_data(url="https://spacesprotocol.github.io/certrelay/swift/resolve-intro.txt", format="plain") %}
-                            <pre id="code-swift" class="hidden font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-swift">{{ ri_swift | safe }}</code></pre>
+                            <pre id="code-swift" class="hidden font-mono text-[14px] leading-relaxed whitespace-pre"><code class="language-swift">{{ ri_swift | safe }}</code></pre>
                             {% set ri_kotlin = load_data(url="https://spacesprotocol.github.io/certrelay/kotlin/resolve-intro.txt", format="plain") %}
-                            <pre id="code-kotlin" class="hidden font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-kotlin">{{ ri_kotlin | safe }}</code></pre>
+                            <pre id="code-kotlin" class="hidden font-mono text-[14px] leading-relaxed whitespace-pre"><code class="language-kotlin">{{ ri_kotlin | safe }}</code></pre>
                             {% set ri_python = load_data(url="https://spacesprotocol.github.io/certrelay/python/resolve-intro.txt", format="plain") %}
-                            <pre id="code-python" class="hidden font-mono text-[13px] leading-relaxed whitespace-pre"><code class="language-python">{{ ri_python | safe }}</code></pre>
+                            <pre id="code-python" class="hidden font-mono text-[14px] leading-relaxed whitespace-pre"><code class="language-python">{{ ri_python | safe }}</code></pre>
                         </div>
                         <div class="border-t border-border-subtle bg-surface p-5">
                             <div class="flex items-center gap-2 mb-3">
@@ -361,7 +382,7 @@
                     <span class="w-1.5 h-1.5 rounded-full bg-accent" style="animation:pulse-dot 2s ease infinite"></span>
                     <span class="font-mono text-[10px] text-txt-secondary font-semibold tracking-[0.1em] uppercase">Architecture</span>
                 </div>
-                <h2 class="text-[clamp(1.6rem,3.2vw,2.4rem)] font-bold text-txt-primary tracking-[-0.03em] mb-4 leading-tight">
+                <h2 class="text-[clamp(1.6rem,3.2vw,2.4rem)] font-serif text-txt-primary tracking-[-0.015em] mb-4 leading-tight">
                     From auction to resolution
                 </h2>
                 <p class="text-[15px] text-txt-secondary max-w-xl mx-auto leading-relaxed">
@@ -373,7 +394,7 @@
             <div class="reveal mb-8">
                 <div class="flex items-center justify-center mb-10">
                     <div class="flex items-center gap-4">
-                        <div class="step-num bg-accent text-black active">1</div>
+                        <div class="step-num bg-accent text-accent-fg active">1</div>
                         <div class="h-px w-8 bg-border"></div>
                         <div class="step-num bg-surface border border-border text-txt-muted">2</div>
                         <div class="h-px w-8 bg-border"></div>
@@ -384,11 +405,11 @@
                 <div class="grid grid-cols-1 lg:grid-cols-[1.1fr,1fr] gap-8 lg:gap-14 items-center">
                     <div class="order-2">
                         <div class="font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-accent mb-3">Stage 1</div>
-                        <h3 class="text-2xl md:text-[1.75rem] font-bold text-txt-primary tracking-tight mb-4 leading-snug">
+                        <h3 class="text-2xl md:text-[1.75rem] font-serif text-txt-primary tracking-tight mb-4 leading-snug">
                             Permissionless auctions
                         </h3>
                         <p class="text-[15px] text-txt-secondary leading-relaxed mb-5">
-                            Top-level spaces like <span class="text-txt-primary font-mono text-[13px] bg-raised px-1.5 py-0.5 rounded border border-border">@bitcoin</span> are distributed through open auctions on Bitcoin. Up to 10 per day - bids are burned, no entity profits.
+                            Top-level spaces like <span class="text-txt-primary font-mono text-[14px] bg-raised px-1.5 py-0.5 rounded border border-border">@bitcoin</span> are distributed through open auctions on Bitcoin. Up to 10 per day - bids are burned, no entity profits.
                         </p>
 
                         <div class="space-y-3 mb-6">
@@ -411,7 +432,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="https://docs.spacesprotocol.org/getting-started/auctions" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-accent hover:text-accent-strong transition-colors">
+                        <a href="/docs/top-level/acquisition/" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-accent hover:text-accent-strong transition-colors">
                             Learn about auctions <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
                         </a>
                     </div>
@@ -444,7 +465,7 @@
                                         <span class="font-mono text-[11px] font-semibold text-txt-primary">bc1q...8wlh</span>
                                     </div>
                                     <div class="text-right">
-                                        <span class="font-mono text-[13px] font-bold text-accent">0.52 BTC</span>
+                                        <span class="font-mono text-[14px] font-bold text-accent">0.52 BTC</span>
                                         <div class="font-mono text-[9px] text-sp-green uppercase font-semibold">Leading</div>
                                     </div>
                                 </div>
@@ -454,7 +475,7 @@
                                         <span class="font-mono text-[11px] text-txt-secondary">bc1q...f3a9</span>
                                     </div>
                                     <div class="text-right">
-                                        <span class="font-mono text-[13px] font-semibold text-txt-secondary">0.38 BTC</span>
+                                        <span class="font-mono text-[14px] font-semibold text-txt-secondary">0.38 BTC</span>
                                         <div class="font-mono text-[9px] text-txt-muted uppercase">Outbid</div>
                                     </div>
                                 </div>
@@ -464,7 +485,7 @@
                                         <span class="font-mono text-[11px] text-txt-secondary">bc1q...2d7c</span>
                                     </div>
                                     <div class="text-right">
-                                        <span class="font-mono text-[13px] font-semibold text-txt-secondary">0.24 BTC</span>
+                                        <span class="font-mono text-[14px] font-semibold text-txt-secondary">0.24 BTC</span>
                                         <div class="font-mono text-[9px] text-txt-muted uppercase">Outbid</div>
                                     </div>
                                 </div>
@@ -500,8 +521,8 @@
                         <div class="step-num bg-surface border border-border text-txt-muted">
                             <iconify-icon icon="solar:check-read-linear" class="text-accent text-sm"></iconify-icon>
                         </div>
-                        <div class="h-px w-8 bg-accent/30"></div>
-                        <div class="step-num bg-sp-green text-black active" style="box-shadow:0 0 24px rgba(63,188,139,.25)">2</div>
+                        <div class="h-px w-8 bg-accent/70"></div>
+                        <div class="step-num bg-sp-green text-accent-fg active" style="box-shadow:0 0 24px rgba(63,188,139,.25)">2</div>
                         <div class="h-px w-8 bg-border"></div>
                         <div class="step-num bg-surface border border-border text-txt-muted">3</div>
                     </div>
@@ -533,7 +554,7 @@
 
                                 <!-- Hopper -->
                                 <div class="absolute left-4 top-3 w-[175px] z-[3]">
-                                    <div class="bg-raised border border-border rounded-lg p-2.5">
+                                    <div class="bg-surface dark:bg-raised border border-border rounded-lg p-2.5 shadow-soft">
                                         <div class="font-mono text-[9px] font-semibold uppercase tracking-[0.06em] text-txt-muted mb-2">&#9654; Input Hopper</div>
                                         <div class="flex flex-wrap gap-1 max-h-[60px] overflow-hidden" id="hChips"></div>
                                     </div>
@@ -543,25 +564,25 @@
 
                                 <!-- Conveyor -->
                                 <div class="absolute left-0 top-[130px] h-[56px] right-[240px]">
-                                    <div class="absolute inset-0 bg-surface border-t-2 border-b-2 border-border overflow-hidden">
-                                        <div class="absolute inset-[2px_0] opacity-30" style="background:repeating-linear-gradient(90deg,transparent,transparent 24px,#2a2a31 24px,#2a2a31 26px);animation:beltMove 1.4s linear infinite"></div>
+                                    <div class="absolute inset-0 bg-raised-hover dark:bg-surface border-t border-b border-border overflow-hidden">
+                                        <div class="absolute inset-[1px_0] opacity-40" style="background:repeating-linear-gradient(90deg,transparent,transparent 24px,rgb(var(--color-txt-muted)) 24px,rgb(var(--color-txt-muted)) 25px);animation:beltMove 1.4s linear infinite"></div>
                                     </div>
-                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[35px]" style="animation:rSpin .7s linear infinite"></div>
-                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[115px]" style="animation:rSpin .7s linear infinite"></div>
-                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[195px]" style="animation:rSpin .7s linear infinite"></div>
-                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[275px]" style="animation:rSpin .7s linear infinite"></div>
-                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[355px]" style="animation:rSpin .7s linear infinite"></div>
-                                    <div class="absolute w-3 h-3 rounded-full border-2 border-border bg-raised-hover top-[22px] left-[435px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border border-border bg-base dark:bg-raised-hover top-[22px] left-[35px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border border-border bg-base dark:bg-raised-hover top-[22px] left-[115px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border border-border bg-base dark:bg-raised-hover top-[22px] left-[195px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border border-border bg-base dark:bg-raised-hover top-[22px] left-[275px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border border-border bg-base dark:bg-raised-hover top-[22px] left-[355px]" style="animation:rSpin .7s linear infinite"></div>
+                                    <div class="absolute w-3 h-3 rounded-full border border-border bg-base dark:bg-raised-hover top-[22px] left-[435px]" style="animation:rSpin .7s linear infinite"></div>
                                 </div>
 
                                 <div id="tks"></div>
 
                                 <!-- Machine -->
                                 <div class="absolute right-3 top-[48px] w-[220px] h-[200px] z-[5]">
-                                    <div class="absolute left-[-12px] w-[13px] h-[36px] bg-border rounded-l z-[6]" style="top:110px;transform:translateY(-50%)">
+                                    <div class="absolute left-[-12px] w-[14px] h-[36px] bg-border rounded-l z-[6]" style="top:110px;transform:translateY(-50%)">
                                         <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-accent/50" style="animation:iPulse 1s ease-in-out infinite"></div>
                                     </div>
-                                    <div class="absolute inset-0 bg-gradient-to-b from-raised to-surface border border-border rounded-[10px] overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,.4)]">
+                                    <div class="absolute inset-0 bg-gradient-to-b from-raised to-surface border border-border rounded-[10px] overflow-hidden shadow-card">
                                         <div class="absolute top-[-1px] left-1/2 -translate-x-1/2 w-[72px] h-[3px] bg-sp-green shadow-[0_0_14px_rgba(63,188,139,.3)] rounded-b"></div>
                                         <div class="absolute top-3 left-1/2 -translate-x-1/2 font-mono text-[9px] font-semibold uppercase tracking-[0.06em] text-txt-muted whitespace-nowrap">Commitment Engine</div>
                                         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100px] h-[100px]">
@@ -584,12 +605,12 @@
                                     <div class="absolute right-[110px] top-[-50px] w-[2px] h-[50px] bg-border">
                                         <div class="absolute left-[-3px] w-[8px] h-full bg-gradient-to-b from-transparent via-sp-green/12 to-transparent" style="animation:pGlow 2s linear infinite"></div>
                                     </div>
-                                    <div class="bg-raised border border-border rounded-lg p-2.5">
+                                    <div class="bg-surface dark:bg-raised border border-border rounded-lg p-2.5 shadow-soft">
                                         <div class="flex items-center gap-2 mb-1.5">
                                             <span class="w-[5px] h-[5px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b]" style="animation:pulse-dot 2s ease-in-out infinite"></span>
                                             <span class="font-mono text-[9px] font-semibold uppercase tracking-[0.06em] text-txt-muted">Root &middot; 32 Bytes</span>
                                         </div>
-                                        <div class="font-mono text-[10px] text-txt-secondary bg-base border border-border-subtle rounded px-2 py-1 break-all leading-relaxed min-h-[2em]" id="hOut">awaiting input&hellip;</div>
+                                        <div class="font-mono text-[10px] text-txt-secondary bg-base border border-border-subtle rounded px-2 py-1 truncate leading-relaxed min-h-[2em]" id="hOut">awaiting input&hellip;</div>
                                     </div>
                                 </div>
 
@@ -609,11 +630,11 @@
                     <!-- Text -->
                     <div class="order-2 lg:order-1">
                         <div class="font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-sp-green mb-3">Stage 2</div>
-                        <h3 class="text-2xl md:text-[1.75rem] font-bold text-txt-primary tracking-tight mb-4 leading-snug">
+                        <h3 class="text-2xl md:text-[1.75rem] font-serif text-txt-primary tracking-tight mb-4 leading-snug">
                             Batch handle issuance
                         </h3>
                         <p class="text-[15px] text-txt-secondary leading-relaxed mb-5">
-                            Space owners issue handles in batches using <span class="text-txt-primary font-mono text-[13px] bg-raised px-1.5 py-0.5 rounded border border-border">subs</span>. Millions of handles are organized into a Merkle tree and committed with a single 32-byte root hash - one transaction, unlimited names.
+                            Space owners issue handles in batches using <span class="text-txt-primary font-mono text-[14px] bg-raised px-1.5 py-0.5 rounded border border-border">subs</span>. Millions of handles are organized into a Merkle tree and committed with a single 32-byte root hash.
                         </p>
 
                         <div class="space-y-3 mb-6">
@@ -666,7 +687,7 @@
                             </div>
                         </div>
 
-                        <a href="https://docs.spacesprotocol.org/getting-started/subspaces" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-accent hover:text-accent-strong transition-colors">
+                        <a href="/docs/learn/subspaces/" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-accent hover:text-accent-strong transition-colors">
                             Learn about subspaces <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
                         </a>
                     </div>
@@ -691,23 +712,23 @@
                         <div class="step-num bg-surface border border-border text-txt-muted">
                             <iconify-icon icon="solar:check-read-linear" class="text-accent text-sm"></iconify-icon>
                         </div>
-                        <div class="h-px w-8 bg-accent/30"></div>
+                        <div class="h-px w-8 bg-accent/70"></div>
                         <div class="step-num bg-surface border border-border text-txt-muted">
                             <iconify-icon icon="solar:check-read-linear" class="text-sp-green text-sm"></iconify-icon>
                         </div>
-                        <div class="h-px w-8 bg-sp-green/30"></div>
-                        <div class="step-num bg-sp-blue text-black active" style="box-shadow:0 0 24px rgba(94,157,224,.25)">3</div>
+                        <div class="h-px w-8 bg-sp-green/70"></div>
+                        <div class="step-num bg-sp-blue text-accent-fg active" style="box-shadow:0 0 24px rgba(94,157,224,.25)">3</div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-[1fr,0.75fr] gap-8 lg:gap-24 items-center">
                     <div class="order-2">
                         <div class="font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-sp-blue mb-3">Stage 3</div>
-                        <h3 class="text-2xl md:text-[1.75rem] font-bold text-txt-primary tracking-tight mb-4 leading-snug">
+                        <h3 class="text-2xl md:text-[1.75rem] font-serif text-txt-primary tracking-tight mb-4 leading-snug">
                             Off-chain relay network
                         </h3>
                         <p class="text-[15px] text-txt-secondary leading-relaxed mb-5">
-                            Users publish records & certificates to <span class="text-txt-primary font-mono text-[13px] bg-raised px-1.5 py-0.5 rounded border border-border">Certrelay</span> - an HTTP based browser-resolvable network. Apps resolve handles with zero on-chain footprint, verified against the Bitcoin-anchored state root.
+                            Users publish records & certificates to <span class="text-txt-primary font-mono text-[14px] bg-raised px-1.5 py-0.5 rounded border border-border">Certrelay</span> - an HTTP based browser-resolvable network. Apps resolve handles with zero on-chain footprint, verified against the Bitcoin-anchored state root.
                         </p>
 
                         <div class="space-y-3 mb-6">
@@ -730,12 +751,11 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="https://github.com/spacesprotocol/fabric" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-accent hover:text-accent-strong transition-colors">
+                        <a href="https://github.com/spacesprotocol/certrelay" class="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium text-accent hover:text-accent-strong transition-colors">
                             View Certrelay on GitHub <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
                         </a>
                     </div>
 
-                    <!-- Network visual -->
                     <div class="order-1">
                         <div class="relative">
                             <div class="flex items-center justify-start gap-2 mb-2 px-1">
@@ -751,7 +771,7 @@
                                 <div class="absolute inset-0 dot-grid opacity-15 pointer-events-none"></div>
 
                                 <div class="absolute left-4 top-1/2 -translate-y-1/2 w-[100px] z-10">
-                                    <div class="bg-surface border border-accent/25 rounded-lg p-2.5 text-center shadow-[0_2px_12px_rgba(0,0,0,.3)]">
+                                    <div class="bg-surface border border-accent/25 rounded-lg p-2.5 text-center shadow-soft">
                                         <div class="font-mono text-[8px] font-semibold text-txt-muted uppercase tracking-[0.06em] mb-1">User</div>
                                         <div class="font-mono text-[11px] font-bold text-accent mb-1">alice@btc</div>
                                         <div class="font-mono text-[7px] text-txt-muted">publish records</div>
@@ -812,7 +832,7 @@
                                 </div>
 
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 w-[100px] z-10">
-                                    <div class="bg-surface border border-sp-green/25 rounded-lg p-2.5 text-center shadow-[0_2px_12px_rgba(0,0,0,.3)]">
+                                    <div class="bg-surface border border-sp-green/25 rounded-lg p-2.5 text-center shadow-soft">
                                         <div class="font-mono text-[8px] font-semibold text-txt-muted uppercase tracking-[0.06em] mb-1">App</div>
                                         <div class="font-mono text-[10px] font-semibold text-sp-green mb-1">resolve()</div>
                                         <div class="font-mono text-[7px] text-txt-muted">verify proof</div>
@@ -856,7 +876,7 @@
                     <iconify-icon icon="solar:shield-check-linear" class="text-accent text-xs"></iconify-icon>
                     <span class="font-mono text-[10px] text-txt-secondary font-semibold tracking-[0.1em] uppercase">Trust Model</span>
                 </div>
-                <h2 class="text-[clamp(1.4rem,2.8vw,2rem)] font-bold text-txt-primary tracking-[-0.025em] mb-4 leading-tight">Trust vs. Verify</h2>
+                <h2 class="text-[clamp(1.4rem,2.8vw,2rem)] font-serif text-txt-primary tracking-[-0.025em] mb-4 leading-tight">Trust vs. Verify</h2>
                 <p class="text-[15px] text-txt-secondary max-w-2xl mx-auto leading-relaxed">
                     DNS requires you to trust a chain of authorities. Spaces requires you to <button data-trust-popover class="inline-flex items-center gap-1 text-accent hover:text-accent-strong transition-colors cursor-pointer">trust math<svg class="w-3.5 h-3.5" viewBox="0 0 180 188" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M102 72H78C72.4772 72 68 76.4772 68 82V106C68 111.523 72.4772 116 78 116H102C107.523 116 112 111.523 112 106V82C112 76.4772 107.523 72 102 72Z" fill-opacity="0.88"/><path d="M99 0H81C76.0294 0 72 4.02944 72 9V27C72 31.9706 76.0294 36 81 36H99C103.971 36 108 31.9706 108 27V9C108 4.02944 103.971 0 99 0Z" fill-opacity="0.55"/><path d="M99 152H81C76.0294 152 72 156.029 72 161V179C72 183.971 76.0294 188 81 188H99C103.971 188 108 183.971 108 179V161C108 156.029 103.971 152 99 152Z" fill-opacity="0.55"/><path d="M24 76H8C3.58172 76 0 79.5817 0 84V100C0 104.418 3.58172 108 8 108H24C28.4183 108 32 104.418 32 100V84C32 79.5817 28.4183 76 24 76Z" fill-opacity="0.38"/><path d="M172 76H156C151.582 76 148 79.5817 148 84V100C148 104.418 151.582 108 156 108H172C176.418 108 180 104.418 180 100V84C180 79.5817 176.418 76 172 76Z" fill-opacity="0.38"/></svg></button>
                 </p>
@@ -864,7 +884,7 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto reveal">
                 <!-- DNS -->
-                <div class="bg-surface border border-border rounded-xl p-7 relative overflow-hidden">
+                <div class="bg-surface border border-border rounded-lg p-7 relative overflow-hidden">
                     <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent"></div>
                     <div class="flex items-center gap-3 mb-6">
                         <span class="px-2.5 py-1 rounded-md bg-red-500/[0.06] border border-red-500/15 font-mono text-[11px] text-red-400 font-semibold">DNS / BIP-353</span>
@@ -907,7 +927,7 @@
                 </div>
 
                 <!-- Spaces -->
-                <div class="bg-surface border border-border rounded-xl p-7 relative overflow-hidden">
+                <div class="bg-surface border border-border rounded-lg p-7 relative overflow-hidden">
                     <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sp-green/40 to-transparent"></div>
                     <div class="flex items-center gap-3 mb-6">
                         <span class="px-2.5 py-1 rounded-md bg-sp-green/[0.06] border border-sp-green/15 font-mono text-[11px] text-sp-green font-semibold">Spaces Protocol</span>
@@ -961,36 +981,36 @@
                     <iconify-icon icon="solar:users-group-rounded-linear" class="text-accent text-xs"></iconify-icon>
                     <span class="font-mono text-[10px] text-txt-secondary font-semibold tracking-[0.1em] uppercase">Ecosystem</span>
                 </div>
-                <h2 class="text-[clamp(1.4rem,2.8vw,2rem)] font-bold text-txt-primary tracking-[-0.025em] mb-4 leading-tight">Ship with Spaces</h2>
+                <h2 class="text-[clamp(1.4rem,2.8vw,2rem)] font-serif text-txt-primary tracking-[-0.025em] mb-4 leading-tight">Ship with Spaces</h2>
                 <p class="text-[15px] text-txt-secondary max-w-xl mx-auto leading-relaxed">
                     Open source protocol with a growing ecosystem of tools, wallets, and community builders.
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-3xl mx-auto reveal">
-                <a href="https://github.com/spacesprotocol" class="group bg-surface border border-border rounded-[10px] p-5 transition-all hover:border-txt-muted/30 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,.3)]">
+                <a href="https://github.com/spacesprotocol" class="group bg-surface border border-border rounded-[10px] p-5 transition-all hover:border-txt-muted/30 hover:-translate-y-1 hover:shadow-card">
                     <div class="w-8 h-8 rounded-lg bg-raised border border-border flex items-center justify-center mb-3">
                         <iconify-icon icon="mdi:github" class="text-txt-primary text-sm"></iconify-icon>
                     </div>
-                    <h3 class="text-[13px] font-semibold text-txt-primary mb-1.5 leading-snug group-hover:text-txt-primary transition-colors font-mono">spacesprotocol</h3>
+                    <h3 class="text-[14px] font-semibold text-txt-primary mb-1.5 leading-snug group-hover:text-txt-primary transition-colors font-mono">spacesprotocol</h3>
                     <p class="text-[11px] text-txt-muted leading-relaxed mb-3">Protocol, wallet, certrelay, explorer. MIT licensed.</p>
                     <span class="inline-flex items-center gap-1 font-mono text-[10px] text-txt-secondary group-hover:text-txt-primary transition-colors">View repos <iconify-icon icon="solar:arrow-right-up-linear" class="text-[10px]"></iconify-icon></span>
                 </a>
 
-                <a href="https://akron.io" class="group bg-surface border border-border rounded-[10px] p-5 transition-all hover:border-txt-muted/30 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,.3)]">
+                <a href="https://akron.io" class="group bg-surface border border-border rounded-[10px] p-5 transition-all hover:border-txt-muted/30 hover:-translate-y-1 hover:shadow-card">
                     <div class="w-8 h-8 rounded-lg bg-sp-green-dim border border-sp-green/15 flex items-center justify-center mb-3">
                         <iconify-icon icon="solar:wallet-linear" class="text-sp-green text-sm"></iconify-icon>
                     </div>
-                    <h3 class="text-[13px] font-semibold text-txt-primary mb-1.5 leading-snug group-hover:text-sp-green transition-colors font-mono">Akron Wallet</h3>
+                    <h3 class="text-[14px] font-semibold text-txt-primary mb-1.5 leading-snug group-hover:text-sp-green transition-colors font-mono">Akron Wallet</h3>
                     <p class="text-[11px] text-txt-muted leading-relaxed mb-3">Cypherpunk wallet in Rust. Verify headers without a full node.</p>
                     <span class="inline-flex items-center gap-1 font-mono text-[10px] text-sp-green group-hover:text-sp-green transition-colors">Download <iconify-icon icon="solar:arrow-right-up-linear" class="text-[10px]"></iconify-icon></span>
                 </a>
 
-                <a href="https://spaces.market" class="group bg-surface border border-border rounded-[10px] p-5 transition-all hover:border-txt-muted/30 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,.3)]">
+                <a href="https://spaces.market" class="group bg-surface border border-border rounded-[10px] p-5 transition-all hover:border-txt-muted/30 hover:-translate-y-1 hover:shadow-card">
                     <div class="w-8 h-8 rounded-lg bg-accent-dim border border-accent/15 flex items-center justify-center mb-3">
                         <iconify-icon icon="solar:tag-price-linear" class="text-accent text-sm"></iconify-icon>
                     </div>
-                    <h3 class="text-[13px] font-semibold text-txt-primary mb-1.5 leading-snug group-hover:text-accent transition-colors font-mono">Spaces Market</h3>
+                    <h3 class="text-[14px] font-semibold text-txt-primary mb-1.5 leading-snug group-hover:text-accent transition-colors font-mono">Spaces Market</h3>
                     <p class="text-[11px] text-txt-muted leading-relaxed mb-3">Permissionless marketplace. No middlemen, no custody.</p>
                     <span class="inline-flex items-center gap-1 font-mono text-[10px] text-accent group-hover:text-accent-strong transition-colors">Browse <iconify-icon icon="solar:arrow-right-up-linear" class="text-[10px]"></iconify-icon></span>
                 </a>
@@ -1004,16 +1024,20 @@
         <div class="absolute inset-0 dot-grid opacity-[0.06] pointer-events-none"></div>
         <div class="relative z-10 max-w-3xl mx-auto px-8 text-center">
             <div class="font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-txt-muted mb-3">Open Source</div>
-            <h2 class="text-[clamp(1.4rem,2.8vw,2rem)] font-bold text-txt-primary tracking-[-0.025em] mb-4 leading-tight">Build on Spaces</h2>
+            <h2 class="text-[clamp(1.4rem,2.8vw,2rem)] font-serif text-txt-primary tracking-[-0.025em] mb-4 leading-tight">Build on Spaces</h2>
             <p class="text-[15px] text-txt-secondary mb-8 max-w-lg mx-auto leading-relaxed">
                 Spaces Protocol is open source infrastructure. Contribute to the codebase, run a node, or integrate resolution into your app.
             </p>
             <div class="flex flex-col md:flex-row items-center justify-center gap-3.5">
-                <a href="/faucet" class="w-full md:w-auto font-mono text-[13px] font-semibold text-black bg-accent hover:bg-accent-strong px-6 py-3 rounded-md transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(224,114,46,.2)] text-center">
+                <a href="/faucet" data-kbd="g" class="btn btn-primary w-full md:w-fit">
+                    <iconify-icon icon="ph:at-bold" class="text-[16px]"></iconify-icon>
                     Get a free handle
+                    <kbd class="btn-kbd on-accent">G</kbd>
                 </a>
-                <a href="/docs/use/veritas/" class="w-full md:w-auto font-mono text-[13px] font-medium text-txt-secondary border border-border hover:border-txt-muted hover:text-txt-primary px-6 py-3 rounded-md transition-all flex items-center justify-center gap-2 text-center">
+                <a href="/docs/use/veritas/" data-kbd="i" class="btn btn-secondary w-full md:w-fit">
+                    <iconify-icon icon="ph:shield-check" class="text-[16px]"></iconify-icon>
                     Install trust anchor
+                    <kbd class="btn-kbd">I</kbd>
                 </a>
             </div>
         </div>
@@ -1022,6 +1046,47 @@
 
 {% block scripts %}
 <script>
+    // ── Hero "Trust anchor at #<height>" — populated once trust ID resolves ──
+    (function () {
+        function wire() {
+            const el = document.getElementById('heroBlockHeight');
+            if (!el || !window.trustIdPromise) return;
+            window.trustIdPromise.then(function (value) {
+                if (!value || !value.height) return;
+                el.textContent = 'Trust anchor at #' + value.height.toLocaleString();
+                el.href = 'https://mempool.space/block/' + value.height;
+            }).catch(function () { /* leave default text/link */ });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', wire);
+        } else {
+            wire();
+        }
+    })();
+
+    // ── Trust-anchor pointer arrow: align with navbar trust button ──
+    (function () {
+        function positionTrustArrow() {
+            const btn = document.getElementById('navTrustBtn');
+            const arrow = document.getElementById('trustAnchorHint');
+            if (!btn || !arrow) return;
+            const r = btn.getBoundingClientRect();
+            if (r.width === 0 || r.height === 0) return; // hidden (mobile)
+            const nav = btn.closest('nav');
+            const navBottom = nav ? nav.getBoundingClientRect().bottom : r.bottom;
+            // SVG renders at 100×55 (viewBox 145×80, scale ≈0.69). Tip is at viewBox (56, 4) → rendered (~39, ~3).
+            // Shift x by 4 to compensate for the curl's leftward visual lean so the tip reads "at" the icon.
+            arrow.style.left = (r.left + r.width / 2 - 35) + 'px';
+            arrow.style.top = (navBottom + 10) + 'px';
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', positionTrustArrow);
+        } else {
+            positionTrustArrow();
+        }
+        window.addEventListener('resize', positionTrustArrow);
+    })();
+
     const $=id=>document.getElementById(id);
     const pick=a=>a[Math.floor(Math.random()*a.length)];
 

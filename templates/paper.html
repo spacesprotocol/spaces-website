@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block body_class %}no-page-grid{% endblock %}
+
 {% block head %}
 <meta name="author" content="M. Carson, Buffrr">
 <meta name="citation_author" content="M. Carson">
@@ -9,78 +11,40 @@
 <meta name="citation_technical_report_institution" content="Impervious">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Anybody:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-    /* ── Blueprint CSS Variables ── */
+    /* ── Paper tokens mapped to site theme (works in both light + dark) ── */
     :root {
-        --bp-deep: #0a1628;
-        --bp-base: #0d1f3c;
-        --bp-mid: #122a4e;
-        --bp-line: #1e4a7a;
-        --bp-line-soft: rgba(30, 74, 122, 0.4);
-        --bp-line-faint: rgba(30, 74, 122, 0.18);
-        --bp-text: #c8ddf5;
-        --bp-text-bright: #e8f0fb;
-        --bp-text-dim: #6b8bb5;
-        --bp-text-muted: #3d6494;
-        --bp-accent: #4da8da;
-        --bp-accent-bright: #7ec8f0;
-        --bp-accent-glow: rgba(77, 168, 218, 0.15);
-        --bp-orange: #e0722e;
-        --bp-orange-dim: rgba(224, 114, 46, 0.2);
-        --bp-grid-color: rgba(30, 74, 122, 0.12);
-        --bp-grid-strong: rgba(30, 74, 122, 0.22);
+        --bp-deep: rgb(var(--color-base));
+        --bp-base: rgb(var(--color-surface));
+        --bp-mid: rgb(var(--color-raised-hover));
+        --bp-line: rgb(var(--color-border));
+        --bp-line-soft: rgb(var(--color-border) / 0.6);
+        --bp-line-faint: rgb(var(--color-border-subtle));
+        --bp-text: rgb(var(--color-txt-secondary));
+        --bp-text-bright: rgb(var(--color-txt-primary));
+        --bp-text-dim: rgb(var(--color-txt-muted));
+        --bp-text-muted: rgb(var(--color-txt-muted));
+        --bp-accent: rgb(var(--color-accent));
+        --bp-accent-bright: rgb(var(--color-accent-strong));
+        --bp-accent-glow: rgb(var(--color-accent) / 0.15);
+        --bp-orange: rgb(var(--color-accent));
+        --bp-orange-dim: rgb(var(--color-accent) / 0.16);
+        --bp-grid-color: rgb(var(--color-border) / 0.45);
+        --bp-grid-strong: rgb(var(--color-border) / 0.7);
     }
 
-    /* ── Override body for blueprint theme ── */
+    /* Keep the paper's distinctive mono typography but inherit theme colors */
     body {
         font-family: 'IBM Plex Mono', monospace !important;
-        background: var(--bp-deep) !important;
-        color: var(--bp-text) !important;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         line-height: 1.7;
     }
 
-    ::selection { background: rgba(77, 168, 218, 0.3); color: #fff; }
+    ::selection { background: rgb(var(--color-accent) / 0.25); color: rgb(var(--color-txt-primary)); }
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bp-deep); }
-    ::-webkit-scrollbar-thumb { background: var(--bp-line); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--bp-accent); }
-
-    /* ── Override nav to match blueprint theme ── */
-    nav.fixed,
-    body nav,
-    nav {
-        background: rgba(10, 22, 40, 0.88) !important;
-        border-bottom-color: var(--bp-line-soft) !important;
-    }
-    nav a.flex.items-center span {
-        color: var(--bp-text-bright) !important;
-    }
-    nav .hidden a.font-mono {
-        color: var(--bp-text-muted) !important;
-    }
-    nav .hidden a.font-mono:hover {
-        color: var(--bp-accent) !important;
-    }
-    nav .hidden a.bg-accent {
-        color: var(--bp-deep) !important;
-        background: var(--bp-accent) !important;
-    }
-    nav .hidden a.bg-accent:hover {
-        background: var(--bp-accent-bright) !important;
-    }
-
-    /* ── Override footer to match blueprint theme ── */
-    footer {
-        border-top-color: var(--bp-line-faint) !important;
-        background: transparent !important;
-    }
-    footer span, footer a {
-        color: var(--bp-text-muted) !important;
-    }
-    footer a:hover {
-        color: var(--bp-accent) !important;
-    }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgb(var(--color-border)); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-accent)); }
 
     /* ── Grid background ── */
     .blueprint-bg {
@@ -122,7 +86,7 @@
         border-radius: 2px;
         padding: 48px 52px 60px;
         position: relative;
-        background: rgba(10, 22, 40, 0.5);
+        background: rgb(var(--color-surface) / 0.7);
         animation: fadeIn 0.6s ease forwards;
     }
     .paper-frame::before {
@@ -246,29 +210,29 @@
     .paper-frame blockquote p {
         color: var(--bp-text);
         margin: 0;
-        font-size: 13px;
+        font-size: 14px;
     }
 
     /* ── Code ── */
     .paper-frame code:not(pre code) {
-        background: rgba(30, 74, 122, 0.2);
-        border: 1px solid var(--bp-line-faint);
+        background: rgb(var(--color-accent) / 0.08);
+        border: 1px solid rgb(var(--color-accent) / 0.18);
         border-radius: 3px;
         padding: 1px 5px;
         font-size: 0.85em;
-        color: var(--bp-accent-bright);
+        color: rgb(var(--color-accent));
     }
 
     .paper-frame pre {
         margin: 1.5em 0 2em;
         padding: 20px 24px;
-        background: rgba(10, 22, 40, 0.7);
+        background: rgb(var(--color-raised-hover));
         border: 1px solid var(--bp-line-soft);
         border-radius: 3px;
         overflow-x: auto;
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.6;
-        color: var(--bp-text);
+        color: var(--bp-text-bright);
     }
     .paper-frame pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
 
@@ -289,7 +253,7 @@
     }
     .rfc-toc li {
         margin: 2px 0;
-        font-size: 13px;
+        font-size: 14px;
     }
     .rfc-toc a {
         color: var(--bp-text-dim);
@@ -324,9 +288,49 @@
         border: 1px solid var(--bp-line-faint);
         border-radius: 3px;
         padding: 12px;
-        background: rgba(10, 22, 40, 0.6);
-        filter: invert(0.85) sepia(0.3) saturate(1.5) hue-rotate(180deg) brightness(0.9);
+        background: rgb(var(--color-surface));
     }
+    /* The original figure artwork is dark-line on light; invert it for dark mode legibility */
+    .dark .rfc-fig img {
+        background: rgb(var(--color-raised));
+        filter: invert(1) hue-rotate(180deg) brightness(0.92) saturate(0.85);
+    }
+
+    /* ── Inline figure SVGs use baked-in blueprint colors. Remap them to theme tokens. ── */
+    .paper-frame svg [fill="#1e4a7a"]   { fill: rgb(var(--color-border)); }
+    .paper-frame svg [stroke="#1e4a7a"] { stroke: rgb(var(--color-border)); }
+    /* When #1e4a7a is used on a text element (dim hex preview labels), use a readable muted instead of the hairline-border color */
+    .paper-frame svg text[fill="#1e4a7a"] { fill: rgb(var(--color-txt-muted)); }
+    .paper-frame svg [fill="#3d6494"]   { fill: rgb(var(--color-txt-muted)); }
+    .paper-frame svg [stroke="#3d6494"] { stroke: rgb(var(--color-txt-muted)); }
+    .paper-frame svg [fill="#4da8da"]   { fill: rgb(var(--color-accent)); }
+    .paper-frame svg [stroke="#4da8da"] { stroke: rgb(var(--color-accent)); }
+    .paper-frame svg [fill="#6b8bb5"]   { fill: rgb(var(--color-txt-muted)); }
+    .paper-frame svg [fill="#7ec8f0"]   { fill: rgb(var(--color-accent-strong)); }
+    .paper-frame svg [stroke="#7ec8f0"] { stroke: rgb(var(--color-accent-strong)); }
+    .paper-frame svg [fill="#c8ddf5"]   { fill: rgb(var(--color-txt-primary)); }
+    .paper-frame svg [fill="#e8f0fb"]   { fill: rgb(var(--color-txt-primary)); }
+    .paper-frame svg [stroke="#e8f0fb"] { stroke: rgb(var(--color-txt-primary)); }
+    /* Neutral panel backgrounds: transparent in light (hairline border outlines define the panel), subtle raised tile in dark */
+    .paper-frame svg [fill="rgba(13,31,60,0.4)"],
+    .paper-frame svg [fill="rgba(13,31,60,0.5)"],
+    .paper-frame svg [fill="rgba(13,31,60,0.6)"],
+    .paper-frame svg [fill="rgba(13,31,60,0.7)"],
+    .paper-frame svg [fill="rgba(13,31,60,0.85)"] { fill: transparent; }
+    .dark .paper-frame svg [fill="rgba(13,31,60,0.4)"]   { fill: rgb(var(--color-raised-hover) / 0.5); }
+    .dark .paper-frame svg [fill="rgba(13,31,60,0.5)"]   { fill: rgb(var(--color-raised-hover) / 0.6); }
+    .dark .paper-frame svg [fill="rgba(13,31,60,0.6)"]   { fill: rgb(var(--color-raised-hover) / 0.7); }
+    .dark .paper-frame svg [fill="rgba(13,31,60,0.7)"]   { fill: rgb(var(--color-raised-hover) / 0.8); }
+    .dark .paper-frame svg [fill="rgba(13,31,60,0.85)"]  { fill: rgb(var(--color-raised-hover) / 0.95); }
+    /* Translucent accent washes (originally light blue) → translucent site accent */
+    .paper-frame svg [fill="rgba(77,168,218,0.05)"]  { fill: rgb(var(--color-accent) / 0.05); }
+    .paper-frame svg [fill="rgba(77,168,218,0.06)"]  { fill: rgb(var(--color-accent) / 0.06); }
+    .paper-frame svg [fill="rgba(77,168,218,0.08)"]  { fill: rgb(var(--color-accent) / 0.08); }
+    .paper-frame svg [fill="rgba(77,168,218,0.1)"]   { fill: rgb(var(--color-accent) / 0.1); }
+    .paper-frame svg [fill="rgba(77,168,218,0.12)"]  { fill: rgb(var(--color-accent) / 0.12); }
+    .paper-frame svg [fill="rgba(126,200,240,0.04)"] { fill: rgb(var(--color-accent) / 0.04); }
+    .paper-frame svg [fill="rgba(126,200,240,0.06)"] { fill: rgb(var(--color-accent) / 0.06); }
+    .paper-frame svg [fill="rgba(126,200,240,0.08)"] { fill: rgb(var(--color-accent) / 0.08); }
     .rfc-fig svg {
         display: block;
         margin: 0 auto;

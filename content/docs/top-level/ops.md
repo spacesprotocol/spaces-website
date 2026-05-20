@@ -1,6 +1,6 @@
 +++
 title = "Operation"
-description = "How the auction mechanism works"
+description = "Operating a top-level Spaces name — issuing handles in batches, on-chain commitments, and the choice between self-operating and delegating to an operator."
 weight = 20
 template = "docs/page.html"
 +++

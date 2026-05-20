@@ -121,7 +121,7 @@
                     <span class="font-mono text-[11px] text-txt-secondary font-medium tracking-[0.1em] uppercase">Free handles</span>
                 </div>
 
-                <h1 class="fade-up fd2 text-[2rem] md:text-[2.8rem] font-extrabold text-white tracking-[-0.04em] mb-4 leading-[1.1]">
+                <h1 class="fade-up fd2 text-[2rem] md:text-[2.8rem] font-serif text-txt-primary tracking-[-0.02em] mb-4 leading-[1.1]">
                     Handle faucet
                 </h1>
                     <p class="fade-up fd3 text-[15px] text-txt-secondary max-w-md mx-auto leading-relaxed mb-3">
@@ -131,21 +131,21 @@
                 <div class="fade-up fd5 flex items-center justify-center gap-8 md:gap-12 ">
 
                     <div class="flex flex-col items-center gap-1">
-                        <div class="font-mono text-[36px] md:text-[48px] font-extrabold tracking-[-0.04em] text-white leading-none">100M</div>
+                        <div class="font-mono text-[36px] md:text-[48px] font-serif font-medium tracking-[-0.02em] text-txt-primary leading-none">100M</div>
                         <div class="font-mono text-[10px] text-txt-muted tracking-[0.06em] uppercase">                     <iconify-icon icon="solar:infinity-linear" class="text-txt-secondary text-xs"></iconify-icon>
                             handles issued</div>
                     </div>
 
 
                     <div class="flex flex-col items-center gap-1">
-                        <div class="font-mono text-[36px] md:text-[48px] font-extrabold tracking-[-0.04em] text-sp-green leading-none" id="statsClaimed">—</div>
+                        <div class="font-mono text-[36px] md:text-[48px] font-serif font-medium tracking-[-0.02em] text-sp-green leading-none" id="statsClaimed">—</div>
                         <div class="font-mono text-[10px] text-txt-muted tracking-[0.06em] uppercase">                    <iconify-icon icon="solar:wallet-linear" class="text-txt-secondary text-xs"></iconify-icon>
                             claimed</div>
                     </div>
 
 
                     <div class="flex flex-col items-center gap-1">
-                        <div class="font-mono text-[36px] md:text-[48px] font-extrabold tracking-[-0.04em] text-txt-muted leading-none">32<span class="inline ml-2 text-sm">bytes</span></div>
+                        <div class="font-mono text-[36px] md:text-[48px] font-serif font-medium tracking-[-0.02em] text-txt-muted leading-none">32<span class="inline ml-2 text-sm">bytes</span></div>
                         <div class="font-mono text-[10px] text-txt-muted tracking-[0.06em] uppercase">                     <iconify-icon icon="solar:database-linear" class="text-txt-secondary text-xs"></iconify-icon>
                             On-chain footprint</div>
                     </div>
@@ -157,7 +157,7 @@
 
             <!-- Handle picker -->
             <div class="fade-up fd4 mb-6">
-                <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_8px_60px_rgba(0,0,0,.5)]">
+                <div class="bg-surface border border-border rounded-lg overflow-hidden shadow-pop">
 
                     <!-- Top bar -->
                     <div class="flex items-center justify-between border-b border-border-subtle px-5 py-2.5">
@@ -193,12 +193,12 @@
 
                         <!-- Two claim options -->
                         <div id="claimButtons" class="space-y-2">
-                            <a id="orbeeClaimBtn" href="#" class="claim-btn w-full font-mono text-[13px] font-semibold text-white px-6 py-3 rounded-lg transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(139,92,246,.25)] flex items-center justify-center gap-2 no-underline" style="background:#8b5cf6;text-decoration:none">
+                            <a id="orbeeClaimBtn" href="#" class="claim-btn btn btn-orbee w-full no-underline">
                                 <iconify-icon icon="solar:chat-round-dots-linear" class="text-sm"></iconify-icon>
                                 Claim on Orbee
                                 <span class="font-mono text-[9px] font-medium px-1.5 py-0.5 rounded bg-white/15 ml-1">recommended</span>
                             </a>
-                            <button id="claimBtn" onclick="claimHandle()" disabled class="claim-btn w-full font-mono text-[12px] font-semibold text-txt-muted bg-raised hover:bg-border border border-border disabled:cursor-not-allowed px-6 py-2.5 rounded-lg transition-all flex items-center justify-center gap-2">
+                            <button id="claimBtn" onclick="claimHandle()" disabled class="claim-btn btn btn-sm btn-secondary w-full disabled:cursor-not-allowed">
                                 <iconify-icon icon="solar:pen-new-round-linear" class="text-sm"></iconify-icon>
                                 Setup manually
                             </button>
@@ -218,7 +218,7 @@
                                 <div class="mb-3">
                                     <div class="font-mono text-[9px] text-txt-muted uppercase tracking-[0.06em] mb-1">Handle</div>
                                     <div class="flex items-center justify-between bg-base border border-border rounded-md px-3 py-2">
-                                        <span id="claimedHandle" class="font-mono text-[13px] font-bold text-accent break-all">—</span>
+                                        <span id="claimedHandle" class="font-mono text-[14px] font-bold text-accent break-all">—</span>
                                         <button onclick="copyField('claimedHandle')" class="copy-btn shrink-0 ml-2 p-1 rounded hover:bg-raised transition-colors" title="Copy">
                                             <iconify-icon icon="solar:copy-linear" class="text-txt-muted text-sm"></iconify-icon>
                                         </button>
@@ -260,7 +260,7 @@
 
             <!-- Your handles (populated from localStorage) -->
             <div id="yourHandles" class="hidden mb-6">
-                <div class="bg-surface border border-border rounded-xl overflow-hidden">
+                <div class="bg-surface border border-border rounded-lg overflow-hidden">
                     <div class="flex items-center gap-2 border-b border-border-subtle px-5 py-2.5">
                         <iconify-icon icon="solar:wallet-linear" class="text-accent text-sm"></iconify-icon>
                         <span class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em]">Your handles</span>
@@ -272,7 +272,12 @@
             <!-- Info section -->
             <div class="fade-up fd6 space-y-4">
                 <!-- How it works -->
-                <div class="bg-surface border border-border rounded-xl p-5">
+                <p>
+                    Note: faucet handles are intended for experimentation. Normally, when you register a sovereign handle through an operator, you hand over only your public key and they include it in the batch. The faucet pre-generates the key pairs itself and bundles them into a batch, so you can claim a handle that's already issued. The secret key is deleted from the faucet when you claim, but you can also rotate your key after.
+
+
+                </p>
+                <div class="bg-surface border border-border rounded-lg p-5">
                     <div class="flex items-center gap-2 mb-4">
                         <iconify-icon icon="solar:info-circle-linear" class="text-accent text-sm"></iconify-icon>
                         <span class="font-mono text-[11px] font-semibold text-txt-primary">How it works</span>
@@ -356,7 +361,7 @@
         list.innerHTML = handles.map((h, i) => `
             <div class="px-5 py-3 flex items-center gap-3">
                 <div class="flex-1 min-w-0">
-                    <div class="font-mono text-[13px] font-bold text-accent truncate">${h.name}.genesis@key</div>
+                    <div class="font-mono text-[14px] font-bold text-accent truncate">${h.name}.genesis@key</div>
                 </div>
                 <div class="flex items-center gap-1.5 shrink-0">
                     <button onclick="downloadSavedCert(${i})" class="p-1.5 rounded-md hover:bg-raised transition-colors" title="Download certificate"><iconify-icon icon="solar:download-linear" class="text-txt-muted text-xs"></iconify-icon></button>
@@ -529,7 +534,7 @@
         const container = $('toastContainer');
         const toast = document.createElement('div');
         const colors = { success: 'border-sp-green/30 bg-sp-green/10 text-sp-green', error: 'border-red-500/30 bg-red-500/10 text-red-400', info: 'border-accent/30 bg-accent-dim text-accent' };
-        toast.className = `toast pointer-events-auto px-4 py-2.5 rounded-lg border font-mono text-[12px] font-medium shadow-[0_8px_30px_rgba(0,0,0,.5)] ${colors[type] || colors.info}`;
+        toast.className = `toast pointer-events-auto px-4 py-2.5 rounded-lg border font-mono text-[12px] font-medium shadow-pop ${colors[type] || colors.info}`;
         toast.textContent = msg;
         container.appendChild(toast);
         setTimeout(() => {
