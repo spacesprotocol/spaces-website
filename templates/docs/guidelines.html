@@ -396,12 +396,12 @@
   <h3 class="text-[15px] font-bold text-txt-primary mb-3" id="terminology">Introduction</h3>
   <p class="doc-p mb-6">A <strong>trust ID</strong> is the hash of a set of Merkle roots computed at multiple block intervals. It allows any client to verify protocol state from an inclusion proof anchored in any of those roots.</p>
   <p class="doc-p mb-4">Spaces is purely Bitcoin-native PKI. Trust is derived from Bitcoin's proof of work, not from HTTPS certificates, DNS, or any external authority. A trust ID is computed locally by reading Bitcoin blocks. No server can grant or revoke trust.</p>
-  <p class="doc-p mb-6">Not every user will run their own verifier (such as <a href="/docs/use/veritas/">Veritas</a>). Fabric provides three trust pools so apps can offer a reasonable experience out of the box while preserving the path to full verification.</p>
+  <p class="doc-p mb-6">Not every user will run their own verifier (such as <a href="/docs/use/trust-anchor/">Veritas</a>). Fabric provides three trust pools so apps can offer a reasonable experience out of the box while preserving the path to full verification.</p>
 
   <p class="doc-p mb-4"><strong>Observed</strong> - automatically populated from peers. This is always present and is used for best-effort resolution. On its own, <code>badge()</code> returns <code>Unverified</code> for all handles.</p>
   <p class="doc-p mb-4"><strong>Semi-trusted</strong> - apps may pre-fill this from a source they control (e.g. an anchor served over HTTPS from your own backend). This is a pragmatic concession: HTTPS is not trustless, but it prevents every handle from showing as <code>Unverified</code> on first launch. Semi-trusted anchors will never produce <code>Orange</code> badges.</p>
   <p class="doc-p mb-4"><strong>Trusted</strong> - reserved for anchors the user has explicitly verified, either by scanning a QR code or from an embedded verifier that permissionlessly computes the trust ID from Bitcoin blocks. This is the only pool that can produce <code>Orange</code> badges. Apps must not write to this pool on the user's behalf unless they embed a local verifier.</p>
-  <p class="doc-p mb-6">The <a href="/docs/use/veritas/">Veritas app</a> is the easiest way for users to obtain a permissionless trust ID without running a Bitcoin full node. It syncs from a checkpoint, verifies the Bitcoin header chain, and computes the trust ID locally.</p>
+  <p class="doc-p mb-6">The <a href="/docs/use/trust-anchor/">Veritas app</a> is the easiest way for users to obtain a permissionless trust ID without running a Bitcoin full node. It syncs from a checkpoint, verifies the Bitcoin header chain, and computes the trust ID locally.</p>
 
   <!-- Two iPhones side by side: Settings with anchor + QR scan screen -->
   <div class="flex flex-col md:flex-row items-start justify-center gap-8 my-12">

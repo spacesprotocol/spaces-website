@@ -191,16 +191,11 @@
                             <span id="availLabel" class="font-mono text-[10px] uppercase font-semibold text-txt-muted tracking-[0.06em] transition-colors">Loading...</span>
                         </div>
 
-                        <!-- Two claim options -->
-                        <div id="claimButtons" class="space-y-2">
-                            <a id="orbeeClaimBtn" href="#" class="claim-btn btn btn-orbee w-full no-underline">
-                                <iconify-icon icon="solar:chat-round-dots-linear" class="text-sm"></iconify-icon>
-                                Claim on Orbee
-                                <span class="font-mono text-[9px] font-medium px-1.5 py-0.5 rounded bg-white/15 ml-1">recommended</span>
-                            </a>
-                            <button id="claimBtn" onclick="claimHandle()" disabled class="claim-btn btn btn-sm btn-secondary w-full disabled:cursor-not-allowed">
+                        <!-- Claim -->
+                        <div id="claimButtons">
+                            <button id="claimBtn" onclick="claimHandle()" disabled class="claim-btn btn btn-primary w-full disabled:cursor-not-allowed">
                                 <iconify-icon icon="solar:pen-new-round-linear" class="text-sm"></iconify-icon>
-                                Setup manually
+                                Claim handle
                             </button>
                         </div>
 
@@ -410,14 +405,10 @@
         // Reset claim UI
         $('keypairReveal').classList.add('hidden');
         $('claimButtons').classList.remove('hidden');
-        $('claimBtn').innerHTML = '<iconify-icon icon="solar:pen-new-round-linear" class="text-sm"></iconify-icon> Setup manually';
+        $('claimBtn').innerHTML = '<iconify-icon icon="solar:pen-new-round-linear" class="text-sm"></iconify-icon> Claim handle';
         $('claimBtn').style.background = '';
         $('claimBtn').style.cursor = '';
         $('claimBtn').disabled = false;
-
-        // Update Orbee link
-        const orbeeBase = location.protocol === 'https:' ? 'https://orbee.chat' : 'http://localhost:5173';
-        $('orbeeClaimBtn').href = orbeeBase + '/n?pick=' + encodeURIComponent(currentName);
 
         $('availDot').className = 'w-[6px] h-[6px] rounded-full bg-sp-green shadow-[0_0_5px_#3fbc8b] avail-badge';
         $('availLabel').textContent = 'Available';
