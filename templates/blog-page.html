@@ -32,6 +32,10 @@
     .post-prose p { margin: 1.1em 0; }
     .post-prose a { color: rgb(var(--color-accent)); text-decoration: none; border-bottom: 1px solid rgb(var(--color-accent) / 0.35); transition: border-color .15s, color .15s; }
     .post-prose a:hover { color: rgb(var(--color-accent-strong)); border-bottom-color: rgb(var(--color-accent-strong)); }
+    /* buttons inside posts keep their own look, not the prose link underline */
+    .post-prose a.btn, .post-prose a.btn:hover { border-bottom: 0; }
+    .post-prose a.btn-primary, .post-prose a.btn-primary:hover { color: rgb(var(--color-accent-fg)); }
+    .post-prose a.btn-secondary, .post-prose a.btn-secondary:hover { color: rgb(var(--color-txt-primary)); }
     .post-prose strong { color: rgb(var(--color-txt-primary)); font-weight: 600; }
     .post-prose ul, .post-prose ol { margin: 1.1em 0; padding-left: 1.5em; }
     .post-prose li { margin: 0.35em 0; }

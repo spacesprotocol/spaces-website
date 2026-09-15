@@ -1,13 +1,14 @@
 +++
 title = "Trust anchor"
-description = "Install a trust anchor to verify spaces protocol queries — the Veritas app on macOS, or space-cli trust on any platform"
+description = "Install a trust anchor to verify spaces protocol queries with the Veritas app on macOS, or space-cli trust on any platform"
 weight = 10
 template = "docs/page.html"
+aliases = ["/docs/use/veritas/"]
 +++
 
 # Trust anchor
 
-A trust anchor is what lets your apps verify handles against Bitcoin itself instead of trusting a server. It's a single id — the **Trust ID** — that you scan or paste once.
+A trust anchor is what lets your apps verify handles against Bitcoin itself instead of trusting a server. It's a single id, the **Trust ID**, that you scan or paste once.
 
 The easiest way to get one is the **Veritas** desktop app on macOS. If you're on another platform, or already run a Bitcoin node, `space-cli trust` computes the same id.
 
@@ -45,9 +46,9 @@ It prints a scannable QR code for the latest Trust ID, followed by the id itself
 
 Scan the QR code from any app that supports Spaces, or copy the hex id. A few flags are available:
 
-- `--all` — list every trust id, newest first
-- `--json` — print the raw JSON list
-- `--no-qr` — print only the hex id(s)
+- `--all` - list every trust id, newest first
+- `--json` - print the raw JSON list
+- `--no-qr` - print only the hex id(s)
 
 ## How does it work?
 

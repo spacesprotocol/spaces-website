@@ -30,7 +30,7 @@ Change any of them whenever you like; the name never changes.
 
 **Look anyone up.** Type a handle to see everything its owner published, and pay them straight from the result.
 
-**Verify on the device.** Lookups are verified on your phone rather than by a server, so no company sits between you and the answer - see [Trust anchor](/docs/use/veritas/) for how that verification works.
+**Verify on the device.** Lookups are verified on your phone rather than by a server, so no company sits between you and the answer - see [Trust anchor](/docs/use/trust-anchor/) for how that verification works.
 
 ## Handles vs. top level names
 

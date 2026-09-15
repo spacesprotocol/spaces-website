@@ -42,7 +42,7 @@ It will automatically read Bitcoin Core's cookie file for authentication.
 
 ### Get your trust anchor
 
-Once `spaced` has caught up, print the [Trust ID](/docs/use/veritas/) your node computed and scan it into any app that supports Spaces:
+Once `spaced` has caught up, print the [Trust ID](/docs/use/trust-anchor/) your node computed and scan it into any app that supports Spaces:
 
 ```sh
 space-cli trust
