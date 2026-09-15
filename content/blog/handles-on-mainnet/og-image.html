@@ -23,62 +23,45 @@
             linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
         background-size: 60px 60px;
     }
-    /* left art */
-    .art { position: absolute; left: 96px; top: 175px; width: 280px; height: 280px; }
-    .glow {
-        position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
-        width: 420px; height: 420px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(224,114,46,.20) 0%, rgba(224,114,46,.06) 42%, transparent 68%);
+    /* accent wash, keeps the plate from reading flat once the art is gone */
+    .wash {
+        position: absolute; right: -180px; top: -220px; width: 900px; height: 900px;
+        background: radial-gradient(circle, rgba(224,114,46,.16) 0%, rgba(224,114,46,.05) 40%, transparent 66%);
     }
-    .at {
-        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-        font-family: 'Lilex', 'IBM Plex Sans', monospace; font-weight: 700; font-size: 250px;
-        color: #e0722e; line-height: 1;
+    .wash-2 {
+        position: absolute; left: -260px; bottom: -340px; width: 820px; height: 820px;
+        background: radial-gradient(circle, rgba(224,114,46,.10) 0%, transparent 62%);
     }
-    .px { position: absolute; border-radius: 1px; }
-    /* right column */
-    .col { position: absolute; left: 470px; top: 168px; width: 660px; }
+
+    .col { position: absolute; left: 92px; right: 92px; top: 150px; }
     .eyebrow {
-        font-family: 'Lilex', monospace; font-weight: 600; font-size: 17px;
-        letter-spacing: .16em; color: #e0722e; text-transform: uppercase; margin-bottom: 22px;
+        font-family: 'Lilex', monospace; font-weight: 600; font-size: 20px;
+        letter-spacing: .17em; color: #e0722e; text-transform: uppercase; margin-bottom: 30px;
     }
     h1 {
-        font-size: 62px; font-weight: 700; letter-spacing: -.022em; line-height: 1.05;
-        color: #f4f4f6; margin-bottom: 24px;
+        font-size: 96px; font-weight: 700; letter-spacing: -.028em; line-height: 1;
+        color: #f4f4f6; margin-bottom: 32px;
     }
-    p { font-size: 25px; line-height: 1.46; color: #9b9ba5; max-width: 600px; font-weight: 400; }
+    p { font-size: 32px; line-height: 1.42; color: #a3a3ad; max-width: 960px; font-weight: 400; }
     /* footer */
-    .foot { position: absolute; left: 470px; bottom: 42px; display: flex; align-items: center; gap: 11px; }
-    .dot { width: 11px; height: 11px; border-radius: 50%; background: #e0722e; }
-    .brand { font-size: 22px; font-weight: 500; color: #e8e8ea; }
+    .foot { position: absolute; left: 92px; bottom: 50px; display: flex; align-items: center; gap: 12px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: #e0722e; }
+    .brand { font-size: 24px; font-weight: 500; color: #e8e8ea; }
     .url {
-        position: absolute; right: 44px; bottom: 48px;
-        font-family: 'Lilex', monospace; font-size: 14px; letter-spacing: .1em; color: #63636d;
+        position: absolute; right: 92px; bottom: 56px;
+        font-family: 'Lilex', monospace; font-size: 16px; letter-spacing: .1em; color: #63636d;
     }
 </style>
 </head>
 <body>
     <div class="grid"></div>
-
-    <div class="art">
-        <div class="glow"></div>
-        <div class="at">@</div>
-        <div class="px" style="left:-16px;  top:26px;  width:13px; height:13px; background:#8a6b1f"></div>
-        <div class="px" style="left:76px;   top:-14px; width:16px; height:16px; background:#c026d3"></div>
-        <div class="px" style="left:210px;  top:8px;   width:12px; height:12px; background:#7c3aed"></div>
-        <div class="px" style="left:246px;  top:74px;  width:18px; height:18px; background:#f5c518"></div>
-        <div class="px" style="left:288px;  top:132px; width:15px; height:15px; background:#ffffff"></div>
-        <div class="px" style="left:-34px;  top:148px; width:14px; height:14px; background:#f5c518"></div>
-        <div class="px" style="left:262px;  top:196px; width:17px; height:17px; background:#ec4899"></div>
-        <div class="px" style="left:16px;   top:236px; width:13px; height:13px; background:#c026d3"></div>
-        <div class="px" style="left:118px;  top:268px; width:16px; height:16px; background:#ffffff"></div>
-        <div class="px" style="left:214px;  top:258px; width:12px; height:12px; background:#f5c518"></div>
-    </div>
+    <div class="wash"></div>
+    <div class="wash-2"></div>
 
     <div class="col">
         <div class="eyebrow">Spaces Protocol &nbsp;·&nbsp; Release</div>
-        <h1>Handles on Mainnet.</h1>
-        <p>Spaces v0.4.2 ships off-chain issuance to mainnet. @bitcoin is the first operator, issuing handles through Nacho.</p>
+        <h1>Handles on Mainnet!</h1>
+        <p>Sovereign, irrevocable, permanent. Spaces v0.4.2 ships off-chain issuance to mainnet, with @bitcoin as the first operator.</p>
     </div>
 
     <div class="foot">
