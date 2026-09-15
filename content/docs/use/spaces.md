@@ -7,9 +7,7 @@ template = "docs/page.html"
 
 # Spaces client
 
-## GUI
-
-The easiest way to get started is to use the [Akron wallet](https://akron.io) - a desktop wallet that handles everything for you including syncing and verification. No Bitcoin full node required.
+> If you just want a handle, you don't need any of this - the [Nacho app](https://nacho.io) buys and manages handles on iOS and Android, no node and no account required.
 
 ## CLI
 
@@ -22,7 +20,7 @@ Install Bitcoin Core from [bitcoin.org/en/download](https://bitcoin.org/en/downl
 `spaced` is a tiny layer that connects to Bitcoin Core and scans transactions relevant to the protocol.
 
 ```sh
-curl --proto '=https' --tlsv1.2 -sSf https://install.spacesprotocol.org | sh
+curl --proto '=https' --tlsv1.2 -sSf https://get.spacesprotocol.org | sh
 ```
 
 Verify installation:
@@ -41,6 +39,14 @@ spaced
 ```
 
 It will automatically read Bitcoin Core's cookie file for authentication.
+
+### Get your trust anchor
+
+Once `spaced` has caught up, print the [Trust ID](/docs/use/veritas/) your node computed and scan it into any app that supports Spaces:
+
+```sh
+space-cli trust
+```
 
 ### Create a wallet
 

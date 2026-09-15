@@ -131,7 +131,7 @@
         if (row1) row1.textContent = r1.slice(0, 20);
         if (row2) row2.textContent = r2.slice(20);
 
-        renderQr(JSON.stringify(value));
+        renderQr(`veritas://scan?id=${value.trust_id}`);
 
         const heightEl = document.getElementById('tp-height');
         if (heightEl && value.height) {
