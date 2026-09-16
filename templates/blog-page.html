@@ -32,6 +32,7 @@
     .post-prose p { margin: 1.1em 0; }
     .post-prose a { color: rgb(var(--color-accent)); text-decoration: none; border-bottom: 1px solid rgb(var(--color-accent) / 0.35); transition: border-color .15s, color .15s; }
     .post-prose a:hover { color: rgb(var(--color-accent-strong)); border-bottom-color: rgb(var(--color-accent-strong)); }
+    /* light/dark variants of the same image, picked by the site theme */
     /* buttons inside posts keep their own look, not the prose link underline */
     .post-prose a.btn, .post-prose a.btn:hover { border-bottom: 0; }
     .post-prose a.btn-primary, .post-prose a.btn-primary:hover { color: rgb(var(--color-accent-fg)); }
@@ -51,6 +52,11 @@
         background: rgb(var(--color-surface));
     }
     .post-prose video { width: 100%; }
+    /* light/dark variants of the same media, picked by the site theme */
+    .theme-media img { display: block; max-width: 520px; width: 100%; margin-inline: auto; border: 0; background: none; }
+    .theme-media .dark-only { display: none; }
+    .dark .theme-media .light-only { display: none; }
+    .dark .theme-media .dark-only  { display: block; }
     .hero-art {
         display: block;
         margin: 0 auto 1.6em;
