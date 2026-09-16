@@ -118,12 +118,6 @@
     /* ── Trust model ── */
     .trust-dns { border-left:2px solid rgba(239,68,68,.15); }
     .trust-spaces { border-left:2px solid rgba(63,188,139,.15); }
-
-    /* ── Handle picker dialog ── */
-    #handlePicker { border:0; background:transparent; padding:0; color:inherit; max-width:100vw; }
-    #handlePicker::backdrop { background:rgba(0,0,0,.55); backdrop-filter:blur(3px); }
-    #handlePicker[open] > div { animation:pickerIn .18s ease-out; }
-    @keyframes pickerIn { from{opacity:0;transform:translateY(6px) scale(.985)} to{opacity:1;transform:none} }
 </style>
 {% endblock %}
 
@@ -1049,76 +1043,10 @@
         </div>
     </section>
 
-    <!-- ═══════════════════════════ HANDLE PICKER ═══════════════════════════ -->
-    <dialog id="handlePicker" aria-labelledby="handlePickerTitle">
-        <div class="w-[min(92vw,430px)] bg-surface border border-border rounded-xl shadow-pop overflow-hidden">
-            <div class="flex items-center justify-between border-b border-border-subtle px-5 py-3">
-                <span id="handlePickerTitle" class="font-mono text-[10px] text-txt-muted font-semibold uppercase tracking-[0.06em]">Get a handle</span>
-                <button type="button" data-handle-picker-close class="text-txt-muted hover:text-txt-primary transition-colors leading-none" aria-label="Close">
-                    <iconify-icon icon="solar:close-circle-linear" class="text-base"></iconify-icon>
-                </button>
-            </div>
-
-            <div class="p-4 flex flex-col gap-2.5">
-                <a href="https://nacho.io" class="group flex items-start gap-3 rounded-lg border border-border bg-base p-4 transition-all hover:border-accent/40 hover:-translate-y-px">
-                    <div class="w-9 h-9 rounded-lg border border-border overflow-hidden shrink-0">
-                        <img src="{{ get_url(path='images/nacho-icon.png') }}" alt="" width="36" height="36" class="w-full h-full object-cover">
-                    </div>
-                    <div class="min-w-0">
-                        <div class="flex items-center gap-1.5 mb-1">
-                            <span class="font-mono text-[13px] font-semibold text-txt-primary group-hover:text-accent transition-colors">Buy from an operator</span>
-                            <iconify-icon icon="solar:arrow-right-up-linear" class="text-txt-muted text-[11px] group-hover:text-accent transition-colors"></iconify-icon>
-                        </div>
-                        <p class="text-[11px] text-txt-muted leading-relaxed">Pick a name from an operator in the Nacho app and pay once. iOS and Android.</p>
-                    </div>
-                </a>
-
-                <a href="/faucet" class="group flex items-start gap-3 rounded-lg border border-border bg-base p-4 transition-all hover:border-sp-green/40 hover:-translate-y-px">
-                    <div class="w-9 h-9 rounded-lg bg-sp-green-dim border border-sp-green/15 flex items-center justify-center shrink-0">
-                        <iconify-icon icon="ph:magic-wand" class="text-sp-green text-sm"></iconify-icon>
-                    </div>
-                    <div class="min-w-0">
-                        <div class="flex items-center gap-1.5 mb-1">
-                            <span class="font-mono text-[13px] font-semibold text-txt-primary group-hover:text-sp-green transition-colors">Claim a free test handle</span>
-                            <iconify-icon icon="solar:arrow-right-linear" class="text-txt-muted text-[11px] group-hover:text-sp-green transition-colors"></iconify-icon>
-                        </div>
-                        <p class="text-[11px] text-txt-muted leading-relaxed">Grab a handle from the faucet - free, instant, nothing to install.</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </dialog>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // ── Handle picker: "Get a handle" opens buy-vs-faucet choice ──
-    (function () {
-        const dlg = document.getElementById('handlePicker');
-        if (!dlg || typeof dlg.showModal !== 'function') return;
-
-        function open() { if (!dlg.open) dlg.showModal(); }
-
-        document.querySelectorAll('[data-handle-picker]').forEach(function (btn) {
-            btn.addEventListener('click', open);
-        });
-        dlg.querySelector('[data-handle-picker-close]')?.addEventListener('click', function () { dlg.close(); });
-        // Click outside the card (on the dialog itself) closes it
-        dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
-
-        // The nav "Get Started" link also claims the G shortcut, so intercept it
-        // here in the capture phase to keep the hero's G hint honest.
-        document.addEventListener('keydown', function (e) {
-            if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-            if (e.key?.toLowerCase() !== 'g') return;
-            const el = document.activeElement;
-            if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
-            e.preventDefault();
-            e.stopPropagation();
-            open();
-        }, true);
-    })();
-
     // ── Hero "Trust anchor at #<height>" — populated once trust ID resolves ──
     (function () {
         function wire() {
