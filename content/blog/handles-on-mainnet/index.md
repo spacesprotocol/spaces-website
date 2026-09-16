@@ -1,7 +1,7 @@
 +++
 title = "Handles on Mainnet!"
 description = "Spaces v0.4.2 ships the off-chain issuance layer to mainnet. The first production operator is @bitcoin, issuing handles through the Nacho app."
-date = 2026-09-15
+date = 2026-09-16
 
 [extra]
 og_image = "og-image.png"
