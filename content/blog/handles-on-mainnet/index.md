@@ -12,6 +12,8 @@ og_image = "og-image.png"
 <img src="launch-banner-dark-v2.gif" alt="Handles are live on Bitcoin" class="dark-only">
 </div>
 
+
+
 Spaces v0.4.2 ships the off-chain issuance layer to mainnet. Operators can now issue handles under a top level space without an on-chain transaction per name, and clients can verify those handles against the Bitcoin anchored root. Handles are sovereign, irrevocable and permanent.
 
 The first production operator is `@bitcoin`. Handles under it are issued through [atbitcoin.com](https://atbitcoin.com) on the web, or the Nacho app on [iOS](https://apps.apple.com/app/id6755894049) and [Android](https://play.google.com/store/apps/details?id=com.impervious.nacho).
@@ -24,9 +26,19 @@ What the holder receives is an off-chain certificate containing two proofs: an i
 
 Certificates do not expire, and the handle remains yours, forever. There is no renewal and no on-chain transaction required to keep a handle.
 
+## Not Your Keys, Not Your Name
+
+NIP-05 and BIP-353 both give you a `you@example.com` identifier, and both inherit DNS. A NIP-05 identifier resolves by fetching a JSON file from a web server. A BIP-353 address resolves to a DNSSEC-signed TXT record.
+
+The proofs in BIP-353 are real cryptography, but DNS is a tower of custody. The record is signed by the zone operator, whose key is vouched for by the registry, whose key is vouched for by ICANN. Each link in that chain can rewrite what sits below it, and the name itself is rented.
+
+A handle inverts that. The binding between the name and your key is committed to Bitcoin and proven by a certificate you hold. The operator that issued it has no way to alter it, and nothing has to be renewed.
+
 ## Verifying on a Phone
 
-<img src="aliceatbitcoindemo.svg" alt="alice@bitcoin resolved in Nacho, marked sovereign and verified on-device against the trust anchor, with its records listed below" style="max-width:320px;border:0;background:none">
+<div class="device-crop">
+<img src="aliceatbitcoindemo.svg" alt="alice@bitcoin resolved in Nacho, marked sovereign and verified on-device against the trust anchor, with its records listed below">
+</div>
 
 Most decentralized naming requires a full node to verify anything, which is workable on a server and not on the device where names are actually resolved.
 
@@ -52,7 +64,7 @@ Nacho is a mobile client for handles, available on iOS and Android. It is a reso
 
 Nacho generates a key pair on your device and submits the name and public key to the operator, much like a certificate signing request but cooler. The operator adds the binding to its tree, commits the root on Bitcoin and returns a certificate. The private key never leaves the device, and the operator never sees it.
 
-Nacho resolves handles, verifies certificates on-device against a trust anchor you supply, and lets you update records. Handles are purchased in-app under @bitcoin and the other spaces Nacho operates in its registry. It also accepts creating incusion requests for other top level spaces not operated by Nacho.
+Nacho resolves handles, verifies certificates on-device against a trust anchor you supply, and lets you update records. Handles are purchased in-app under @bitcoin and the other spaces Nacho operates in its registry. It also accepts creating inclusion requests for other top level spaces not operated by Nacho.
 
 Records such as payment addresses, Nostr pubkeys, and websites are published through Certrelay and touch no on-chain bytes.
 
